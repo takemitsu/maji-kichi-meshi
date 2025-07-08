@@ -23,6 +23,7 @@ Future: Mobile Apps → Same API
 - **モード**: SPA (Single Page Application)
 - **スタイリング**: Tailwind CSS
 - **型安全性**: TypeScript
+- **状態管理**: Pinia
 - **ホスティング**: 静的ビルド → nginx/CDN
 
 ### バックエンド
@@ -64,6 +65,15 @@ Future: Mobile Apps → Same API
 - GitHub OAuth
 - LINE Login
 - Twitter OAuth 1.0a
+
+### フロントエンド認証フロー
+1. **ログインページ**: OAuth プロバイダー選択
+2. **OAuth 認証**: バックエンドへリダイレクト
+3. **コールバック処理**: JWT トークンとユーザー情報を URL パラメータで受信
+4. **ローカル保存**: localStorage に JWT トークン保存
+5. **自動認証**: リロード時に localStorage からトークン復元
+6. **API 認証**: 全API リクエストに Bearer トークン付与
+7. **ログアウト**: ローカルストレージクリア + ログインページへリダイレクト
 
 ## API仕様
 
@@ -142,6 +152,38 @@ CREATE INDEX idx_rankings_position ON rankings(category_id, rank_position);
 - **XSS防止**: エスケープ処理
 - **SQL Injection**: Eloquent ORM
 
+## フロントエンド詳細
+
+### アーキテクチャ
+- **SPA モード**: SSR 無効化により静的ホスティング対応
+- **コンポーネント設計**: Vue.js 3 Composition API 使用
+- **状態管理**: Pinia によるストア管理
+- **ルーティング**: Vue Router 自動ルーティング
+- **ミドルウェア**: 認証保護とゲストページ制御
+
+### 認証システム
+- **Pinia ストア**: 認証状態の一元管理
+- **ローカルストレージ**: JWT トークン永続化
+- **自動リダイレクト**: 認証状態に基づく画面遷移
+- **API インターセプト**: 401 エラー時の自動ログアウト
+
+### スタイリング
+- **Tailwind CSS**: ユーティリティファースト CSS
+- **カスタムコンポーネント**: ボタン、カード、入力フィールド
+- **レスポンシブデザイン**: モバイルファースト設計
+- **アクセシビリティ**: 適切な色彩コントラストと構造
+
+### 実装済みページ
+- **ホームページ** (`/`): プロジェクト概要とログイン導線
+- **ログインページ** (`/login`): OAuth プロバイダー選択
+- **ダッシュボード** (`/dashboard`): 認証後のメインページ
+
+### API クライアント
+- **useApi Composable**: 全 API エンドポイントのタイプセーフラッパー
+- **自動認証**: Bearer トークンの自動付与
+- **エラーハンドリング**: 401 エラーの自動処理
+- **TypeScript**: 型安全な API 呼び出し
+
 ## パフォーマンス
 
 ### フロントエンド
@@ -185,8 +227,12 @@ CREATE INDEX idx_rankings_position ON rankings(category_id, rank_position);
 - [x] 包括的テストスイート (13/13 成功)
 - [x] API ルート設定
 - [x] CategorySeeder (基本データ投入)
+- [x] フロントエンド基本構成 (Nuxt.js + TypeScript + Tailwind CSS)
+- [x] 認証システムフロントエンド実装 (OAuth + JWT)
 
 ### 実装済みファイル
+
+#### バックエンド
 ```
 backend/
 ├── app/Models/
@@ -211,10 +257,36 @@ backend/
 └── routes/api.php
 ```
 
+#### フロントエンド
+```
+frontend/
+├── nuxt.config.ts (SPA設定、Tailwind CSS、Pinia)
+├── package.json (Vue.js 3 + Nuxt.js 3 + TypeScript)
+├── app.vue (メインレイアウト)
+├── assets/css/main.css (Tailwind CSS + カスタムスタイル)
+├── composables/
+│   └── useApi.ts (API クライアント、全エンドポイント定義)
+├── middleware/
+│   ├── auth.ts (認証保護ミドルウェア)
+│   └── guest.ts (ゲストミドルウェア)
+├── pages/
+│   ├── index.vue (ホームページ)
+│   ├── login.vue (OAuth ログインページ)
+│   └── dashboard.vue (ダッシュボード)
+├── plugins/
+│   ├── api.client.ts (API プラグイン)
+│   └── auth.client.ts (認証プラグイン、OAuth コールバック処理)
+├── stores/
+│   └── auth.ts (Pinia 認証ストア)
+└── tailwind.config.js (Tailwind CSS 設定)
+```
+
 ### Phase 2: Business Logic API (次の実装)
 - [ ] 店舗管理 API (Shop, Category 関連)
 - [ ] レビュー機能 API (Review, ReviewImage 関連)
 - [ ] ランキング機能 API (Ranking 関連)
 - [ ] 画像アップロード機能 (Intervention Image)
 - [ ] Google Places API 連携
-- [ ] フロントエンド実装開始
+- [ ] 店舗管理フロントエンド実装
+- [ ] レビュー機能フロントエンド実装
+- [ ] ランキング機能フロントエンド実装

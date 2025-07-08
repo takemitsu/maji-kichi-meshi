@@ -23,10 +23,18 @@
 ### Phase 1: Authentication & Foundation ✅
 - [x] プロジェクト基盤構築 (Laravel + Nuxt.js)
 - [x] データベース設計・マイグレーション作成 (8テーブル)
-- [x] JWT + OAuth認証システム実装
+- [x] JWT + OAuth認証システム実装（バックエンド）
 - [x] 認証システムテスト作成 (13/13 成功)
+- [x] フロントエンド基本設定（SPA、Tailwind CSS、Pinia）
+- [x] フロントエンド認証機能実装（OAuth連携、JWT管理）
 
-### Phase 2: Core Business Logic (次のステップ)
+### Phase 2: Frontend Core Features (進行中)
+- [ ] 基本レイアウト・ナビゲーション作成
+- [ ] 店舗管理機能（一覧・詳細・検索）
+- [ ] レビュー機能実装
+- [ ] ランキング機能実装
+
+### Phase 3: Backend API Enhancement (後続)
 - [ ] 店舗管理API実装
 - [ ] レビュー機能API実装  
 - [ ] ランキング機能API実装
