@@ -103,20 +103,4 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * Refresh token
-     */
-    public function refresh()
-    {
-        try {
-            $token = JWTAuth::refresh();
-            return response()->json([
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => config('jwt.ttl') * 60
-            ]);
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not refresh token'], 500);
-        }
-    }
 }

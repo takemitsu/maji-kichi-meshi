@@ -70,24 +70,6 @@ class AuthenticationTest extends TestCase
                  ->assertJson(['message' => 'Successfully logged out']);
     }
 
-    /** @test */
-    public function it_can_refresh_valid_token()
-    {
-        $user = User::factory()->create();
-        $token = JWTAuth::fromUser($user);
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json'
-        ])->postJson('/api/auth/refresh');
-
-        $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'access_token',
-                     'token_type',
-                     'expires_in'
-                 ]);
-    }
 
     /** @test */
     public function it_returns_error_for_invalid_oauth_provider()
