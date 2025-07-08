@@ -1,29 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- ナビゲーション -->
-    <nav class="bg-white shadow">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex items-center">
-            <NuxtLink to="/" class="text-xl font-bold text-gray-900">
-              マジキチメシ
-            </NuxtLink>
-          </div>
-          <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-700">{{ authStore.user?.name }}</span>
-            <button
-              @click="logout"
-              class="text-sm text-gray-600 hover:text-gray-900"
-            >
-              ログアウト
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <!-- メインコンテンツ -->
-    <main class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
       <div class="px-4 py-6 sm:px-0">
         <div class="mb-8">
           <h1 class="text-2xl font-bold text-gray-900">
@@ -167,7 +143,6 @@
           </div>
         </div>
       </div>
-    </main>
   </div>
 </template>
 
@@ -205,10 +180,7 @@ onMounted(async () => {
   }
 })
 
-// ログアウト処理
-const logout = async () => {
-  await authStore.logout()
-}
+// ログアウト処理はヘッダーコンポーネントで処理
 
 // メタデータ設定
 useHead({

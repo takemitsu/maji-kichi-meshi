@@ -39,6 +39,13 @@
 </template>
 
 <script setup lang="ts">
+const authStore = useAuthStore()
+
+// 認証済みユーザーは自動的にダッシュボードにリダイレクト
+if (authStore.isLoggedIn) {
+  await navigateTo('/dashboard')
+}
+
 // メタデータ設定
 useHead({
   title: 'マジキチメシ - 吉祥寺地域の個人的な店舗ランキング',

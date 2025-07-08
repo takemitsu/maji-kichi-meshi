@@ -90,9 +90,10 @@
 </template>
 
 <script setup lang="ts">
-// ゲストミドルウェア適用
+// ゲストミドルウェア適用、認証レイアウト使用
 definePageMeta({
-  middleware: 'guest'
+  middleware: 'guest',
+  layout: 'auth'
 })
 
 const authStore = useAuthStore()
