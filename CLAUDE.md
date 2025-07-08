@@ -153,9 +153,47 @@ maji-kichi-meshi/
 
 詳細設計: `docs/database-er-diagram.md`
 
+## Authentication Implementation Status
+
+### 認証システム（完了 ✅）
+- **JWT認証実装済み**: 1週間有効期限、リフレッシュ機能なし
+- **OAuth対応済み**: Google, GitHub, LINE, Twitter (Laravel Socialite)
+- **API保護**: 認証が必要なエンドポイントの適切な保護
+- **テストカバレッジ**: 包括的な認証テスト実装
+
+### 実装済みファイル
+- `app/Models/User.php` - JWT対応、OAuth関係定義
+- `app/Models/OAuthProvider.php` - OAuth連携データ
+- `app/Http/Controllers/Api/AuthController.php` - 認証API（OAuth + JWT）
+- `routes/api.php` - 認証ルート設定
+- `tests/Feature/AuthenticationTest.php` - 認証フローテスト (6/6 成功)
+- `tests/Unit/UserModelTest.php` - Userモデルテスト (7/7 成功)
+- `database/factories/OAuthProviderFactory.php` - テスト用ファクトリ
+
+### 認証フロー
+1. フロントエンド → `/api/auth/{provider}` (OAuth開始)
+2. プロバイダー認証 → `/api/auth/{provider}/callback`
+3. ユーザー作成/取得 + JWTトークン発行
+4. フロントエンドでJWTトークン保存
+5. API呼び出し時 `Authorization: Bearer {token}` ヘッダー
+
 ## Notes
 
 - 個人プロジェクトから開始、将来的に共有機能拡張
 - 既存Sakura VPS環境を活用
 - PostgreSQL新規導入予定（MySQL環境との比較検討）
 - 管理画面はLaravel Filamentで効率開発
+
+## Development Progress
+
+### Phase 1: Authentication & Foundation ✅
+- [x] プロジェクトセットアップ (Laravel + Nuxt.js)
+- [x] データベース設計・マイグレーション作成
+- [x] JWT + OAuth認証システム実装
+- [x] 認証システムテスト作成
+
+### Phase 2: Core Business Logic (次のステップ)
+- [ ] 店舗管理API実装
+- [ ] レビュー機能API実装
+- [ ] ランキング機能API実装
+- [ ] 画像アップロード実装
