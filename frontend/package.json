@@ -7,13 +7,21 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "type-check": "nuxt typecheck"
   },
   "dependencies": {
     "@nuxt/typescript-build": "^3.0.2",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "nuxt": "^3.17.6",
     "vue": "^3.5.17",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "@pinia/nuxt": "^0.5.1",
+    "pinia": "^2.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "typescript": "^5.5.3",
+    "vue-tsc": "^2.0.22"
   }
 }
