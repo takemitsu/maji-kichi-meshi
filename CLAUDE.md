@@ -197,3 +197,16 @@ maji-kichi-meshi/
 - [ ] レビュー機能API実装
 - [ ] ランキング機能API実装
 - [ ] 画像アップロード実装
+
+## Documentation
+
+### 詳細ドキュメント (docs/)
+- **[プロジェクト概要](docs/concept.md)** - コンセプト・ターゲットユーザー・利用シーン
+- **[技術仕様書](docs/technical-specs.md)** - アーキテクチャ・API仕様・実装状況
+- **[データベース設計](docs/database-er-diagram.md)** - ER図・実装状況・マイグレーション一覧
+- **[アーキテクチャ決定](docs/architecture-decision.md)** - SPA + API選択理由
+- **[開発記録](docs/session-log.md)** - セッション別作業記録
+- **[コンセプト詳細](docs/concept-memo.md)** - 「マジキチ」コンセプトの詳細解説
+
+### ディレクトリ構成説明
+詳細は `docs/README.md` を参照
