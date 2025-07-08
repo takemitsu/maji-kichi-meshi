@@ -141,12 +141,17 @@ maji-kichi-meshi/
 
 ## Database Design
 
-### 主要テーブル
+### 主要テーブル（実装済み）
 - `users` - ユーザー情報
-- `shops` - 店舗情報
-- `categories` - カテゴリ
-- `rankings` - ユーザー別ランキング
-- `reviews` - レビュー・評価
+- `oauth_providers` - OAuth連携情報（Google, GitHub, LINE, Twitter）
+- `shops` - 店舗情報（Google Places ID対応、緯度経度）
+- `categories` - カテゴリマスタ（基本/時間帯/ランキング用）
+- `shop_categories` - 店舗カテゴリ中間テーブル（複数選択対応）
+- `reviews` - レビュー・評価（星評価＋リピート意向＋メモ）
+- `review_images` - レビュー画像（複数枚、自動リサイズ4種）
+- `rankings` - ユーザー別ランキング（レビューとは独立）
+
+詳細設計: `docs/database-er-diagram.md`
 
 ## Notes
 

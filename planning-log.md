@@ -80,12 +80,41 @@
   - フロント: nginx or CDN配信
 - **将来拡張**: Android/iOSアプリも同じAPIを利用
 
-## 今後のタスク
-1. API設計
-2. データベース設計  
-3. 外部API連携検討
-4. デプロイ戦略
-5. 認証実装
+## 開発進捗
+
+### ✅ 完了済み (2025/07/08)
+1. **プロジェクト初期化**
+   - Laravel 12 + 必要パッケージ (Socialite, JWT-Auth, Intervention Image)
+   - Nuxt.js + Tailwind CSS
+   - Git リポジトリ初期化
+
+2. **データベース設計完了**
+   - 完全なER図作成 (`docs/database-er-diagram.md`)
+   - 全テーブルのマイグレーションファイル作成
+   - カテゴリマスタの初期データシーダー作成
+   - 全モデルファイル作成
+
+### 🚧 今後のタスク
+1. **認証基盤実装** (次回優先)
+   - JWT設定
+   - OAuth実装 (Google, GitHub, LINE, Twitter)
+   - 認証ミドルウェア
+
+2. **API設計・実装**
+   - ルーティング設計
+   - コントローラー実装
+   - API Resource作成
+
+3. **フロントエンド実装**
+   - Nuxt.js SPA設定
+   - 認証フロー
+   - 基本UI実装
+
+4. **外部API連携**
+   - Google Places API
+   - Google Maps API
+
+5. **デプロイ準備**
 
 ## 開発環境
 - Sakura VPS
