@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\RankingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,9 @@ Route::get('/shops', [ShopController::class, 'index']);
 Route::get('/shops/{shop}', [ShopController::class, 'show']);
 Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+Route::get('/rankings', [RankingController::class, 'index']);
+Route::get('/rankings/{ranking}', [RankingController::class, 'show']);
+Route::get('/public-rankings', [RankingController::class, 'publicRankings']);
 
 // Protected routes (authentication required)
 Route::middleware('auth:api')->group(function () {
@@ -56,5 +60,9 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
     Route::get('/my-reviews', [ReviewController::class, 'myReviews']);
     
-    // Ranking routes will be added here
+    // Ranking management
+    Route::post('/rankings', [RankingController::class, 'store']);
+    Route::put('/rankings/{ranking}', [RankingController::class, 'update']);
+    Route::delete('/rankings/{ranking}', [RankingController::class, 'destroy']);
+    Route::get('/my-rankings', [RankingController::class, 'myRankings']);
 });
