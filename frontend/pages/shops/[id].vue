@@ -296,7 +296,7 @@ const loadShop = async () => {
 // レビューデータ取得
 const loadRecentReviews = async () => {
   try {
-    const response = await $api.reviews.list(shopId.value)
+    const response = await $api.reviews.list({ shop_id: shopId.value })
     recentReviews.value = (response.data || []).slice(0, 3) // 最新3件
   } catch (err) {
     console.error('Failed to load reviews:', err)
