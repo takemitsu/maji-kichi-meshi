@@ -30,7 +30,7 @@
         <h2 class="text-2xl font-semibold mb-4">ログインして始めましょう</h2>
         <p class="text-gray-600 mb-6">Google、GitHub、LINE、Twitterでログイン可能</p>
         <div class="space-x-4">
-          <button class="btn-primary">ログイン</button>
+          <NuxtLink to="/login" class="btn-primary">ログイン</NuxtLink>
           <button class="btn-secondary">ゲストで見る</button>
         </div>
       </div>
