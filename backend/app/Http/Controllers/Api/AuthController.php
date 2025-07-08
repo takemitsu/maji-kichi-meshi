@@ -13,10 +13,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['oauthRedirect', 'oauthCallback', 'logout']]);
-    }
+    // Middleware is now handled in routes instead of constructor
 
     /**
      * Redirect to OAuth provider
