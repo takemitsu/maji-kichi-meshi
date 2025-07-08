@@ -1,0 +1,220 @@
+<template>
+  <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+      <!-- ヘッダー -->
+      <div class="mb-8">
+        <div class="md:flex md:items-center md:justify-between">
+          <div class="min-w-0 flex-1">
+            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+              店舗管理
+            </h1>
+            <p class="mt-1 text-sm text-gray-500">
+              登録済みの店舗を管理・編集できます
+            </p>
+          </div>
+          <div class="mt-4 flex md:ml-4 md:mt-0">
+            <button
+              @click="showAddModal = true"
+              class="btn-primary"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              店舗を追加
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 検索・フィルター -->
+      <div class="mb-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- 検索 -->
+          <div class="md:col-span-2">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+              <input
+                v-model="searchQuery"
+                @input="handleSearch"
+                type="text"
+                placeholder="店舗名で検索..."
+                class="input-field pl-10"
+              >
+            </div>
+          </div>
+
+          <!-- カテゴリフィルター -->
+          <div>
+            <select
+              v-model="selectedCategory"
+              @change="handleCategoryFilter"
+              class="input-field"
+            >
+              <option value="">全てのカテゴリ</option>
+              <option 
+                v-for="category in categories" 
+                :key="category.id"
+                :value="category.id"
+              >
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ローディング -->
+      <LoadingSpinner v-if="loading" />
+
+      <!-- エラーメッセージ -->
+      <AlertMessage
+        v-if="error"
+        type="error"
+        :message="error"
+        @close="error = ''"
+      />
+
+      <!-- 店舗一覧 -->
+      <div v-if="!loading && shops.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ShopCard
+          v-for="shop in shops"
+          :key="shop.id"
+          :shop="shop"
+          @edit="editShop"
+          @delete="deleteShop"
+        />
+      </div>
+
+      <!-- 空の状態 -->
+      <div v-if="!loading && shops.length === 0" class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">店舗がありません</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          {{ searchQuery || selectedCategory ? '検索条件に一致する店舗が見つかりませんでした。' : '最初の店舗を追加してみましょう。' }}
+        </p>
+        <div class="mt-6">
+          <button
+            @click="showAddModal = true"
+            class="btn-primary"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            店舗を追加
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 店舗追加/編集モーダル（今後実装） -->
+    <!-- <ShopModal v-if="showAddModal" @close="showAddModal = false" /> -->
+  </div>
+</template>
+
+<script setup lang="ts">
+// 認証ミドルウェア適用
+definePageMeta({
+  middleware: 'auth'
+})
+
+const { $api } = useNuxtApp()
+
+// リアクティブデータ
+const shops = ref<any[]>([])
+const categories = ref<any[]>([])
+const loading = ref(true)
+const error = ref('')
+const searchQuery = ref('')
+const selectedCategory = ref('')
+// ShopCardコンポーネントを使用するため、activeActionMenuは不要
+const showAddModal = ref(false)
+
+// 検索とフィルター
+const handleSearch = useDebounceFn(() => {
+  loadShops()
+}, 300)
+
+const handleCategoryFilter = () => {
+  loadShops()
+}
+
+// ShopCardコンポーネントでアクションメニューを処理
+
+// 店舗データ取得
+const loadShops = async () => {
+  try {
+    loading.value = true
+    
+    const params: Record<string, any> = {}
+    if (searchQuery.value) params.search = searchQuery.value
+    if (selectedCategory.value) params.category = selectedCategory.value
+
+    const response = await $api.shops.list(params)
+    shops.value = response.data || []
+  } catch (err) {
+    console.error('Failed to load shops:', err)
+    error.value = '店舗データの取得に失敗しました'
+  } finally {
+    loading.value = false
+  }
+}
+
+// カテゴリデータ取得
+const loadCategories = async () => {
+  try {
+    const response = await $api.categories.list()
+    categories.value = response.data || []
+  } catch (err) {
+    console.error('Failed to load categories:', err)
+  }
+}
+
+// 店舗操作
+const editShop = (shop: any) => {
+  // 編集モーダルを開く（今後実装）
+  console.log('Edit shop:', shop)
+}
+
+const deleteShop = async (shop: any) => {
+  if (!confirm(`「${shop.name}」を削除しますか？この操作は元に戻せません。`)) {
+    return
+  }
+
+  try {
+    await $api.shops.delete(shop.id)
+    await loadShops()
+  } catch (err) {
+    console.error('Failed to delete shop:', err)
+    error.value = '店舗の削除に失敗しました'
+  }
+}
+
+// ユーティリティ関数
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('ja-JP')
+}
+
+// ShopCardコンポーネントで外部クリック処理
+
+// 初期化
+onMounted(async () => {
+  await Promise.all([
+    loadShops(),
+    loadCategories()
+  ])
+})
+
+// メタデータ設定
+useHead({
+  title: '店舗管理 - マジキチメシ',
+  meta: [
+    { name: 'description', content: '登録済み店舗の管理・編集ページ' }
+  ]
+})
+</script>
