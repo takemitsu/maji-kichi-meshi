@@ -16,11 +16,16 @@ use App\Http\Controllers\Api\AuthController;
 
 // Authentication routes
 Route::prefix('auth')->group(function () {
+    // Protected routes (must come first to avoid route conflicts)
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/me', [AuthController::class, 'me'])->name('auth.me');
+        Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+        Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
+    });
+    
+    // Public OAuth routes (must come after protected routes)
     Route::get('/{provider}', [AuthController::class, 'oauthRedirect'])->name('auth.redirect');
     Route::get('/{provider}/callback', [AuthController::class, 'oauthCallback'])->name('auth.callback');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
-    Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
-    Route::get('/me', [AuthController::class, 'me'])->name('auth.me');
 });
 
 // Protected routes
