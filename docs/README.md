@@ -18,6 +18,11 @@
 ### 詳細メモ
 - **[concept-memo.md](./concept-memo.md)** - 「マジキチ」コンセプトの詳細解説
 
+### レビュー・レポート系
+- **[バックエンドレビューレポート](20250709005500-backend-review-report.md)** - バックエンド実装の包括的評価
+- **[フロントエンドコードレビュー](20250709005500-frontend-code-review.md)** - フロントエンド実装の品質評価
+- **[統合テストレポート](20250709005500-integration-test-report.md)** - フロントエンド・バックエンド統合テスト結果
+
 ## プロジェクト状況
 
 ### Phase 1: Authentication & Foundation ✅ 完了
