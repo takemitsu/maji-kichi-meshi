@@ -53,8 +53,8 @@
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               </div>
             </div>
-            <div v-if="searchQuery" class="mt-2 text-sm text-gray-500">
-              {{ searchQuery }}の検索結果: {{ filteredShops.length }}件
+            <div v-if="searchQuery || selectedCategory" class="mt-2 text-sm text-gray-500">
+              検索結果: {{ totalItems }}件中 {{ (currentPage - 1) * perPage + 1 }}〜{{ Math.min(currentPage * perPage, totalItems) }}件を表示
             </div>
           </div>
 
@@ -90,18 +90,31 @@
       />
 
       <!-- 店舗一覧 -->
-      <div v-if="!loading && filteredShops.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ShopCard
-          v-for="shop in filteredShops"
-          :key="shop.id"
-          :shop="enhanceShopForDisplay(shop)"
-          @edit="editShop"
-          @delete="deleteShop"
-        />
+      <div v-if="!loading && shops.length > 0" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ShopCard
+            v-for="shop in shops"
+            :key="shop.id"
+            :shop="enhanceShopForDisplay(shop)"
+            @edit="editShop"
+            @delete="deleteShop"
+          />
+        </div>
+        
+        <!-- ページネーション -->
+        <div v-if="totalPages > 1" class="flex justify-center">
+          <PaginationComponent
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            :total-items="totalItems"
+            :per-page="perPage"
+            @page-change="handlePageChange"
+          />
+        </div>
       </div>
 
       <!-- 空の状態 -->
-      <div v-if="!loading && filteredShops.length === 0" class="text-center py-12">
+      <div v-if="!loading && shops.length === 0" class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
         </svg>
@@ -145,43 +158,17 @@ const selectedCategory = ref('')
 // ShopCardコンポーネントを使用するため、activeActionMenuは不要
 const showAddModal = ref(false)
 
+// ページネーション
+const currentPage = ref(1)
+const perPage = ref(20)
+const totalItems = ref(0)
+const totalPages = ref(0)
+
 // 検索とハイライト機能
 const { highlightText, calculateRelevanceScore } = useSearchHighlight()
 
-// フィルター処理
-const filteredShops = computed(() => {
-  let result = [...shops.value]
-  
-  // 検索フィルター
-  if (searchQuery.value) {
-    result = result.filter(shop => 
-      shop.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      shop.address.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-    
-    // 関連度でソート
-    result.sort((a, b) => {
-      const scoreA = Math.max(
-        calculateRelevanceScore(a.name, searchQuery.value),
-        calculateRelevanceScore(a.address, searchQuery.value)
-      )
-      const scoreB = Math.max(
-        calculateRelevanceScore(b.name, searchQuery.value),
-        calculateRelevanceScore(b.address, searchQuery.value)
-      )
-      return scoreB - scoreA
-    })
-  }
-  
-  // カテゴリフィルター
-  if (selectedCategory.value) {
-    result = result.filter(shop => 
-      shop.categories?.some((cat: any) => cat.id == selectedCategory.value)
-    )
-  }
-  
-  return result
-})
+// フィルター処理（サーバーサイドで実行するため削除）
+const filteredShops = computed(() => shops.value)
 
 // 表示用の店舗データ拡張
 const enhanceShopForDisplay = (shop: any) => {
@@ -196,15 +183,19 @@ const enhanceShopForDisplay = (shop: any) => {
 
 // 検索とフィルター
 const handleSearch = useDebounceFn(() => {
-  searchLoading.value = true
-  // フィルター処理はcomputed内で実行
-  setTimeout(() => {
-    searchLoading.value = false
-  }, 150)
+  currentPage.value = 1 // 検索時は1ページ目に戻る
+  loadShops()
 }, 300)
 
 const handleCategoryFilter = () => {
-  // カテゴリフィルターはcomputed内で処理
+  currentPage.value = 1 // フィルター変更時は1ページ目に戻る
+  loadShops()
+}
+
+// ページ変更
+const handlePageChange = (page: number) => {
+  currentPage.value = page
+  loadShops()
 }
 
 // ShopCardコンポーネントでアクションメニューを処理
@@ -214,9 +205,25 @@ const loadShops = async () => {
   try {
     loading.value = true
     
-    // 検索・フィルターはクライアント側で実行するため、全データを取得
-    const response = await $api.shops.list()
+    const params: Record<string, any> = {
+      page: currentPage.value,
+      per_page: perPage.value
+    }
+    
+    if (searchQuery.value) params.search = searchQuery.value
+    if (selectedCategory.value) params.category = selectedCategory.value
+
+    const response = await $api.shops.list(params)
+    
+    // ページネーション対応のレスポンス処理
     shops.value = response.data || []
+    
+    if (response.meta) {
+      currentPage.value = response.meta.current_page
+      perPage.value = response.meta.per_page
+      totalItems.value = response.meta.total
+      totalPages.value = response.meta.last_page
+    }
   } catch (err: any) {
     console.error('Failed to load shops:', err)
     console.error('Error status:', err.status)

@@ -103,11 +103,12 @@
 
       <!-- レビュー一覧 -->
       <div v-if="!loading && reviews.length > 0" class="space-y-6">
-        <div
-          v-for="review in reviews"
-          :key="review.id"
-          class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200"
-        >
+        <div class="space-y-6">
+          <div
+            v-for="review in reviews"
+            :key="review.id"
+            class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200"
+          >
           <div class="p-6">
             <!-- ヘッダー部分 -->
             <div class="flex items-start justify-between mb-4">
@@ -263,6 +264,17 @@
             </div>
           </div>
         </div>
+        
+        <!-- ページネーション -->
+        <div v-if="totalPages > 1" class="flex justify-center">
+          <PaginationComponent
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            :total-items="totalItems"
+            :per-page="perPage"
+            @page-change="handlePageChange"
+          />
+        </div>
       </div>
 
       <!-- 空の状態 -->
@@ -315,6 +327,12 @@ const selectedRating = ref('')
 const selectedRepeatIntention = ref('')
 const selectedImage = ref<any>(null)
 
+// ページネーション
+const currentPage = ref(1)
+const perPage = ref(20)
+const totalItems = ref(0)
+const totalPages = ref(0)
+
 // URLパラメータから初期値を設定
 onMounted(() => {
   if (route.query.shop_id) {
@@ -325,6 +343,7 @@ onMounted(() => {
 
 // 検索とフィルター
 const handleSearch = useDebounceFn(() => {
+  currentPage.value = 1 // 検索時は1ページ目に戻る
   searchLoading.value = true
   loadReviews().finally(() => {
     searchLoading.value = false
@@ -332,10 +351,17 @@ const handleSearch = useDebounceFn(() => {
 }, 300)
 
 const handleFilter = () => {
+  currentPage.value = 1 // フィルター変更時は1ページ目に戻る
   searchLoading.value = true
   loadReviews().finally(() => {
     searchLoading.value = false
   })
+}
+
+// ページ変更
+const handlePageChange = (page: number) => {
+  currentPage.value = page
+  loadReviews()
 }
 
 // レビューデータ取得
@@ -343,14 +369,27 @@ const loadReviews = async () => {
   try {
     loading.value = true
     
-    const params: Record<string, any> = {}
+    const params: Record<string, any> = {
+      page: currentPage.value,
+      per_page: perPage.value
+    }
+    
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedRating.value) params.rating = selectedRating.value
     if (selectedRepeatIntention.value) params.repeat_intention = selectedRepeatIntention.value
     if (route.query.shop_id) params.shop_id = route.query.shop_id
 
-    const response = await $api.reviews.list()
+    const response = await $api.reviews.list(params)
+    
+    // ページネーション対応のレスポンス処理
     reviews.value = response.data || []
+    
+    if (response.meta) {
+      currentPage.value = response.meta.current_page
+      perPage.value = response.meta.per_page
+      totalItems.value = response.meta.total
+      totalPages.value = response.meta.last_page
+    }
   } catch (err) {
     console.error('Failed to load reviews:', err)
     error.value = 'レビューデータの取得に失敗しました'
