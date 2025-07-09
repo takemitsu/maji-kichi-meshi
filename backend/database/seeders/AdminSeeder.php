@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
@@ -17,7 +16,7 @@ class AdminSeeder extends Seeder
         User::create([
             'name' => 'System Admin',
             'email' => 'admin@majikichi-meshi.com',
-            'password' => Hash::make('admin123'),
+            'password' => 'admin123',
             'email_verified_at' => now(),
             'role' => 'admin',
             'status' => 'active',
@@ -27,7 +26,7 @@ class AdminSeeder extends Seeder
         User::create([
             'name' => 'Content Moderator',
             'email' => 'moderator@majikichi-meshi.com',
-            'password' => Hash::make('moderator123'),
+            'password' => 'moderator123',
             'email_verified_at' => now(),
             'role' => 'moderator',
             'status' => 'active',
@@ -38,7 +37,7 @@ class AdminSeeder extends Seeder
             User::create([
                 'name' => 'Dev Admin',
                 'email' => 'dev@example.com',
-                'password' => Hash::make('password'),
+                'password' => 'password',
                 'email_verified_at' => now(),
                 'role' => 'admin',
                 'status' => 'active',
