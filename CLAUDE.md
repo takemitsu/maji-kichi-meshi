@@ -18,8 +18,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Backend  
 - Laravel API (純粋なREST API)
 - Laravel Socialite (OAuth → JWT発行)
-- Laravel Filament (管理画面)
+- Laravel Filament (管理画面) - ✅ 実装完了
 - Backend for Frontend (BFF)パターン
+- Intervention Image (画像処理) - ✅ 実装完了
 
 ### Database
 - PostgreSQL (メイン)
@@ -29,6 +30,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - OAuth: Google, GitHub, LINE, Twitter
 - Laravel Socialite → JWTトークン発行
 - Web/Mobile共通認証
+- ハイブリッド認証: 一般ユーザー(JWT) + 管理者(セッション) - ✅ 実装完了
 
 ### External APIs
 - Google Places API (店舗情報)
@@ -142,13 +144,13 @@ maji-kichi-meshi/
 ## Database Design
 
 ### 主要テーブル（実装済み）
-- `users` - ユーザー情報
+- `users` - ユーザー情報 + 管理者権限(role/status)
 - `oauth_providers` - OAuth連携情報（Google, GitHub, LINE, Twitter）
-- `shops` - 店舗情報（Google Places ID対応、緯度経度）
+- `shops` - 店舗情報（Google Places ID対応、緯度経度） + 管理者制御(status)
 - `categories` - カテゴリマスタ（基本/時間帯/ランキング用）
 - `shop_categories` - 店舗カテゴリ中間テーブル（複数選択対応）
 - `reviews` - レビュー・評価（星評価＋リピート意向＋メモ）
-- `review_images` - レビュー画像（複数枚、自動リサイズ4種）
+- `review_images` - レビュー画像（複数枚、自動リサイズ4種） + 検閲機能
 - `rankings` - ユーザー別ランキング（レビューとは独立）
 
 詳細設計: `docs/database-er-diagram.md`
@@ -211,14 +213,29 @@ maji-kichi-meshi/
 - [x] 認証フロー統合テスト (認証エラー解決)
 - [x] フロントエンド・バックエンド統合テスト完了
 
-### Phase 4: Enhancement (後続)
-- [ ] 画像アップロード機能実装 (Intervention Image)
+### Phase 4: Image Upload & Admin System ✅ 完了
+- [x] 画像アップロード機能実装 (Intervention Image)
+  - 4サイズ自動リサイズ (thumbnail/small/medium/large)
+  - ReviewImageモデル実装
+  - 画像アップロードテスト完了
+- [x] 管理者システム実装 (Laravel Filament)
+  - ハイブリッド認証 (一般:JWT + 管理者:セッション)
+  - ユーザー管理 (強制退会・ステータス変更)
+  - 店舗管理 (非表示・削除処理)
+  - 画像検閲 (承認・拒否・一括操作)
+  - レビュー/ランキング管理
+  - ユーザーベースレート制限
+  - 包括的テスト実装 (16テストケース)
+
+### Phase 5: Enhancement (後続)
 - [ ] Google Places API 連携
+- [ ] 通報システム実装
+- [ ] 統計ダッシュボード
 - [ ] パフォーマンス最適化
 - [ ] デプロイメント自動化
 
-### 🎯 プロジェクト完了状況: **100%** (コア機能完了)
-**OAuth設定完了後、即座に本番リリース可能**
+### 🎯 プロジェクト完了状況: **100%** (管理機能含む完全版)
+**OAuth設定完了後、即座に本番リリース可能 + 管理者機能完備**
 
 ## Documentation
 

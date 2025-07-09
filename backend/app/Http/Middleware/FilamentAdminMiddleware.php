@@ -22,6 +22,18 @@ class FilamentAdminMiddleware
             abort(403, 'Unauthorized');
         }
 
+        // 2FA必須チェック（管理者のみ）
+        if ($user->isAdmin() && !$user->hasTwoFactorEnabled()) {
+            return redirect()->route('admin.two-factor.setup')
+                ->with('warning', '管理者はTwo-Factor Authentication (2FA)の設定が必要です。');
+        }
+
+        // 2FA認証チェック
+        if ($user->hasTwoFactorEnabled() && !session('two_factor_confirmed')) {
+            return redirect()->route('admin.two-factor.challenge')
+                ->with('info', 'Two-Factor Authenticationコードを入力してください。');
+        }
+
         return $next($request);
     }
 }
