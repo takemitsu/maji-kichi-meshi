@@ -130,4 +130,20 @@ class Shop extends Model
     {
         return $this->belongsTo(User::class, 'moderated_by');
     }
+
+    /**
+     * Relationship with images
+     */
+    public function images()
+    {
+        return $this->hasMany(ShopImage::class)->ordered();
+    }
+
+    /**
+     * Relationship with published images only
+     */
+    public function publishedImages()
+    {
+        return $this->hasMany(ShopImage::class)->published()->ordered();
+    }
 }

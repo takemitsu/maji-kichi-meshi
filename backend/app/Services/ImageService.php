@@ -114,6 +114,7 @@ class ImageService
         return Storage::disk('public')->url($path);
     }
 
+
     /**
      * サポートされている画像形式をチェック
      *

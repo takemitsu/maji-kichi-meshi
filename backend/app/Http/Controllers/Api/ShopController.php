@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ShopResource;
 use App\Models\Shop;
+use App\Models\ShopImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ShopController extends Controller
@@ -16,7 +19,7 @@ class ShopController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Shop::with('categories');
+        $query = Shop::with(['categories', 'publishedImages']);
 
         // Search by name
         if ($request->has('search')) {
@@ -93,7 +96,7 @@ class ShopController extends Controller
      */
     public function show(Shop $shop)
     {
-        $shop->load('categories');
+        $shop->load(['categories', 'publishedImages']);
         return new ShopResource($shop);
     }
 
@@ -143,5 +146,121 @@ class ShopController extends Controller
         $shop->delete();
         
         return response()->json(['message' => 'Shop deleted successfully']);
+    }
+
+    /**
+     * Upload images to a shop
+     */
+    public function uploadImages(Request $request, Shop $shop)
+    {
+        $validator = Validator::make($request->all(), [
+            'images' => 'required|array|min:1|max:10',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Validation failed',
+                'messages' => $validator->errors()
+            ], 422);
+        }
+
+        // Check current image count
+        $currentImageCount = $shop->images()->count();
+        $newImageCount = count($request->file('images'));
+        
+        if ($currentImageCount + $newImageCount > 10) {
+            return response()->json([
+                'error' => 'Maximum 10 images allowed per shop'
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $uploadedImages = [];
+            $sortOrder = $currentImageCount;
+
+            foreach ($request->file('images') as $imageFile) {
+                $shopImage = ShopImage::createFromUpload($shop->id, $imageFile, $sortOrder);
+                $uploadedImages[] = $shopImage;
+                $sortOrder++;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Images uploaded successfully',
+                'data' => [
+                    'uploaded_count' => count($uploadedImages),
+                    'images' => collect($uploadedImages)->map(function ($image) {
+                        return [
+                            'id' => $image->id,
+                            'urls' => $image->urls,
+                            'sort_order' => $image->sort_order,
+                        ];
+                    })
+                ]
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Failed to upload images',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete a shop image
+     */
+    public function deleteImage(Request $request, Shop $shop, ShopImage $image)
+    {
+        // Check if image belongs to the shop
+        if ($image->shop_id !== $shop->id) {
+            return response()->json(['error' => 'Image does not belong to this shop'], 403);
+        }
+
+        $image->delete();
+
+        return response()->json(['message' => 'Image deleted successfully']);
+    }
+
+    /**
+     * Reorder shop images
+     */
+    public function reorderImages(Request $request, Shop $shop)
+    {
+        $validator = Validator::make($request->all(), [
+            'image_ids' => 'required|array',
+            'image_ids.*' => 'exists:shop_images,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Validation failed',
+                'messages' => $validator->errors()
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->image_ids as $index => $imageId) {
+                ShopImage::where('id', $imageId)
+                    ->where('shop_id', $shop->id)
+                    ->update(['sort_order' => $index]);
+            }
+
+            DB::commit();
+
+            return response()->json(['message' => 'Images reordered successfully']);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Failed to reorder images',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

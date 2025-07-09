@@ -53,6 +53,14 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/shops/{shop}', [ShopController::class, 'destroy'])
         ->middleware('throttle:5,60');
     
+    // Shop image management
+    Route::post('/shops/{shop}/images', [ShopController::class, 'uploadImages'])
+        ->middleware('throttle:15,60');  // 1時間に15回まで
+    Route::delete('/shops/{shop}/images/{image}', [ShopController::class, 'deleteImage'])
+        ->middleware('throttle:30,60');
+    Route::put('/shops/{shop}/images/reorder', [ShopController::class, 'reorderImages'])
+        ->middleware('throttle:10,60');
+    
     // Category management (admin only - will add middleware later)
     Route::post('/categories', [CategoryController::class, 'store'])
         ->middleware('throttle:5,60');
