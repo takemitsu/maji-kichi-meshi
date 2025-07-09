@@ -96,8 +96,11 @@ npm run start
 # 型チェック
 npm run type-check
 
-# Lint
+# Lint (ESLint v9 + Prettier)
 npm run lint
+
+# コードフォーマット
+npm run format
 ```
 
 ## Project Structure
@@ -114,6 +117,29 @@ maji-kichi-meshi/
 │   └── plugins/
 └── docs/            # 設計書類
 ```
+
+## Development Environment
+
+### Frontend Development Tools
+- **ESLint v9**: コード品質チェック（Flat Config対応）
+- **Prettier**: コードフォーマット統一
+- **TypeScript**: 型安全性確保
+- **Vue 3 + Composition API**: 最新のVue.js開発
+- **Nuxt.js 3**: SPA + SSGハイブリッド
+- **Tailwind CSS**: ユーティリティファーストCSS
+- **Pinia**: 状態管理
+
+### Code Quality Settings
+- 未使用変数チェック
+- TypeScript型チェック
+- Vue.jsテンプレート構文チェック
+- 自動フォーマット機能
+- 開発時リアルタイムエラー検出
+
+### Build & Deploy
+- 静的ビルド対応
+- nginx/CDN配信最適化
+- 開発・本番環境分離
 
 ## Key Features
 
@@ -227,7 +253,15 @@ maji-kichi-meshi/
   - ユーザーベースレート制限
   - 包括的テスト実装 (16テストケース)
 
-### Phase 5: Enhancement (後続)
+### Phase 5: UI/UX Improvements & DevOps ✅ 完了
+- [x] 店舗一覧・レビュー一覧のページネーション実装
+- [x] 画像遅延読み込み機能
+- [x] 検索機能とハイライト表示
+- [x] モバイル対応改善
+- [x] ESLint v9 + Prettier設定
+- [x] 開発環境コード品質向上
+
+### Phase 6: Enhancement (後続)
 - [ ] Google Places API 連携
 - [ ] 通報システム実装
 - [ ] 統計ダッシュボード

@@ -19,5 +19,18 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Admin user for Filament
+        User::updateOrCreate(
+            ['email' => 'takemitsu@notespace.jp'],
+            [
+                'name' => 'Takemitsu Admin',
+                'email' => 'takemitsu@notespace.jp',
+                'password' => \Hash::make('admin123'),
+                'role' => 'admin',
+                'status' => 'active',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

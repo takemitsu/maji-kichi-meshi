@@ -134,7 +134,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        return $this->isModerator() && $this->isActive();
+        return $this->role === 'admin' || $this->role === 'moderator';
     }
 
     // =============================================================================

@@ -111,7 +111,8 @@
         <div
           v-for="review in reviews"
           :key="review.id"
-          class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200"
+          class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 cursor-pointer"
+          @click="navigateToReview(review)"
         >
           <div class="p-6">
             <!-- ヘッダー部分 -->
@@ -151,6 +152,7 @@
                     <NuxtLink
                       :to="`/shops/${review.shop?.id}`"
                       class="hover:text-blue-600 transition-colors"
+                      @click.stop
                     >
                       {{ review.shop?.name }}
                     </NuxtLink>
@@ -182,11 +184,12 @@
                   <NuxtLink
                     :to="`/reviews/${review.id}/edit`"
                     class="text-sm text-blue-600 hover:text-blue-800"
+                    @click.stop
                   >
                     編集
                   </NuxtLink>
                   <button
-                    @click="deleteReview(review)"
+                    @click.stop="deleteReview(review)"
                     class="text-sm text-red-600 hover:text-red-800"
                   >
                     削除
@@ -251,7 +254,7 @@
                   v-for="image in review.images.slice(0, 4)"
                   :key="image.id"
                   class="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                  @click="openImageModal(image)"
+                  @click.stop="openImageModal(image)"
                 >
                   <img
                     :src="image.url"
@@ -274,9 +277,7 @@
                 </span>
               </div>
               <div class="flex items-center space-x-2">
-                <NuxtLink :to="`/reviews/${review.id}`" class="btn-secondary text-sm">
-                  詳細を見る
-                </NuxtLink>
+                <span class="text-sm text-gray-500">クリックで詳細を見る →</span>
               </div>
             </div>
           </div>
@@ -466,6 +467,11 @@ const openImageModal = (image: any) => {
   selectedImage.value = image
   // 将来的にはモーダルコンポーネントを表示
   console.log('Image modal opened:', image)
+}
+
+// レビュー詳細ページに遷移
+const navigateToReview = (review: any) => {
+  navigateTo(`/reviews/${review.id}`)
 }
 
 // 画像エラーハンドリング
