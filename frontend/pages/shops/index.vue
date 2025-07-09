@@ -63,7 +63,7 @@
                 @input="handleSearch"
                 type="text"
                 placeholder="店舗名で検索..."
-                class="input-field pl-10"
+                class="w-full py-2 pr-3 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <div v-if="searchLoading" class="absolute inset-y-0 right-0 pr-3 flex items-center">
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
