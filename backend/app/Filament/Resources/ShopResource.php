@@ -79,6 +79,10 @@ class ShopResource extends Resource
                     ->label('店舗名')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('images_count')
+                    ->label('画像数')
+                    ->counts('images')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('address')
                     ->label('住所')
                     ->searchable()
@@ -144,6 +148,12 @@ class ShopResource extends Resource
                 Filter::make('no_reviews')
                     ->label('レビュー無し')
                     ->query(fn (Builder $query): Builder => $query->doesntHave('reviews')),
+                Filter::make('has_images')
+                    ->label('画像有り')
+                    ->query(fn (Builder $query): Builder => $query->has('images')),
+                Filter::make('no_images')
+                    ->label('画像無し')
+                    ->query(fn (Builder $query): Builder => $query->doesntHave('images')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
