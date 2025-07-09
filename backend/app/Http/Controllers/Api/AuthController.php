@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponseTrait;
 use App\Models\User;
 use App\Models\OAuthProvider;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
+    use ApiResponseTrait;
     // Middleware is now handled in routes instead of constructor
 
     /**
@@ -23,7 +25,7 @@ class AuthController extends Controller
         try {
             return Socialite::driver($provider)->redirect();
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Invalid provider'], 400);
+            return $this->errorResponse('Invalid OAuth provider', 400);
         }
     }
 
@@ -70,15 +72,28 @@ class AuthController extends Controller
             // Generate JWT token
             $token = JWTAuth::fromUser($user);
 
-            return response()->json([
+            // Build success callback URL with token data
+            $callbackUrl = config('app.frontend_url') . '/auth/callback?' . http_build_query([
                 'access_token' => $token,
                 'token_type' => 'bearer',
                 'expires_in' => config('jwt.ttl') * 60, // 1 week in seconds
-                'user' => $user
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'success' => 'true'
             ]);
 
+            return redirect($callbackUrl);
+
         } catch (\Exception $e) {
-            return response()->json(['error' => 'OAuth authentication failed'], 500);
+            // Build error callback URL
+            $errorUrl = config('app.frontend_url') . '/auth/callback?' . http_build_query([
+                'error' => 'oauth_failed',
+                'error_description' => 'OAuth authentication failed',
+                'success' => 'false'
+            ]);
+
+            return redirect($errorUrl);
         }
     }
 
@@ -87,7 +102,15 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth('api')->user());
+        try {
+            $user = auth('api')->user();
+            if (!$user) {
+                return $this->unauthorizedResponse('User not authenticated');
+            }
+            return $this->successResponse($user);
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('Failed to retrieve user information');
+        }
     }
 
     /**
@@ -97,9 +120,30 @@ class AuthController extends Controller
     {
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
-            return response()->json(['message' => 'Successfully logged out']);
+            return $this->successResponse(null, 'Successfully logged out');
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Failed to logout'], 500);
+            return $this->serverErrorResponse('Failed to logout');
+        }
+    }
+
+    /**
+     * Get JWT token info (for debugging/validation)
+     */
+    public function tokenInfo()
+    {
+        try {
+            $token = JWTAuth::getToken();
+            $payload = JWTAuth::getPayload($token);
+            
+            return $this->successResponse([
+                'token' => $token->get(),
+                'payload' => $payload->toArray(),
+                'expires_at' => $payload->get('exp'),
+                'issued_at' => $payload->get('iat'),
+                'user_id' => $payload->get('sub'),
+            ]);
+        } catch (JWTException $e) {
+            return $this->unauthorizedResponse('Invalid token');
         }
     }
 

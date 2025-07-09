@@ -24,6 +24,7 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::get('/me', [AuthController::class, 'me'])->name('auth.me');
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+        Route::get('/token-info', [AuthController::class, 'tokenInfo'])->name('auth.token-info');
     });
     
     // Public OAuth routes (must come after protected routes)

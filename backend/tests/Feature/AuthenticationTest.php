@@ -50,8 +50,11 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(200)
                  ->assertJson([
-                     'name' => 'Test User',
-                     'email' => 'test@example.com'
+                     'success' => true,
+                     'data' => [
+                         'name' => 'Test User',
+                         'email' => 'test@example.com'
+                     ]
                  ]);
     }
 
@@ -67,7 +70,10 @@ class AuthenticationTest extends TestCase
         ])->postJson('/api/auth/logout');
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Successfully logged out']);
+                 ->assertJson([
+                     'success' => true,
+                     'message' => 'Successfully logged out'
+                 ]);
     }
 
 
@@ -77,7 +83,9 @@ class AuthenticationTest extends TestCase
         $response = $this->getJson('/api/auth/invalid-provider');
 
         $response->assertStatus(400)
-                 ->assertJson(['error' => 'Invalid provider']);
+                 ->assertJson([
+                     'message' => 'Invalid OAuth provider'
+                 ]);
     }
 
     /** @test */
@@ -102,15 +110,18 @@ class AuthenticationTest extends TestCase
             'redirect' => 'http://localhost/auth/google/callback',
         ]);
 
-        $response = $this->getJson('/api/auth/google/callback');
+        Config::set('app.frontend_url', 'http://localhost:3000');
 
-        $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'access_token',
-                     'token_type',
-                     'expires_in',
-                     'user'
-                 ]);
+        $response = $this->get('/api/auth/google/callback');
+
+        $response->assertStatus(302);
+        $response->assertRedirect();
+        
+        // Check that the redirect URL contains the expected parameters
+        $redirectUrl = $response->headers->get('Location');
+        $this->assertStringContainsString('http://localhost:3000/auth/callback', $redirectUrl);
+        $this->assertStringContainsString('access_token=', $redirectUrl);
+        $this->assertStringContainsString('success=true', $redirectUrl);
 
         // Verify user was created
         $this->assertDatabaseHas('users', [
@@ -154,17 +165,47 @@ class AuthenticationTest extends TestCase
             'redirect' => 'http://localhost/auth/google/callback',
         ]);
 
-        $response = $this->getJson('/api/auth/google/callback');
+        Config::set('app.frontend_url', 'http://localhost:3000');
 
-        $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'access_token',
-                     'token_type',
-                     'expires_in',
-                     'user'
-                 ]);
+        $response = $this->get('/api/auth/google/callback');
+
+        $response->assertStatus(302);
+        $response->assertRedirect();
+        
+        // Check that the redirect URL contains the expected parameters
+        $redirectUrl = $response->headers->get('Location');
+        $this->assertStringContainsString('http://localhost:3000/auth/callback', $redirectUrl);
+        $this->assertStringContainsString('access_token=', $redirectUrl);
+        $this->assertStringContainsString('success=true', $redirectUrl);
 
         // Verify no duplicate user was created
         $this->assertEquals(1, User::where('email', 'test@example.com')->count());
+    }
+
+    /** @test */
+    public function it_returns_token_info_for_authenticated_user()
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json'
+        ])->getJson('/api/auth/token-info');
+
+        $response->assertStatus(200)
+                 ->assertJson([
+                     'success' => true
+                 ])
+                 ->assertJsonStructure([
+                     'success',
+                     'data' => [
+                         'token',
+                         'payload',
+                         'expires_at',
+                         'issued_at',
+                         'user_id'
+                     ]
+                 ]);
     }
 }
