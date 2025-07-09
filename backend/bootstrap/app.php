@@ -15,5 +15,25 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // JWT例外の適切な処理
+        $exceptions->render(function (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token has expired'
+            ], 401);
+        });
+
+        $exceptions->render(function (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token is invalid'
+            ], 401);
+        });
+
+        $exceptions->render(function (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token not provided'
+            ], 401);
+        });
     })->create();

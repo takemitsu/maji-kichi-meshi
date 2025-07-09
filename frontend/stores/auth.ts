@@ -1,43 +1,66 @@
 import { defineStore } from 'pinia'
+import type { User, AuthState } from '~/types/auth'
 
-export interface User {
-  id: number
-  name: string
-  email: string
-  email_verified_at: string | null
-  created_at: string
-  updated_at: string
-}
-
-export interface AuthState {
-  user: User | null
-  token: string | null
-  isAuthenticated: boolean
+interface ExtendedAuthState extends AuthState {
+  tokenExpiresAt: number | null
 }
 
 export const useAuthStore = defineStore('auth', {
-  state: (): AuthState => ({
+  state: (): ExtendedAuthState => ({
     user: null,
     token: null,
-    isAuthenticated: false
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
+    tokenExpiresAt: null
   }),
 
   getters: {
-    isLoggedIn: (state) => state.isAuthenticated && !!state.token,
+    isLoggedIn: (state) => state.isAuthenticated && !!state.token && !state.isTokenExpired,
     currentUser: (state) => state.user,
-    authToken: (state) => state.token
+    authToken: (state) => state.token,
+    isTokenExpired: (state) => {
+      if (!state.tokenExpiresAt) return false
+      return Date.now() >= state.tokenExpiresAt
+    },
+    timeUntilExpiry: (state) => {
+      if (!state.tokenExpiresAt) return null
+      const timeLeft = state.tokenExpiresAt - Date.now()
+      return timeLeft > 0 ? timeLeft : 0
+    }
   },
 
   actions: {
-    setAuth(user: User, token: string) {
+    setAuth(user: User, token: string, expiresIn?: number) {
       this.user = user
       this.token = token
       this.isAuthenticated = true
+      this.error = null
+      
+      // トークンの有効期限を設定（デフォルト1週間）
+      const expirationTime = expiresIn || 7 * 24 * 60 * 60 // 1週間（秒）
+      this.tokenExpiresAt = Date.now() + (expirationTime * 1000)
       
       // LocalStorageに保存
       if (process.client) {
         localStorage.setItem('auth_token', token)
         localStorage.setItem('user', JSON.stringify(user))
+        localStorage.setItem('token_expires_at', this.tokenExpiresAt.toString())
+      }
+      
+      // 自動ログアウトタイマーを設定
+      this.setAutoLogoutTimer()
+    },
+
+    setError(error: string) {
+      this.error = error
+      this.isLoading = false
+    },
+
+    setLoading(loading: boolean) {
+      this.isLoading = loading
+      if (loading) {
+        this.error = null
       }
     },
 
@@ -45,11 +68,17 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.token = null
       this.isAuthenticated = false
+      this.error = null
+      this.tokenExpiresAt = null
+      
+      // 自動ログアウトタイマーをクリア
+      this.clearAutoLogoutTimer()
       
       // LocalStorageからクリア
       if (process.client) {
         localStorage.removeItem('auth_token')
         localStorage.removeItem('user')
+        localStorage.removeItem('token_expires_at')
       }
     },
 
@@ -57,17 +86,67 @@ export const useAuthStore = defineStore('auth', {
       if (process.client) {
         const token = localStorage.getItem('auth_token')
         const userData = localStorage.getItem('user')
+        const expiresAt = localStorage.getItem('token_expires_at')
         
-        if (token && userData) {
+        if (token && userData && expiresAt) {
           try {
             const user = JSON.parse(userData)
-            this.setAuth(user, token)
+            const expirationTime = parseInt(expiresAt)
+            
+            // トークンが期限切れかチェック
+            if (Date.now() >= expirationTime) {
+              console.log('Token has expired, clearing auth')
+              this.clearAuth()
+              return
+            }
+            
+            this.user = user
+            this.token = token
+            this.isAuthenticated = true
+            this.tokenExpiresAt = expirationTime
+            
+            // 自動ログアウトタイマーを設定
+            this.setAutoLogoutTimer()
           } catch (error) {
-            console.error('Failed to parse user data:', error)
+            console.error('Failed to parse auth data:', error)
             this.clearAuth()
           }
         }
       }
+    },
+
+    // 自動ログアウトタイマー管理
+    autoLogoutTimer: null as NodeJS.Timeout | null,
+    
+    setAutoLogoutTimer() {
+      this.clearAutoLogoutTimer()
+      
+      if (this.tokenExpiresAt && process.client) {
+        const timeUntilExpiry = this.tokenExpiresAt - Date.now()
+        
+        if (timeUntilExpiry > 0) {
+          this.autoLogoutTimer = setTimeout(() => {
+            console.log('Token expired, auto-logout')
+            this.logout()
+          }, timeUntilExpiry)
+        }
+      }
+    },
+    
+    clearAutoLogoutTimer() {
+      if (this.autoLogoutTimer) {
+        clearTimeout(this.autoLogoutTimer)
+        this.autoLogoutTimer = null
+      }
+    },
+
+    checkTokenExpiration() {
+      if (this.isTokenExpired) {
+        console.log('Token expired during check, logging out')
+        this.logout()
+        return false
+      }
+      return true
     },
 
     async logout() {

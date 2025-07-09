@@ -1,3 +1,14 @@
+import type { User } from '~/types/auth'
+import type { 
+  ApiResponse, 
+  PaginatedResponse, 
+  Shop, 
+  Category, 
+  Review, 
+  Ranking,
+  ErrorResponse 
+} from '~/types/api'
+
 export const useApi = () => {
   const config = useRuntimeConfig()
   const authStore = useAuthStore()
@@ -63,29 +74,29 @@ export const useApi = () => {
       logout: () => apiFetch('/auth/logout', { method: 'POST' }),
       
       // ユーザー情報取得
-      me: () => apiFetch<{ user: any }>('/auth/me')
+      me: () => apiFetch<ApiResponse<User>>('/auth/me')
     },
 
     // 店舗関連
     shops: {
       list: (params?: Record<string, any>) => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
-        return apiFetch<{ data: any[] }>(`/shops${query}`)
+        return apiFetch<PaginatedResponse<Shop>>(`/shops${query}`)
       },
       
-      get: (id: number) => apiFetch<{ data: any }>(`/shops/${id}`),
+      get: (id: number) => apiFetch<ApiResponse<Shop>>(`/shops/${id}`),
       
-      create: (data: any) => apiFetch<{ data: any }>('/shops', {
+      create: (data: Partial<Shop>) => apiFetch<ApiResponse<Shop>>('/shops', {
         method: 'POST',
         body: JSON.stringify(data)
       }),
       
-      update: (id: number, data: any) => apiFetch<{ data: any }>(`/shops/${id}`, {
+      update: (id: number, data: Partial<Shop>) => apiFetch<ApiResponse<Shop>>(`/shops/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data)
       }),
       
-      delete: (id: number) => apiFetch(`/shops/${id}`, { method: 'DELETE' })
+      delete: (id: number) => apiFetch<{ message: string }>(`/shops/${id}`, { method: 'DELETE' })
     },
 
     // カテゴリ関連
