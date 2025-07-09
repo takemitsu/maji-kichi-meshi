@@ -23,6 +23,13 @@
 # IDE
 .vscode/
 .idea/
+!frontend/.idea/codeStyles/
+!frontend/.idea/inspectionProfiles/
+!frontend/.idea/jsLibraryMappings.xml
+!frontend/.idea/prettier.xml
+!frontend/.idea/vcs.xml
+!frontend/.idea/watcherTasks.xml
+!frontend/.idea/.gitignore
 *.swp
 *.swo
 
