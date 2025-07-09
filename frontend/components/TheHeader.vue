@@ -3,77 +3,57 @@
     <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- ロゴ・タイトル -->
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center">
           <NuxtLink
             to="/"
-            class="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors flex items-center space-x-2"
+            class="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
           >
-            <svg
-              class="w-8 h-8 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              ></path>
-            </svg>
-            <span>マジキチメシ</span>
+            マジキチメシ
           </NuxtLink>
+        </div>
 
-          <!-- 共通ナビゲーション -->
-          <div class="hidden md:flex space-x-6">
-            <NuxtLink
-              to="/"
-              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{ 'text-blue-600 bg-blue-50': $route.path === '/' }"
-            >
-              ホーム
-            </NuxtLink>
-            <NuxtLink
-              to="/shops"
-              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{
-                'text-blue-600 bg-blue-50': $route.path.startsWith('/shops'),
-              }"
-            >
-              店舗
-            </NuxtLink>
-          </div>
+        <!-- メインナビゲーション -->
+        <div class="hidden md:flex items-center space-x-8">
+          <NuxtLink
+            to="/shops"
+            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            :class="{
+              'text-blue-600 bg-blue-50': $route.path.startsWith('/shops'),
+            }"
+          >
+            店舗
+          </NuxtLink>
+          <NuxtLink
+            to="/reviews"
+            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            :class="{
+              'text-blue-600 bg-blue-50': $route.path.startsWith('/reviews'),
+            }"
+          >
+            レビュー
+          </NuxtLink>
+          <NuxtLink
+            to="/rankings/public"
+            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            :class="{
+              'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
+            }"
+          >
+            ランキング
+          </NuxtLink>
+        </div>
 
-          <!-- 認証済みの場合のナビゲーション -->
-          <div v-if="authStore.isLoggedIn" class="hidden md:flex space-x-6">
-            <NuxtLink
-              to="/dashboard"
-              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{
-                'text-blue-600 bg-blue-50': $route.path === '/dashboard',
-              }"
-            >
-              ダッシュボード
-            </NuxtLink>
-            <NuxtLink
-              to="/reviews"
-              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{
-                'text-blue-600 bg-blue-50': $route.path.startsWith('/reviews'),
-              }"
-            >
-              レビュー
-            </NuxtLink>
-            <NuxtLink
-              to="/rankings"
-              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{
-                'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
-              }"
-            >
-              ランキング
-            </NuxtLink>
-          </div>
+        <!-- 認証済みユーザー専用ナビ -->
+        <div v-if="authStore.isLoggedIn" class="hidden md:flex items-center">
+          <NuxtLink
+            to="/dashboard"
+            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            :class="{
+              'text-blue-600 bg-blue-50': $route.path === '/dashboard',
+            }"
+          >
+            マイページ
+          </NuxtLink>
         </div>
 
         <!-- 右側メニュー -->
@@ -180,14 +160,6 @@
         <div v-if="isMobileMenuOpen" class="md:hidden py-4 border-t border-gray-200">
           <div class="space-y-1">
             <NuxtLink
-              to="/"
-              class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              :class="{ 'text-blue-600 bg-blue-50': $route.path === '/' }"
-              @click="closeMobileMenu"
-            >
-              ホーム
-            </NuxtLink>
-            <NuxtLink
               to="/shops"
               class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               :class="{
@@ -196,6 +168,26 @@
               @click="closeMobileMenu"
             >
               店舗
+            </NuxtLink>
+            <NuxtLink
+              to="/reviews"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              :class="{
+                'text-blue-600 bg-blue-50': $route.path.startsWith('/reviews'),
+              }"
+              @click="closeMobileMenu"
+            >
+              レビュー
+            </NuxtLink>
+            <NuxtLink
+              to="/rankings/public"
+              class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              :class="{
+                'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
+              }"
+              @click="closeMobileMenu"
+            >
+              ランキング
             </NuxtLink>
             <template v-if="authStore.isLoggedIn">
               <NuxtLink
