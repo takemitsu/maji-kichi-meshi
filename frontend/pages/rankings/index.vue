@@ -5,7 +5,9 @@
       <div class="mb-8">
         <div class="md:flex md:items-center md:justify-between">
           <div class="min-w-0 flex-1">
-            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            <h1
+              class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight"
+            >
               ランキング管理
             </h1>
             <p class="mt-1 text-sm text-gray-500">
@@ -13,22 +15,41 @@
             </p>
           </div>
           <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
-            <NuxtLink
-              to="/rankings/public"
-              class="btn-secondary"
-            >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+            <NuxtLink to="/rankings/public" class="btn-secondary">
+              <svg
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                ></path>
               </svg>
               公開ランキング
             </NuxtLink>
-            <NuxtLink
-              to="/rankings/create"
-              class="btn-primary"
-            >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            <NuxtLink to="/rankings/create" class="btn-primary">
+              <svg
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                ></path>
               </svg>
               ランキングを作成
             </NuxtLink>
@@ -42,9 +63,21 @@
           <!-- 検索 -->
           <div>
             <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
                 </svg>
               </div>
               <input
@@ -53,7 +86,7 @@
                 type="text"
                 placeholder="ランキング名で検索..."
                 class="input-field pl-10"
-              >
+              />
             </div>
           </div>
 
@@ -65,8 +98,8 @@
               class="input-field"
             >
               <option value="">全てのカテゴリ</option>
-              <option 
-                v-for="category in categories" 
+              <option
+                v-for="category in categories"
                 :key="category.id"
                 :value="category.id"
               >
@@ -114,46 +147,79 @@
               <div class="flex-1 min-w-0">
                 <div class="flex items-center space-x-3">
                   <h3 class="text-lg font-semibold text-gray-900">
-                    <NuxtLink 
+                    <NuxtLink
                       :to="`/rankings/${ranking.id}`"
                       class="hover:text-blue-600 transition-colors"
                     >
                       {{ ranking.title }}
                     </NuxtLink>
                   </h3>
-                  
+
                   <!-- 公開状態バッジ -->
-                  <span 
+                  <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                     :class="{
                       'bg-green-100 text-green-800': ranking.is_public,
-                      'bg-gray-100 text-gray-800': !ranking.is_public
+                      'bg-gray-100 text-gray-800': !ranking.is_public,
                     }"
                   >
                     {{ ranking.is_public ? '公開' : '非公開' }}
                   </span>
                 </div>
-                
-                <p v-if="ranking.description" class="text-sm text-gray-600 mt-2">
+
+                <p
+                  v-if="ranking.description"
+                  class="text-sm text-gray-600 mt-2"
+                >
                   {{ ranking.description }}
                 </p>
-                
+
                 <div class="flex items-center space-x-4 mt-3">
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    <svg
+                      class="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                      ></path>
                     </svg>
                     {{ ranking.category?.name || '総合' }}
                   </div>
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
+                    <svg
+                      class="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"
+                      ></path>
                     </svg>
                     {{ ranking.shops_count || 0 }}店舗
                   </div>
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg
+                      class="w-4 h-4 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
                     </svg>
                     更新: {{ formatDate(ranking.updated_at) }}
                   </div>
@@ -184,7 +250,10 @@
             </div>
 
             <!-- 上位店舗プレビュー -->
-            <div v-if="ranking.shops && ranking.shops.length > 0" class="border-t border-gray-200 pt-4">
+            <div
+              v-if="ranking.shops && ranking.shops.length > 0"
+              class="border-t border-gray-200 pt-4"
+            >
               <h4 class="text-sm font-medium text-gray-700 mb-3">上位店舗</h4>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div
@@ -193,17 +262,17 @@
                   class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
                 >
                   <!-- 順位 -->
-                  <div 
+                  <div
                     class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
                     :class="{
                       'bg-yellow-100 text-yellow-800': index === 0,
                       'bg-gray-100 text-gray-800': index === 1,
-                      'bg-orange-100 text-orange-800': index === 2
+                      'bg-orange-100 text-orange-800': index === 2,
                     }"
                   >
                     {{ index + 1 }}
                   </div>
-                  
+
                   <!-- 店舗情報 -->
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 truncate">
@@ -215,7 +284,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div v-if="ranking.shops.length > 3" class="mt-3 text-center">
                 <NuxtLink
                   :to="`/rankings/${ranking.id}`"
@@ -242,20 +311,43 @@
 
       <!-- 空の状態 -->
       <div v-if="!loading && rankings.length === 0" class="text-center py-12">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          ></path>
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">ランキングがありません</h3>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">
+          ランキングがありません
+        </h3>
         <p class="mt-1 text-sm text-gray-500">
-          {{ searchQuery || selectedCategory || selectedVisibility ? '検索条件に一致するランキングが見つかりませんでした。' : '最初のランキングを作成してみましょう。' }}
+          {{
+            searchQuery || selectedCategory || selectedVisibility
+              ? '検索条件に一致するランキングが見つかりませんでした。'
+              : '最初のランキングを作成してみましょう。'
+          }}
         </p>
         <div class="mt-6">
-          <NuxtLink
-            to="/rankings/create"
-            class="btn-primary"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          <NuxtLink to="/rankings/create" class="btn-primary">
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              ></path>
             </svg>
             ランキングを作成
           </NuxtLink>
@@ -268,7 +360,7 @@
 <script setup lang="ts">
 // 認証ミドルウェア適用
 definePageMeta({
-  middleware: 'auth'
+  middleware: 'auth',
 })
 
 const { $api } = useNuxtApp()
@@ -295,11 +387,12 @@ const handleFilter = () => {
 const loadRankings = async () => {
   try {
     loading.value = true
-    
+
     const params: Record<string, any> = {}
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedCategory.value) params.category_id = selectedCategory.value
-    if (selectedVisibility.value) params.is_public = selectedVisibility.value === 'public'
+    if (selectedVisibility.value)
+      params.is_public = selectedVisibility.value === 'public'
 
     const response = await $api.rankings.myRankings(params)
     rankings.value = response.data || []
@@ -323,7 +416,9 @@ const loadCategories = async () => {
 
 // ランキング削除
 const deleteRanking = async (ranking: any) => {
-  if (!confirm(`「${ranking.title}」を削除しますか？この操作は元に戻せません。`)) {
+  if (
+    !confirm(`「${ranking.title}」を削除しますか？この操作は元に戻せません。`)
+  ) {
     return
   }
 
@@ -343,17 +438,14 @@ const formatDate = (dateString: string) => {
 
 // 初期化
 onMounted(async () => {
-  await Promise.all([
-    loadRankings(),
-    loadCategories()
-  ])
+  await Promise.all([loadRankings(), loadCategories()])
 })
 
 // メタデータ設定
 useHead({
   title: 'ランキング管理 - マジキチメシ',
   meta: [
-    { name: 'description', content: '個人的な店舗ランキングの管理ページ' }
-  ]
+    { name: 'description', content: '個人的な店舗ランキングの管理ページ' },
+  ],
 })
 </script>

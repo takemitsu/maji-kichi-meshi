@@ -3,7 +3,9 @@
     <div class="px-4 py-6 sm:px-0">
       <!-- ヘッダー -->
       <div class="mb-8">
-        <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        <h1
+          class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight"
+        >
           ランキングを作成
         </h1>
         <p class="mt-1 text-sm text-gray-500">
@@ -38,7 +40,7 @@
                 placeholder="俺の吉祥寺ラーメンランキング"
                 maxlength="100"
                 required
-              >
+              />
               <p class="mt-1 text-sm text-gray-500">
                 {{ form.title.length }}/100 文字
               </p>
@@ -66,13 +68,10 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 カテゴリ
               </label>
-              <select
-                v-model="form.category_id"
-                class="input-field"
-              >
+              <select v-model="form.category_id" class="input-field">
                 <option value="">総合（全カテゴリ）</option>
-                <option 
-                  v-for="category in categories" 
+                <option
+                  v-for="category in categories"
                   :key="category.id"
                   :value="category.id"
                 >
@@ -93,8 +92,10 @@
                     :value="false"
                     type="radio"
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span class="ml-2 text-sm text-gray-900"
+                    >非公開（自分だけ）</span
                   >
-                  <span class="ml-2 text-sm text-gray-900">非公開（自分だけ）</span>
                 </label>
                 <label class="flex items-center">
                   <input
@@ -102,8 +103,10 @@
                     :value="true"
                     type="radio"
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <span class="ml-2 text-sm text-gray-900"
+                    >公開（みんなが見られる）</span
                   >
-                  <span class="ml-2 text-sm text-gray-900">公開（みんなが見られる）</span>
                 </label>
               </div>
               <p class="mt-1 text-sm text-gray-500">
@@ -134,17 +137,32 @@
                 type="text"
                 placeholder="店舗名で検索..."
                 class="input-field"
+              />
+              <div
+                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
               >
-              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
                 </svg>
               </div>
             </div>
           </div>
 
           <!-- 検索結果 -->
-          <div v-if="searchResults.length > 0" class="mb-6 max-h-64 overflow-y-auto border border-gray-200 rounded-md">
+          <div
+            v-if="searchResults.length > 0"
+            class="mb-6 max-h-64 overflow-y-auto border border-gray-200 rounded-md"
+          >
             <div
               v-for="shop in searchResults"
               :key="shop.id"
@@ -166,16 +184,26 @@
           </div>
 
           <!-- 店舗が見つからない場合 -->
-          <div v-if="shopSearchQuery && searchResults.length === 0 && !searchLoading" class="mb-6 text-center py-4 text-gray-500">
+          <div
+            v-if="
+              shopSearchQuery && searchResults.length === 0 && !searchLoading
+            "
+            class="mb-6 text-center py-4 text-gray-500"
+          >
             <p class="text-sm">店舗が見つかりませんでした</p>
-            <NuxtLink to="/shops" class="text-sm text-blue-600 hover:text-blue-800">
+            <NuxtLink
+              to="/shops"
+              class="text-sm text-blue-600 hover:text-blue-800"
+            >
               新しい店舗を登録する
             </NuxtLink>
           </div>
 
           <!-- 選択済み店舗一覧 -->
           <div v-if="selectedShops.length > 0">
-            <h4 class="text-sm font-medium text-gray-700 mb-3">選択済み店舗（ドラッグで順序変更）</h4>
+            <h4 class="text-sm font-medium text-gray-700 mb-3">
+              選択済み店舗（ドラッグで順序変更）
+            </h4>
             <div class="space-y-2">
               <div
                 v-for="(shop, index) in selectedShops"
@@ -188,17 +216,27 @@
               >
                 <div class="flex items-center space-x-3">
                   <!-- ドラッグハンドル -->
-                  <div class="cursor-move text-gray-400 group-hover:text-gray-600">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                  <div
+                    class="cursor-move text-gray-400 group-hover:text-gray-600"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
+                      ></path>
                     </svg>
                   </div>
-                  
+
                   <!-- 順位 -->
-                  <div class="w-8 h-8 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-bold">
+                  <div
+                    class="w-8 h-8 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-bold"
+                  >
                     {{ index + 1 }}
                   </div>
-                  
+
                   <!-- 店舗情報 -->
                   <div>
                     <h4 class="font-medium text-gray-900">{{ shop.name }}</h4>
@@ -212,8 +250,18 @@
                   type="button"
                   class="text-red-600 hover:text-red-800"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
                   </svg>
                 </button>
               </div>
@@ -222,28 +270,40 @@
 
           <!-- 空の状態 -->
           <div v-else class="text-center py-6 text-gray-500">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
+            <svg
+              class="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"
+              ></path>
             </svg>
             <p class="text-sm">まだ店舗が選択されていません</p>
-            <p class="text-sm">上の検索ボックスから店舗を検索して追加してください</p>
+            <p class="text-sm">
+              上の検索ボックスから店舗を検索して追加してください
+            </p>
           </div>
         </div>
 
         <!-- 送信ボタン -->
         <div class="flex items-center justify-between pt-6">
-          <NuxtLink
-            to="/rankings"
-            class="btn-secondary"
-          >
-            キャンセル
-          </NuxtLink>
+          <NuxtLink to="/rankings" class="btn-secondary"> キャンセル </NuxtLink>
           <button
             type="submit"
             :disabled="!canSubmit || submitting"
             class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
+            <LoadingSpinner
+              v-if="submitting"
+              size="sm"
+              color="white"
+              class="mr-2"
+            />
             {{ submitting ? '作成中...' : 'ランキングを作成' }}
           </button>
         </div>
@@ -255,7 +315,7 @@
 <script setup lang="ts">
 // 認証ミドルウェア適用
 definePageMeta({
-  middleware: 'auth'
+  middleware: 'auth',
 })
 
 const router = useRouter()
@@ -277,7 +337,7 @@ const form = ref({
   description: '',
   category_id: '',
   is_public: false,
-  shops: [] as any[]
+  shops: [] as any[],
 })
 
 // バリデーション
@@ -334,11 +394,11 @@ const dragOver = (event: DragEvent) => {
 
 const drop = (dropIndex: number) => {
   if (draggedIndex.value === null) return
-  
+
   const draggedShop = selectedShops.value[draggedIndex.value]
   selectedShops.value.splice(draggedIndex.value, 1)
   selectedShops.value.splice(dropIndex, 0, draggedShop)
-  
+
   draggedIndex.value = null
 }
 
@@ -348,11 +408,11 @@ const submitRanking = async () => {
 
   try {
     submitting.value = true
-    
+
     // 店舗データを順位付きで準備
     const shopsData = selectedShops.value.map((shop, index) => ({
       shop_id: shop.id,
-      position: index + 1
+      position: index + 1,
     }))
 
     const rankingData = {
@@ -360,11 +420,11 @@ const submitRanking = async () => {
       description: form.value.description?.trim() || null,
       category_id: form.value.category_id || null,
       is_public: form.value.is_public,
-      shops: shopsData
+      shops: shopsData,
     }
 
     const response = await $api.rankings.create(rankingData)
-    
+
     // 作成成功後、詳細ページに遷移
     await router.push(`/rankings/${response.data.id}`)
   } catch (err: any) {
@@ -398,7 +458,7 @@ onMounted(async () => {
 useHead({
   title: 'ランキング作成 - マジキチメシ',
   meta: [
-    { name: 'description', content: '新しい店舗ランキングを作成しましょう' }
-  ]
+    { name: 'description', content: '新しい店舗ランキングを作成しましょう' },
+  ],
 })
 </script>

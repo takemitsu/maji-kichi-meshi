@@ -4,54 +4,72 @@
       <div class="flex justify-between items-center h-16">
         <!-- ロゴ・タイトル -->
         <div class="flex items-center space-x-4">
-          <NuxtLink 
-            to="/" 
+          <NuxtLink
+            to="/"
             class="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors flex items-center space-x-2"
           >
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            <svg
+              class="w-8 h-8 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              ></path>
             </svg>
             <span>マジキチメシ</span>
           </NuxtLink>
-          
+
           <!-- 共通ナビゲーション -->
           <div class="hidden md:flex space-x-6">
-            <NuxtLink 
-              to="/" 
+            <NuxtLink
+              to="/"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               :class="{ 'text-blue-600 bg-blue-50': $route.path === '/' }"
             >
               ホーム
             </NuxtLink>
-            <NuxtLink 
-              to="/shops" 
+            <NuxtLink
+              to="/shops"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{ 'text-blue-600 bg-blue-50': $route.path.startsWith('/shops') }"
+              :class="{
+                'text-blue-600 bg-blue-50': $route.path.startsWith('/shops'),
+              }"
             >
               店舗
             </NuxtLink>
           </div>
-          
+
           <!-- 認証済みの場合のナビゲーション -->
           <div v-if="authStore.isLoggedIn" class="hidden md:flex space-x-6">
-            <NuxtLink 
-              to="/dashboard" 
+            <NuxtLink
+              to="/dashboard"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{ 'text-blue-600 bg-blue-50': $route.path === '/dashboard' }"
+              :class="{
+                'text-blue-600 bg-blue-50': $route.path === '/dashboard',
+              }"
             >
               ダッシュボード
             </NuxtLink>
-            <NuxtLink 
-              to="/reviews" 
+            <NuxtLink
+              to="/reviews"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{ 'text-blue-600 bg-blue-50': $route.path.startsWith('/reviews') }"
+              :class="{
+                'text-blue-600 bg-blue-50': $route.path.startsWith('/reviews'),
+              }"
             >
               レビュー
             </NuxtLink>
-            <NuxtLink 
-              to="/rankings" 
+            <NuxtLink
+              to="/rankings"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="{ 'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings') }"
+              :class="{
+                'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
+              }"
             >
               ランキング
             </NuxtLink>
@@ -62,8 +80,8 @@
         <div class="flex items-center space-x-4">
           <!-- 未認証の場合 -->
           <div v-if="!authStore.isLoggedIn" class="flex items-center space-x-2">
-            <NuxtLink 
-              to="/login" 
+            <NuxtLink
+              to="/login"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
             >
               ログイン
@@ -78,20 +96,27 @@
                 @click="toggleUserMenu"
                 class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-900 focus:outline-none"
               >
-                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <div
+                  class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"
+                >
                   <span class="text-white text-sm font-medium">
                     {{ authStore.user?.name?.charAt(0).toUpperCase() }}
                   </span>
                 </div>
                 <span class="hidden md:block">{{ authStore.user?.name }}</span>
-                <svg 
+                <svg
                   class="w-4 h-4 transition-transform"
                   :class="{ 'rotate-180': isUserMenuOpen }"
-                  fill="none" 
-                  stroke="currentColor" 
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
                 </svg>
               </button>
 
@@ -119,25 +144,30 @@
               </Transition>
             </div>
           </div>
-          
+
           <!-- モバイルメニューボタン（常に表示） -->
           <button
             @click="toggleMobileMenu"
             class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path 
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
                 v-if="!isMobileMenuOpen"
-                stroke-linecap="round" 
-                stroke-linejoin="round" 
-                stroke-width="2" 
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
                 d="M4 6h16M4 12h16M4 18h16"
               />
-              <path 
+              <path
                 v-else
-                stroke-linecap="round" 
-                stroke-linejoin="round" 
-                stroke-width="2" 
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
@@ -154,54 +184,69 @@
         leave-from-class="transform translate-y-0 opacity-100"
         leave-to-class="transform -translate-y-2 opacity-0"
       >
-        <div v-if="isMobileMenuOpen" class="md:hidden py-4 border-t border-gray-200">
+        <div
+          v-if="isMobileMenuOpen"
+          class="md:hidden py-4 border-t border-gray-200"
+        >
           <div class="space-y-1">
-            <NuxtLink 
-              to="/" 
+            <NuxtLink
+              to="/"
               class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               :class="{ 'text-blue-600 bg-blue-50': $route.path === '/' }"
               @click="closeMobileMenu"
             >
               ホーム
             </NuxtLink>
-            <NuxtLink 
-              to="/shops" 
+            <NuxtLink
+              to="/shops"
               class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              :class="{ 'text-blue-600 bg-blue-50': $route.path.startsWith('/shops') }"
+              :class="{
+                'text-blue-600 bg-blue-50': $route.path.startsWith('/shops'),
+              }"
               @click="closeMobileMenu"
             >
               店舗
             </NuxtLink>
             <template v-if="authStore.isLoggedIn">
-              <NuxtLink 
-                to="/dashboard" 
+              <NuxtLink
+                to="/dashboard"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                :class="{ 'text-blue-600 bg-blue-50': $route.path === '/dashboard' }"
+                :class="{
+                  'text-blue-600 bg-blue-50': $route.path === '/dashboard',
+                }"
                 @click="closeMobileMenu"
               >
                 ダッシュボード
               </NuxtLink>
-              <NuxtLink 
-                to="/reviews" 
+              <NuxtLink
+                to="/reviews"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                :class="{ 'text-blue-600 bg-blue-50': $route.path.startsWith('/reviews') }"
+                :class="{
+                  'text-blue-600 bg-blue-50':
+                    $route.path.startsWith('/reviews'),
+                }"
                 @click="closeMobileMenu"
               >
                 レビュー
               </NuxtLink>
-              <NuxtLink 
-                to="/rankings" 
+              <NuxtLink
+                to="/rankings"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                :class="{ 'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings') }"
+                :class="{
+                  'text-blue-600 bg-blue-50':
+                    $route.path.startsWith('/rankings'),
+                }"
                 @click="closeMobileMenu"
               >
                 ランキング
               </NuxtLink>
-              
+
               <!-- モバイル用ユーザーメニュー -->
               <div class="border-t border-gray-200 pt-4 mt-4">
                 <div class="flex items-center px-3 py-2">
-                  <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                  <div
+                    class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3"
+                  >
                     <span class="text-white text-sm font-medium">
                       {{ authStore.user?.name?.charAt(0).toUpperCase() }}
                     </span>
@@ -215,7 +260,7 @@
                     </p>
                   </div>
                 </div>
-                
+
                 <div class="mt-2 space-y-1">
                   <!-- プロフィール・設定は今後実装予定 -->
                   <button
@@ -227,7 +272,7 @@
                 </div>
               </div>
             </template>
-            
+
             <!-- 未認証時のモバイルメニュー -->
             <template v-else>
               <div class="border-t border-gray-200 pt-4 mt-4">
@@ -257,7 +302,7 @@ if (process.dev) {
   console.log('Auth store state:', {
     isLoggedIn: authStore.isLoggedIn,
     token: !!authStore.token,
-    user: !!authStore.user
+    user: !!authStore.user,
   })
 }
 
@@ -307,7 +352,10 @@ onUnmounted(() => {
 })
 
 // ルート変更時にモバイルメニューを閉じる
-watch(() => router.currentRoute.value.path, () => {
-  closeMobileMenu()
-})
+watch(
+  () => router.currentRoute.value.path,
+  () => {
+    closeMobileMenu()
+  }
+)
 </script>

@@ -8,19 +8,29 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "type-check": "nuxt typecheck"
+    "type-check": "nuxt typecheck",
+    "lint": "eslint --ext .js,.ts,.vue .",
+    "lint:fix": "eslint --ext .js,.ts,.vue . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@nuxt/typescript-build": "^3.0.2",
     "@nuxtjs/tailwindcss": "^6.14.0",
-    "nuxt": "^3.17.6",
-    "vue": "^3.5.17",
-    "vue-router": "^4.5.1",
     "@pinia/nuxt": "^0.5.1",
-    "pinia": "^2.1.7"
+    "nuxt": "^3.17.6",
+    "pinia": "^2.1.7",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@nuxt/eslint-config": "^1.5.2",
     "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
+    "eslint": "^9.30.1",
+    "eslint-plugin-vue": "^10.3.0",
+    "prettier": "^3.6.2",
     "typescript": "^5.5.3",
     "vue-tsc": "^2.0.22"
   }

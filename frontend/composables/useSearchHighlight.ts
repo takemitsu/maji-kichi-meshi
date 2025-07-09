@@ -13,11 +13,14 @@ export function useSearchHighlight() {
 
     // 特殊文字をエスケープ
     const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    
+
     // 大文字小文字を区別しない検索
     const regex = new RegExp(`(${escapedQuery})`, 'gi')
-    
-    return text.replace(regex, '<mark class="bg-yellow-200 text-yellow-900 font-medium rounded px-1">$1</mark>')
+
+    return text.replace(
+      regex,
+      '<mark class="bg-yellow-200 text-yellow-900 font-medium rounded px-1">$1</mark>'
+    )
   }
 
   /**
@@ -30,7 +33,7 @@ export function useSearchHighlight() {
     if (!queries.length || !text) return text
 
     let result = text
-    
+
     queries.forEach(query => {
       if (query.trim()) {
         result = highlightText(result, query.trim())
@@ -60,31 +63,31 @@ export function useSearchHighlight() {
 
     const lowerText = text.toLowerCase()
     const lowerQuery = query.toLowerCase()
-    
+
     // 完全一致
     if (lowerText === lowerQuery) return 1.0
-    
+
     // 前方一致
     if (lowerText.startsWith(lowerQuery)) return 0.9
-    
+
     // 単語の境界での一致
     const wordBoundaryRegex = new RegExp(`\\b${lowerQuery}\\b`)
     if (wordBoundaryRegex.test(lowerText)) return 0.8
-    
+
     // 部分一致
     if (lowerText.includes(lowerQuery)) return 0.7
-    
+
     // 類似度計算（簡易版）
     const queryWords = splitSearchQuery(lowerQuery)
     const matchingWords = queryWords.filter(word => lowerText.includes(word))
-    
-    return matchingWords.length / queryWords.length * 0.5
+
+    return (matchingWords.length / queryWords.length) * 0.5
   }
 
   return {
     highlightText,
     highlightMultipleTerms,
     splitSearchQuery,
-    calculateRelevanceScore
+    calculateRelevanceScore,
   }
 }

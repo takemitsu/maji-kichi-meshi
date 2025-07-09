@@ -1,12 +1,8 @@
 import type { User } from '~/types/auth'
-import type { 
-  ApiResponse, 
-  PaginatedResponse, 
-  Shop, 
-  Category, 
-  Review, 
-  Ranking,
-  ErrorResponse 
+import type {
+  ApiResponse,
+  PaginatedResponse,
+  Shop,
 } from '~/types/api'
 
 export const useApi = () => {
@@ -21,8 +17,8 @@ export const useApi = () => {
     options: RequestInit = {}
   ): Promise<T> => {
     const headers: Record<string, string> = {
-      'Accept': 'application/json',
-      ...(options.headers as Record<string, string>)
+      Accept: 'application/json',
+      ...(options.headers as Record<string, string>),
     }
 
     // FormDataでない場合のみContent-Typeを設定
@@ -37,7 +33,7 @@ export const useApi = () => {
 
     const response = await fetch(`${apiBase}${url}`, {
       ...options,
-      headers
+      headers,
     })
 
     if (!response.ok) {
@@ -46,19 +42,19 @@ export const useApi = () => {
         authStore.clearAuth()
         await navigateTo('/login')
       }
-      
+
       // エラーレスポンスの詳細を取得
       let errorData = null
       try {
         errorData = await response.json()
-      } catch (e) {
+      } catch {
         // JSONパースに失敗した場合
       }
-      
+
       const error = new Error(`API Error: ${response.status}`)
       ;(error as any).status = response.status
       ;(error as any).data = errorData
-      
+
       throw error
     }
 
@@ -73,12 +69,12 @@ export const useApi = () => {
       login: (provider: string) => {
         window.location.href = `${apiBase}/auth/${provider}`
       },
-      
+
       // ログアウト
       logout: () => apiFetch('/auth/logout', { method: 'POST' }),
-      
+
       // ユーザー情報取得
-      me: () => apiFetch<ApiResponse<User>>('/auth/me')
+      me: () => apiFetch<ApiResponse<User>>('/auth/me'),
     },
 
     // 店舗関連
@@ -87,20 +83,23 @@ export const useApi = () => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
         return apiFetch<PaginatedResponse<Shop>>(`/shops${query}`)
       },
-      
+
       get: (id: number) => apiFetch<ApiResponse<Shop>>(`/shops/${id}`),
-      
-      create: (data: Partial<Shop>) => apiFetch<ApiResponse<Shop>>('/shops', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      }),
-      
-      update: (id: number, data: Partial<Shop>) => apiFetch<ApiResponse<Shop>>(`/shops/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      }),
-      
-      delete: (id: number) => apiFetch<{ message: string }>(`/shops/${id}`, { method: 'DELETE' })
+
+      create: (data: Partial<Shop>) =>
+        apiFetch<ApiResponse<Shop>>('/shops', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }),
+
+      update: (id: number, data: Partial<Shop>) =>
+        apiFetch<ApiResponse<Shop>>(`/shops/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(data),
+        }),
+
+      delete: (id: number) =>
+        apiFetch<{ message: string }>(`/shops/${id}`, { method: 'DELETE' }),
     },
 
     // カテゴリ関連
@@ -109,20 +108,23 @@ export const useApi = () => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
         return apiFetch<{ data: any[] }>(`/categories${query}`)
       },
-      
+
       get: (id: number) => apiFetch<{ data: any }>(`/categories/${id}`),
-      
-      create: (data: any) => apiFetch<{ data: any }>('/categories', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      }),
-      
-      update: (id: number, data: any) => apiFetch<{ data: any }>(`/categories/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      }),
-      
-      delete: (id: number) => apiFetch(`/categories/${id}`, { method: 'DELETE' })
+
+      create: (data: any) =>
+        apiFetch<{ data: any }>('/categories', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }),
+
+      update: (id: number, data: any) =>
+        apiFetch<{ data: any }>(`/categories/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(data),
+        }),
+
+      delete: (id: number) =>
+        apiFetch(`/categories/${id}`, { method: 'DELETE' }),
     },
 
     // レビュー関連
@@ -131,42 +133,46 @@ export const useApi = () => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
         return apiFetch<{ data: any[] }>(`/reviews${query}`)
       },
-      
+
       myReviews: (params?: Record<string, any>) => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
         return apiFetch<{ data: any[] }>(`/my-reviews${query}`)
       },
-      
+
       get: (id: number) => apiFetch<{ data: any }>(`/reviews/${id}`),
-      
-      create: (data: any) => apiFetch<{ data: any }>('/reviews', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      }),
-      
-      update: (id: number, data: any) => apiFetch<{ data: any }>(`/reviews/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      }),
-      
+
+      create: (data: any) =>
+        apiFetch<{ data: any }>('/reviews', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }),
+
+      update: (id: number, data: any) =>
+        apiFetch<{ data: any }>(`/reviews/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(data),
+        }),
+
       delete: (id: number) => apiFetch(`/reviews/${id}`, { method: 'DELETE' }),
-      
+
       // 画像管理
       uploadImages: (reviewId: number, files: File[]) => {
         const formData = new FormData()
         files.forEach((file, index) => {
           formData.append(`images[${index}]`, file)
         })
-        
+
         return apiFetch<{ data: any }>(`/reviews/${reviewId}/images`, {
           method: 'POST',
           body: formData,
-          headers: {} // FormDataの場合、Content-Typeヘッダーは自動設定
+          headers: {}, // FormDataの場合、Content-Typeヘッダーは自動設定
         })
       },
-      
-      deleteImage: (reviewId: number, imageId: number) => 
-        apiFetch(`/reviews/${reviewId}/images/${imageId}`, { method: 'DELETE' })
+
+      deleteImage: (reviewId: number, imageId: number) =>
+        apiFetch(`/reviews/${reviewId}/images/${imageId}`, {
+          method: 'DELETE',
+        }),
     },
 
     // ランキング関連
@@ -175,31 +181,33 @@ export const useApi = () => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
         return apiFetch<{ data: any[] }>(`/rankings${query}`)
       },
-      
+
       publicRankings: (params?: Record<string, any>) => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
         return apiFetch<{ data: any[] }>(`/public-rankings${query}`)
       },
-      
+
       myRankings: (params?: Record<string, any>) => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
         return apiFetch<{ data: any[] }>(`/my-rankings${query}`)
       },
-      
+
       get: (id: number) => apiFetch<{ data: any }>(`/rankings/${id}`),
-      
-      create: (data: any) => apiFetch<{ data: any }>('/rankings', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      }),
-      
-      update: (id: number, data: any) => apiFetch<{ data: any }>(`/rankings/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      }),
-      
-      delete: (id: number) => apiFetch(`/rankings/${id}`, { method: 'DELETE' })
-    }
+
+      create: (data: any) =>
+        apiFetch<{ data: any }>('/rankings', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }),
+
+      update: (id: number, data: any) =>
+        apiFetch<{ data: any }>(`/rankings/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(data),
+        }),
+
+      delete: (id: number) => apiFetch(`/rankings/${id}`, { method: 'DELETE' }),
+    },
   }
 
   return api

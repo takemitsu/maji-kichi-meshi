@@ -12,26 +12,26 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: false,
     isLoading: false,
     error: null,
-    tokenExpiresAt: null
+    tokenExpiresAt: null,
   }),
 
   getters: {
-    isTokenExpired: (state) => {
+    isTokenExpired: state => {
       if (!state.tokenExpiresAt) return false
       return Date.now() >= state.tokenExpiresAt
     },
-    isLoggedIn: (state) => {
+    isLoggedIn: state => {
       if (!state.isAuthenticated || !state.token) return false
       if (!state.tokenExpiresAt) return true
       return Date.now() < state.tokenExpiresAt
     },
-    currentUser: (state) => state.user,
-    authToken: (state) => state.token,
-    timeUntilExpiry: (state) => {
+    currentUser: state => state.user,
+    authToken: state => state.token,
+    timeUntilExpiry: state => {
       if (!state.tokenExpiresAt) return null
       const timeLeft = state.tokenExpiresAt - Date.now()
       return timeLeft > 0 ? timeLeft : 0
-    }
+    },
   },
 
   actions: {
@@ -40,18 +40,18 @@ export const useAuthStore = defineStore('auth', {
       this.token = token
       this.isAuthenticated = true
       this.error = null
-      
+
       // トークンの有効期限を設定（デフォルト1週間）
       const expirationTime = expiresIn || 7 * 24 * 60 * 60 // 1週間（秒）
-      this.tokenExpiresAt = Date.now() + (expirationTime * 1000)
-      
+      this.tokenExpiresAt = Date.now() + expirationTime * 1000
+
       // LocalStorageに保存
       if (process.client) {
         localStorage.setItem('auth_token', token)
         localStorage.setItem('user', JSON.stringify(user))
         localStorage.setItem('token_expires_at', this.tokenExpiresAt.toString())
       }
-      
+
       // 自動ログアウトタイマーを設定
       this.setAutoLogoutTimer()
     },
@@ -74,10 +74,10 @@ export const useAuthStore = defineStore('auth', {
       this.isAuthenticated = false
       this.error = null
       this.tokenExpiresAt = null
-      
+
       // 自動ログアウトタイマーをクリア
       this.clearAutoLogoutTimer()
-      
+
       // LocalStorageからクリア
       if (process.client) {
         localStorage.removeItem('auth_token')
@@ -94,28 +94,32 @@ export const useAuthStore = defineStore('auth', {
         const token = localStorage.getItem('auth_token')
         const userData = localStorage.getItem('user')
         const expiresAt = localStorage.getItem('token_expires_at')
-        
+
         if (process.dev) {
-          console.log('LocalStorage values:', { token: !!token, userData: !!userData, expiresAt: !!expiresAt })
+          console.log('LocalStorage values:', {
+            token: !!token,
+            userData: !!userData,
+            expiresAt: !!expiresAt,
+          })
         }
-        
+
         if (token && userData && expiresAt) {
           try {
             const user = JSON.parse(userData)
             const expirationTime = parseInt(expiresAt)
-            
+
             // トークンが期限切れかチェック
             if (Date.now() >= expirationTime) {
               console.log('Token has expired, clearing auth')
               this.clearAuth()
               return
             }
-            
+
             this.user = user
             this.token = token
             this.isAuthenticated = true
             this.tokenExpiresAt = expirationTime
-            
+
             // 自動ログアウトタイマーを設定
             this.setAutoLogoutTimer()
           } catch (error) {
@@ -124,7 +128,9 @@ export const useAuthStore = defineStore('auth', {
           }
         } else {
           if (process.dev) {
-            console.log('No auth data found in localStorage, staying unauthenticated')
+            console.log(
+              'No auth data found in localStorage, staying unauthenticated'
+            )
           }
         }
       }
@@ -132,13 +138,13 @@ export const useAuthStore = defineStore('auth', {
 
     // 自動ログアウトタイマー管理
     autoLogoutTimer: null as NodeJS.Timeout | null,
-    
+
     setAutoLogoutTimer() {
       this.clearAutoLogoutTimer()
-      
+
       if (this.tokenExpiresAt && process.client) {
         const timeUntilExpiry = this.tokenExpiresAt - Date.now()
-        
+
         if (timeUntilExpiry > 0) {
           this.autoLogoutTimer = setTimeout(() => {
             console.log('Token expired, auto-logout')
@@ -147,7 +153,7 @@ export const useAuthStore = defineStore('auth', {
         }
       }
     },
-    
+
     clearAutoLogoutTimer() {
       if (this.autoLogoutTimer) {
         clearTimeout(this.autoLogoutTimer)
@@ -177,6 +183,6 @@ export const useAuthStore = defineStore('auth', {
         this.clearAuth()
         await navigateTo('/login')
       }
-    }
-  }
+    },
+  },
 })

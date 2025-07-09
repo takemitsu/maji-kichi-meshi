@@ -6,7 +6,9 @@
 
       <!-- ヘッダー -->
       <div v-if="!loading" class="mb-8">
-        <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+        <h1
+          class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight"
+        >
           レビューを編集
         </h1>
         <p v-if="review" class="mt-1 text-sm text-gray-500">
@@ -23,11 +25,17 @@
       />
 
       <!-- フォーム -->
-      <form v-if="!loading && review" @submit.prevent="submitReview" class="space-y-6">
+      <form
+        v-if="!loading && review"
+        @submit.prevent="submitReview"
+        class="space-y-6"
+      >
         <!-- 店舗情報（読み取り専用） -->
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4">店舗情報</h3>
-          <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div
+            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+          >
             <div>
               <h4 class="font-medium text-gray-900">{{ review.shop?.name }}</h4>
               <p class="text-sm text-gray-600">{{ review.shop?.address }}</p>
@@ -61,14 +69,22 @@
                 >
                   <svg
                     class="w-8 h-8 transition-colors"
-                    :class="star <= form.rating ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-300 hover:text-gray-400'"
+                    :class="
+                      star <= form.rating
+                        ? 'text-yellow-400 hover:text-yellow-500'
+                        : 'text-gray-300 hover:text-gray-400'
+                    "
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                    ></path>
                   </svg>
                 </button>
-                <span class="ml-2 text-sm text-gray-600">({{ form.rating }}/5)</span>
+                <span class="ml-2 text-sm text-gray-600"
+                  >({{ form.rating }}/5)</span
+                >
               </div>
             </div>
 
@@ -88,8 +104,10 @@
                     :value="option.value"
                     type="radio"
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                  >
-                  <span class="ml-2 text-sm text-gray-900">{{ option.label }}</span>
+                  />
+                  <span class="ml-2 text-sm text-gray-900">{{
+                    option.label
+                  }}</span>
                 </label>
               </div>
             </div>
@@ -109,7 +127,7 @@
               class="input-field"
               :max="today"
               required
-            >
+            />
           </div>
         </div>
 
@@ -135,7 +153,7 @@
         <!-- 写真管理 -->
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4">写真</h3>
-          
+
           <!-- 既存の画像 -->
           <div v-if="existingImages.length > 0" class="mb-6">
             <h4 class="text-sm font-medium text-gray-700 mb-2">現在の画像</h4>
@@ -155,8 +173,18 @@
                   @click="deleteExistingImage(image.id)"
                   class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
                   </svg>
                 </button>
               </div>
@@ -165,7 +193,9 @@
 
           <!-- 新しい画像の追加 -->
           <div v-if="existingImages.length < 5">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">新しい画像を追加</h4>
+            <h4 class="text-sm font-medium text-gray-700 mb-2">
+              新しい画像を追加
+            </h4>
             <ImageUpload
               v-model="newImages"
               :max-files="5 - existingImages.length"
@@ -195,10 +225,7 @@
         <!-- 送信ボタン -->
         <div class="flex items-center justify-between pt-6">
           <div class="flex space-x-4">
-            <NuxtLink
-              :to="`/reviews/${review.id}`"
-              class="btn-secondary"
-            >
+            <NuxtLink :to="`/reviews/${review.id}`" class="btn-secondary">
               キャンセル
             </NuxtLink>
             <button
@@ -214,7 +241,12 @@
             :disabled="!canSubmit || submitting"
             class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
+            <LoadingSpinner
+              v-if="submitting"
+              size="sm"
+              color="white"
+              class="mr-2"
+            />
             {{ submitting ? '更新中...' : 'レビューを更新' }}
           </button>
         </div>
@@ -226,7 +258,7 @@
 <script setup lang="ts">
 // 認証ミドルウェア適用
 definePageMeta({
-  middleware: 'auth'
+  middleware: 'auth',
 })
 
 const route = useRoute()
@@ -250,14 +282,14 @@ const form = ref({
   rating: 0,
   repeat_intention: '',
   visited_at: '',
-  comment: ''
+  comment: '',
 })
 
 // リピート意向オプション
 const repeatOptions = [
   { value: 'yes', label: 'また行く' },
   { value: 'maybe', label: 'わからん' },
-  { value: 'no', label: '行かない' }
+  { value: 'no', label: '行かない' },
 ]
 
 // 今日の日付（最大値として使用）
@@ -265,9 +297,11 @@ const today = new Date().toISOString().split('T')[0]
 
 // バリデーション
 const canSubmit = computed(() => {
-  return form.value.rating > 0 &&
-         form.value.repeat_intention &&
-         form.value.visited_at
+  return (
+    form.value.rating > 0 &&
+    form.value.repeat_intention &&
+    form.value.visited_at
+  )
 })
 
 // レビューデータ取得
@@ -276,15 +310,15 @@ const loadReview = async () => {
     loading.value = true
     const response = await $api.reviews.get(reviewId.value)
     review.value = response.data
-    
+
     // フォームにデータを設定
     form.value = {
       rating: review.value.rating,
       repeat_intention: review.value.repeat_intention,
       visited_at: review.value.visited_at.split('T')[0], // 日付部分のみ
-      comment: review.value.comment || ''
+      comment: review.value.comment || '',
     }
-    
+
     // 既存の画像を設定
     existingImages.value = review.value.images || []
   } catch (err: any) {
@@ -307,20 +341,21 @@ const submitReview = async () => {
 
   try {
     submitting.value = true
-    
+
     // レビューデータを更新
     await $api.reviews.update(reviewId.value, form.value)
-    
+
     // 新しい画像があればアップロード
     if (newImages.value.length > 0) {
       try {
         await $api.reviews.uploadImages(reviewId.value, newImages.value)
       } catch (imageErr) {
         console.error('Failed to upload images:', imageErr)
-        error.value = 'レビューは更新されましたが、画像のアップロードに失敗しました'
+        error.value =
+          'レビューは更新されましたが、画像のアップロードに失敗しました'
       }
     }
-    
+
     // 更新成功後、詳細ページに遷移
     await router.push(`/reviews/${reviewId.value}`)
   } catch (err: any) {
@@ -339,7 +374,11 @@ const submitReview = async () => {
 
 // レビュー削除
 const deleteReview = async () => {
-  if (!confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)) {
+  if (
+    !confirm(
+      `「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`
+    )
+  ) {
     return
   }
 
@@ -359,10 +398,12 @@ const deleteReview = async () => {
 // 既存画像削除
 const deleteExistingImage = async (imageId: number) => {
   if (!confirm('この画像を削除しますか？')) return
-  
+
   try {
     await $api.reviews.deleteImage(reviewId.value, imageId)
-    existingImages.value = existingImages.value.filter(img => img.id !== imageId)
+    existingImages.value = existingImages.value.filter(
+      img => img.id !== imageId
+    )
   } catch (err) {
     console.error('Failed to delete image:', err)
     error.value = '画像の削除に失敗しました'
@@ -381,9 +422,16 @@ onMounted(async () => {
 
 // メタデータ設定
 useHead(() => ({
-  title: review.value ? `${review.value.shop?.name} のレビュー編集 - マジキチメシ` : 'レビュー編集 - マジキチメシ',
+  title: review.value
+    ? `${review.value.shop?.name} のレビュー編集 - マジキチメシ`
+    : 'レビュー編集 - マジキチメシ',
   meta: [
-    { name: 'description', content: review.value ? `${review.value.shop?.name}のレビューを編集` : 'レビュー編集ページ' }
-  ]
+    {
+      name: 'description',
+      content: review.value
+        ? `${review.value.shop?.name}のレビューを編集`
+        : 'レビュー編集ページ',
+    },
+  ],
 }))
 </script>
