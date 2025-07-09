@@ -245,6 +245,17 @@
             </div>
           </div>
         </div>
+
+        <!-- ページネーション -->
+        <div v-if="totalPages > 1" class="flex justify-center mt-8">
+          <PaginationComponent
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            :total-items="totalItems"
+            :per-page="perPage"
+            @page-change="handlePageChange"
+          />
+        </div>
       </div>
 
       <!-- 空の状態 -->
@@ -305,12 +316,26 @@ const error = ref('')
 const searchQuery = ref('')
 const selectedCategory = ref('')
 
+// ページネーション
+const currentPage = ref(1)
+const perPage = ref(20)
+const totalItems = ref(0)
+const totalPages = ref(0)
+
 // 検索とフィルター
 const handleSearch = useDebounceFn(() => {
+  currentPage.value = 1 // 検索時は1ページ目に戻る
   loadRankings()
 }, 300)
 
 const handleFilter = () => {
+  currentPage.value = 1 // フィルター変更時は1ページ目に戻る
+  loadRankings()
+}
+
+// ページ変更
+const handlePageChange = (page: number) => {
+  currentPage.value = page
   loadRankings()
 }
 
@@ -319,12 +344,24 @@ const loadRankings = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, any> = {}
+    const params: Record<string, any> = {
+      page: currentPage.value,
+      per_page: perPage.value,
+    }
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedCategory.value) params.category_id = selectedCategory.value
 
     const response = await $api.rankings.publicRankings(params)
+    
+    // ページネーション対応のレスポンス処理
     rankings.value = response.data || []
+    
+    if (response.meta) {
+      currentPage.value = response.meta.current_page
+      perPage.value = response.meta.per_page
+      totalItems.value = response.meta.total
+      totalPages.value = response.meta.last_page
+    }
   } catch (err) {
     console.error('Failed to load public rankings:', err)
     error.value = '公開ランキングデータの取得に失敗しました'
