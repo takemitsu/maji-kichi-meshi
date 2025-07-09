@@ -201,12 +201,22 @@
             >
               この店舗の他のレビューを見る
             </NuxtLink>
-            <NuxtLink
-              :to="`/reviews/create?shop_id=${review.shop?.id}`"
-              class="btn-primary"
-            >
-              この店舗の新しいレビューを作成
-            </NuxtLink>
+            <template v-if="authStore.isLoggedIn">
+              <NuxtLink
+                :to="`/reviews/create?shop_id=${review.shop?.id}`"
+                class="btn-primary"
+              >
+                この店舗の新しいレビューを作成
+              </NuxtLink>
+            </template>
+            <template v-else>
+              <NuxtLink
+                to="/login"
+                class="btn-primary"
+              >
+                ログインしてレビューを作成
+              </NuxtLink>
+            </template>
           </div>
         </div>
       </div>

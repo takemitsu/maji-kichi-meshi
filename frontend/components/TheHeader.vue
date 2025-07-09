@@ -108,21 +108,7 @@
                   v-if="isUserMenuOpen"
                   class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
                 >
-                  <NuxtLink
-                    to="/profile"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    @click="closeUserMenu"
-                  >
-                    プロフィール
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/settings"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    @click="closeUserMenu"
-                  >
-                    設定
-                  </NuxtLink>
-                  <hr class="my-1">
+                  <!-- プロフィール・設定は今後実装予定 -->
                   <button
                     @click="logout"
                     class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
@@ -231,20 +217,7 @@
                 </div>
                 
                 <div class="mt-2 space-y-1">
-                  <NuxtLink
-                    to="/profile"
-                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    @click="closeMobileMenu"
-                  >
-                    プロフィール
-                  </NuxtLink>
-                  <NuxtLink
-                    to="/settings"
-                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    @click="closeMobileMenu"
-                  >
-                    設定
-                  </NuxtLink>
+                  <!-- プロフィール・設定は今後実装予定 -->
                   <button
                     @click="logout"
                     class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-900 hover:bg-red-50"

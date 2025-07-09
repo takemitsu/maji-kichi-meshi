@@ -32,33 +32,32 @@
           <ul class="space-y-2">
             <li>
               <NuxtLink 
-                v-if="authStore.isLoggedIn"
                 to="/shops" 
                 class="text-sm text-gray-600 hover:text-gray-900"
               >
-                店舗管理
+                店舗一覧
               </NuxtLink>
-              <span v-else class="text-sm text-gray-400">店舗管理</span>
             </li>
             <li>
               <NuxtLink 
-                v-if="authStore.isLoggedIn"
                 to="/reviews" 
                 class="text-sm text-gray-600 hover:text-gray-900"
               >
-                レビュー
+                レビュー一覧
               </NuxtLink>
-              <span v-else class="text-sm text-gray-400">レビュー</span>
             </li>
             <li>
-              <NuxtLink 
-                v-if="authStore.isLoggedIn"
-                to="/rankings" 
-                class="text-sm text-gray-600 hover:text-gray-900"
-              >
-                ランキング
-              </NuxtLink>
-              <span v-else class="text-sm text-gray-400">ランキング</span>
+              <template v-if="authStore.isLoggedIn">
+                <NuxtLink 
+                  to="/rankings" 
+                  class="text-sm text-gray-600 hover:text-gray-900"
+                >
+                  ランキング
+                </NuxtLink>
+              </template>
+              <template v-else>
+                <span class="text-sm text-gray-400">ランキング（要ログイン）</span>
+              </template>
             </li>
           </ul>
         </div>

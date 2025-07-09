@@ -49,6 +49,12 @@
                 placeholder="店舗名で検索..."
                 class="input-field pl-10"
               >
+              <div v-if="searchLoading" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              </div>
+            </div>
+            <div v-if="searchQuery" class="mt-2 text-sm text-gray-500">
+              {{ searchQuery }}の検索結果: {{ filteredShops.length }}件
             </div>
           </div>
 
@@ -84,18 +90,18 @@
       />
 
       <!-- 店舗一覧 -->
-      <div v-if="!loading && shops.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-if="!loading && filteredShops.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ShopCard
-          v-for="shop in shops"
+          v-for="shop in filteredShops"
           :key="shop.id"
-          :shop="shop"
+          :shop="enhanceShopForDisplay(shop)"
           @edit="editShop"
           @delete="deleteShop"
         />
       </div>
 
       <!-- 空の状態 -->
-      <div v-if="!loading && shops.length === 0" class="text-center py-12">
+      <div v-if="!loading && filteredShops.length === 0" class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
         </svg>
@@ -132,19 +138,73 @@ const authStore = useAuthStore()
 const shops = ref<any[]>([])
 const categories = ref<any[]>([])
 const loading = ref(true)
+const searchLoading = ref(false)
 const error = ref('')
 const searchQuery = ref('')
 const selectedCategory = ref('')
 // ShopCardコンポーネントを使用するため、activeActionMenuは不要
 const showAddModal = ref(false)
 
+// 検索とハイライト機能
+const { highlightText, calculateRelevanceScore } = useSearchHighlight()
+
+// フィルター処理
+const filteredShops = computed(() => {
+  let result = [...shops.value]
+  
+  // 検索フィルター
+  if (searchQuery.value) {
+    result = result.filter(shop => 
+      shop.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      shop.address.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+    
+    // 関連度でソート
+    result.sort((a, b) => {
+      const scoreA = Math.max(
+        calculateRelevanceScore(a.name, searchQuery.value),
+        calculateRelevanceScore(a.address, searchQuery.value)
+      )
+      const scoreB = Math.max(
+        calculateRelevanceScore(b.name, searchQuery.value),
+        calculateRelevanceScore(b.address, searchQuery.value)
+      )
+      return scoreB - scoreA
+    })
+  }
+  
+  // カテゴリフィルター
+  if (selectedCategory.value) {
+    result = result.filter(shop => 
+      shop.categories?.some((cat: any) => cat.id == selectedCategory.value)
+    )
+  }
+  
+  return result
+})
+
+// 表示用の店舗データ拡張
+const enhanceShopForDisplay = (shop: any) => {
+  if (!searchQuery.value) return shop
+  
+  return {
+    ...shop,
+    highlightedName: highlightText(shop.name, searchQuery.value),
+    highlightedAddress: highlightText(shop.address, searchQuery.value)
+  }
+}
+
 // 検索とフィルター
 const handleSearch = useDebounceFn(() => {
-  loadShops()
+  searchLoading.value = true
+  // フィルター処理はcomputed内で実行
+  setTimeout(() => {
+    searchLoading.value = false
+  }, 150)
 }, 300)
 
 const handleCategoryFilter = () => {
-  loadShops()
+  // カテゴリフィルターはcomputed内で処理
 }
 
 // ShopCardコンポーネントでアクションメニューを処理
@@ -154,11 +214,8 @@ const loadShops = async () => {
   try {
     loading.value = true
     
-    const params: Record<string, any> = {}
-    if (searchQuery.value) params.search = searchQuery.value
-    if (selectedCategory.value) params.category = selectedCategory.value
-
-    const response = await $api.shops.list(params)
+    // 検索・フィルターはクライアント側で実行するため、全データを取得
+    const response = await $api.shops.list()
     shops.value = response.data || []
   } catch (err: any) {
     console.error('Failed to load shops:', err)

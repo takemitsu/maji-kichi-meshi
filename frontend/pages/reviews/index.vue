@@ -24,9 +24,9 @@
             </NuxtLink>
           </div>
           <div v-else class="mt-4 flex md:ml-4 md:mt-0">
-            <NuxtLink to="/login" class="btn-primary">
-              ログインしてレビューを作成
-            </NuxtLink>
+            <span class="text-sm text-gray-500 px-3 py-2">
+              レビューを作成するにはログインが必要です
+            </span>
           </div>
         </div>
       </div>
@@ -112,11 +112,23 @@
             <!-- ヘッダー部分 -->
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-start space-x-4">
-                <!-- 店舗画像（仮） -->
-                <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
-                  </svg>
+                <!-- 店舗画像 -->
+                <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                  <template v-if="review.shop?.image_url">
+                    <img
+                      :src="review.shop.image_url"
+                      :alt="review.shop.name"
+                      class="w-full h-full object-cover"
+                      @error="handleShopImageError"
+                    />
+                  </template>
+                  <template v-else>
+                    <div class="w-full h-full flex items-center justify-center">
+                      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
+                      </svg>
+                    </div>
+                  </template>
                 </div>
 
                 <div class="flex-1 min-w-0">
@@ -217,14 +229,19 @@
                 <div
                   v-for="image in review.images.slice(0, 4)"
                   :key="image.id"
-                  class="aspect-square bg-gray-200 rounded-lg overflow-hidden"
+                  class="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                  @click="openImageModal(image)"
                 >
                   <img
                     :src="image.url"
                     :alt="`レビュー画像 ${image.id}`"
                     class="w-full h-full object-cover"
+                    @error="handleReviewImageError(image)"
                   />
                 </div>
+              </div>
+              <div v-if="review.images.length > 4" class="mt-2 text-sm text-gray-500">
+                他{{ review.images.length - 4 }}枚の画像があります
               </div>
             </div>
 
@@ -255,9 +272,9 @@
         </svg>
         <h3 class="mt-2 text-sm font-medium text-gray-900">レビューがありません</h3>
         <p class="mt-1 text-sm text-gray-500">
-          {{ searchQuery || selectedRating || selectedRepeatIntention ? '検索条件に一致するレビューが見つかりませんでした。' : '最初のレビューを作成してみましょう。' }}
+          {{ searchQuery || selectedRating || selectedRepeatIntention ? '検索条件に一致するレビューが見つかりませんでした。' : (authStore.isLoggedIn ? '最初のレビューを作成してみましょう。' : 'まだレビューがありません。') }}
         </p>
-        <div class="mt-6">
+        <div v-if="authStore.isLoggedIn" class="mt-6">
           <NuxtLink
             to="/reviews/create"
             class="btn-primary"
@@ -266,6 +283,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
             レビューを作成
+          </NuxtLink>
+        </div>
+        <div v-else class="mt-6">
+          <NuxtLink
+            to="/login"
+            class="btn-primary"
+          >
+            ログインしてレビューを作成
           </NuxtLink>
         </div>
       </div>
@@ -288,6 +313,7 @@ const error = ref('')
 const searchQuery = ref('')
 const selectedRating = ref('')
 const selectedRepeatIntention = ref('')
+const selectedImage = ref<any>(null)
 
 // URLパラメータから初期値を設定
 onMounted(() => {
@@ -360,6 +386,24 @@ const getRepeatIntentionText = (intention: string) => {
     case 'no': return '行かない'
     default: return '未設定'
   }
+}
+
+// 画像モーダル制御
+const openImageModal = (image: any) => {
+  selectedImage.value = image
+  // 将来的にはモーダルコンポーネントを表示
+  console.log('Image modal opened:', image)
+}
+
+// 画像エラーハンドリング
+const handleShopImageError = (event: Event) => {
+  const img = event.target as HTMLImageElement
+  img.style.display = 'none'
+  console.log('Shop image failed to load')
+}
+
+const handleReviewImageError = (image: any) => {
+  console.log('Review image failed to load:', image)
 }
 
 // 初期化

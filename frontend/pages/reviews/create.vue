@@ -64,6 +64,9 @@
                   </svg>
                 </div>
               </div>
+              <p class="mt-1 text-sm text-gray-500">
+                2文字以上入力すると検索が開始されます
+              </p>
             </div>
 
             <!-- 検索結果 -->
@@ -85,12 +88,17 @@
               </div>
             </div>
 
-            <!-- 店舗が見つからない場合 -->
-            <div v-if="shopSearchQuery && searchResults.length === 0 && !searchLoading" class="text-center py-4 text-gray-500">
-              <p class="text-sm">店舗が見つかりませんでした</p>
-              <NuxtLink to="/shops" class="text-sm text-blue-600 hover:text-blue-800">
-                新しい店舗を登録する
-              </NuxtLink>
+            <!-- 検索案内・結果なし -->
+            <div v-if="shopSearchQuery" class="text-center py-4">
+              <div v-if="shopSearchQuery.length < 2" class="text-gray-500">
+                <p class="text-sm">あと{{ 2 - shopSearchQuery.length }}文字入力してください</p>
+              </div>
+              <div v-else-if="searchResults.length === 0 && !searchLoading" class="text-gray-500">
+                <p class="text-sm mb-2">「{{ shopSearchQuery }}」の検索結果が見つかりませんでした</p>
+                <NuxtLink to="/shops" class="text-sm text-blue-600 hover:text-blue-800">
+                  新しい店舗を登録する
+                </NuxtLink>
+              </div>
             </div>
           </div>
         </div>
