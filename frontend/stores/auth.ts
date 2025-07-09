@@ -16,13 +16,17 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    isLoggedIn: (state) => state.isAuthenticated && !!state.token && !state.isTokenExpired,
-    currentUser: (state) => state.user,
-    authToken: (state) => state.token,
     isTokenExpired: (state) => {
       if (!state.tokenExpiresAt) return false
       return Date.now() >= state.tokenExpiresAt
     },
+    isLoggedIn: (state) => {
+      if (!state.isAuthenticated || !state.token) return false
+      if (!state.tokenExpiresAt) return true
+      return Date.now() < state.tokenExpiresAt
+    },
+    currentUser: (state) => state.user,
+    authToken: (state) => state.token,
     timeUntilExpiry: (state) => {
       if (!state.tokenExpiresAt) return null
       const timeLeft = state.tokenExpiresAt - Date.now()
@@ -83,10 +87,17 @@ export const useAuthStore = defineStore('auth', {
     },
 
     initAuth() {
+      if (process.dev) {
+        console.log('Auth store initAuth called')
+      }
       if (process.client) {
         const token = localStorage.getItem('auth_token')
         const userData = localStorage.getItem('user')
         const expiresAt = localStorage.getItem('token_expires_at')
+        
+        if (process.dev) {
+          console.log('LocalStorage values:', { token: !!token, userData: !!userData, expiresAt: !!expiresAt })
+        }
         
         if (token && userData && expiresAt) {
           try {
@@ -110,6 +121,10 @@ export const useAuthStore = defineStore('auth', {
           } catch (error) {
             console.error('Failed to parse auth data:', error)
             this.clearAuth()
+          }
+        } else {
+          if (process.dev) {
+            console.log('No auth data found in localStorage, staying unauthenticated')
           }
         }
       }

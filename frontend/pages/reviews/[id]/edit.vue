@@ -132,30 +132,28 @@
           </div>
         </div>
 
-        <!-- 写真管理（今後実装） -->
+        <!-- 写真管理 -->
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4">写真</h3>
           
           <!-- 既存の画像 -->
-          <div v-if="review.images && review.images.length > 0" class="mb-6">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">現在の写真</h4>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div v-if="existingImages.length > 0" class="mb-6">
+            <h4 class="text-sm font-medium text-gray-700 mb-2">現在の画像</h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div
-                v-for="image in review.images"
+                v-for="image in existingImages"
                 :key="image.id"
-                class="relative aspect-square bg-gray-200 rounded-lg overflow-hidden group"
+                class="relative group"
               >
-                <!-- 画像プレースホルダー -->
-                <div class="w-full h-full flex items-center justify-center">
-                  <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                </div>
-                <!-- 削除ボタン -->
+                <img
+                  :src="image.url"
+                  :alt="`既存画像 ${image.id}`"
+                  class="w-full h-32 object-cover rounded-lg"
+                />
                 <button
                   type="button"
-                  class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  @click="removeImage(image.id)"
+                  @click="deleteExistingImage(image.id)"
+                  class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -165,12 +163,17 @@
             </div>
           </div>
 
-          <!-- 新しい画像アップロード -->
-          <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <p class="mt-2 text-sm text-gray-600">写真のアップロード機能は今後実装予定です</p>
+          <!-- 新しい画像の追加 -->
+          <div v-if="existingImages.length < 5">
+            <h4 class="text-sm font-medium text-gray-700 mb-2">新しい画像を追加</h4>
+            <ImageUpload
+              v-model="newImages"
+              :max-files="5 - existingImages.length"
+            />
+          </div>
+
+          <div v-else class="text-sm text-gray-500">
+            最大5枚の画像が登録されています。新しい画像を追加するには、既存の画像を削除してください。
           </div>
         </div>
 
@@ -236,6 +239,10 @@ const loading = ref(true)
 const error = ref('')
 const submitting = ref(false)
 
+// 画像関連
+const existingImages = ref<any[]>([])
+const newImages = ref<File[]>([])
+
 const reviewId = computed(() => parseInt(route.params.id as string))
 
 // フォームデータ
@@ -277,6 +284,9 @@ const loadReview = async () => {
       visited_at: review.value.visited_at.split('T')[0], // 日付部分のみ
       comment: review.value.comment || ''
     }
+    
+    // 既存の画像を設定
+    existingImages.value = review.value.images || []
   } catch (err: any) {
     console.error('Failed to load review:', err)
     if (err.response?.status === 404) {
@@ -297,7 +307,19 @@ const submitReview = async () => {
 
   try {
     submitting.value = true
+    
+    // レビューデータを更新
     await $api.reviews.update(reviewId.value, form.value)
+    
+    // 新しい画像があればアップロード
+    if (newImages.value.length > 0) {
+      try {
+        await $api.reviews.uploadImages(reviewId.value, newImages.value)
+      } catch (imageErr) {
+        console.error('Failed to upload images:', imageErr)
+        error.value = 'レビューは更新されましたが、画像のアップロードに失敗しました'
+      }
+    }
     
     // 更新成功後、詳細ページに遷移
     await router.push(`/reviews/${reviewId.value}`)
@@ -334,10 +356,17 @@ const deleteReview = async () => {
   }
 }
 
-// 画像削除（今後実装）
-const removeImage = (imageId: number) => {
-  console.log('Remove image:', imageId)
-  // 実装予定
+// 既存画像削除
+const deleteExistingImage = async (imageId: number) => {
+  if (!confirm('この画像を削除しますか？')) return
+  
+  try {
+    await $api.reviews.deleteImage(reviewId.value, imageId)
+    existingImages.value = existingImages.value.filter(img => img.id !== imageId)
+  } catch (err) {
+    console.error('Failed to delete image:', err)
+    error.value = '画像の削除に失敗しました'
+  }
 }
 
 // ユーティリティ関数

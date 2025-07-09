@@ -26,6 +26,37 @@
           <div :class="messageClasses" class="text-sm">
             <slot>{{ message }}</slot>
           </div>
+          
+          <!-- リトライボタン -->
+          <div v-if="retryable" class="mt-3">
+            <button
+              @click="retry"
+              :disabled="retrying"
+              class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+              :class="retryButtonClasses"
+            >
+              <svg 
+                v-if="retrying" 
+                class="animate-spin -ml-1 mr-2 h-3 w-3" 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24"
+              >
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <svg 
+                v-else
+                class="w-3 h-3 mr-1" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              {{ retrying ? '再試行中...' : '再試行' }}
+            </button>
+          </div>
         </div>
 
         <!-- 閉じるボタン -->
@@ -56,20 +87,24 @@ interface Props {
   closable?: boolean
   autoClose?: boolean
   autoCloseDelay?: number
+  retryable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'info',
   closable: true,
   autoClose: false,
-  autoCloseDelay: 3000
+  autoCloseDelay: 3000,
+  retryable: false
 })
 
 const emit = defineEmits<{
   close: []
+  retry: []
 }>()
 
 const show = ref(true)
+const retrying = ref(false)
 
 // アラートのスタイルクラス
 const typeStyles = {
@@ -78,28 +113,32 @@ const typeStyles = {
     icon: 'text-green-400',
     title: 'text-green-800',
     message: 'text-green-700',
-    closeButton: 'text-green-500 hover:bg-green-100 focus:ring-green-600'
+    closeButton: 'text-green-500 hover:bg-green-100 focus:ring-green-600',
+    retryButton: 'text-green-800 bg-green-100 hover:bg-green-200 focus:ring-green-600'
   },
   error: {
     alert: 'bg-red-50 border border-red-200',
     icon: 'text-red-400',
     title: 'text-red-800',
     message: 'text-red-700',
-    closeButton: 'text-red-500 hover:bg-red-100 focus:ring-red-600'
+    closeButton: 'text-red-500 hover:bg-red-100 focus:ring-red-600',
+    retryButton: 'text-red-800 bg-red-100 hover:bg-red-200 focus:ring-red-600'
   },
   warning: {
     alert: 'bg-yellow-50 border border-yellow-200',
     icon: 'text-yellow-400',
     title: 'text-yellow-800',
     message: 'text-yellow-700',
-    closeButton: 'text-yellow-500 hover:bg-yellow-100 focus:ring-yellow-600'
+    closeButton: 'text-yellow-500 hover:bg-yellow-100 focus:ring-yellow-600',
+    retryButton: 'text-yellow-800 bg-yellow-100 hover:bg-yellow-200 focus:ring-yellow-600'
   },
   info: {
     alert: 'bg-blue-50 border border-blue-200',
     icon: 'text-blue-400',
     title: 'text-blue-800',
     message: 'text-blue-700',
-    closeButton: 'text-blue-500 hover:bg-blue-100 focus:ring-blue-600'
+    closeButton: 'text-blue-500 hover:bg-blue-100 focus:ring-blue-600',
+    retryButton: 'text-blue-800 bg-blue-100 hover:bg-blue-200 focus:ring-blue-600'
   }
 }
 
@@ -153,12 +192,20 @@ const iconClasses = computed(() => typeStyles[props.type].icon)
 const titleClasses = computed(() => props.title ? typeStyles[props.type].title : '')
 const messageClasses = computed(() => typeStyles[props.type].message)
 const closeButtonClasses = computed(() => typeStyles[props.type].closeButton)
+const retryButtonClasses = computed(() => typeStyles[props.type].retryButton)
 const iconComponent = computed(() => iconComponents[props.type])
 
 // 閉じる処理
 const close = () => {
   show.value = false
   emit('close')
+}
+
+// リトライ処理
+const retry = async () => {
+  retrying.value = true
+  emit('retry')
+  // 親コンポーネントでリトライ処理が完了した後、retrying.value を false にする責任は親にある
 }
 
 // 自動閉じる

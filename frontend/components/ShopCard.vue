@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+  <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden cursor-pointer" @click="navigateToShop">
     <!-- 店舗画像（仮） -->
     <div class="h-48 bg-gray-200 flex items-center justify-center">
       <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -11,23 +11,18 @@
     <div class="p-6">
       <div class="flex items-start justify-between">
         <div class="flex-1 min-w-0">
-          <h3 class="text-lg font-semibold text-gray-900 truncate">
-            <NuxtLink 
-              :to="`/shops/${shop.id}`"
-              class="hover:text-blue-600 transition-colors"
-            >
-              {{ shop.name }}
-            </NuxtLink>
+          <h3 class="text-lg font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors">
+            {{ shop.name }}
           </h3>
           <p class="text-sm text-gray-500 mt-1">
             {{ shop.address }}
           </p>
         </div>
         
-        <!-- アクションメニュー -->
-        <div v-if="showActions" class="ml-4 relative">
+        <!-- アクションメニュー（認証済みユーザーのみ） -->
+        <div v-if="showActions && authStore.isLoggedIn" class="ml-4 relative">
           <button
-            @click="toggleActionMenu"
+            @click.stop="toggleActionMenu"
             class="text-gray-400 hover:text-gray-600 focus:outline-none"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -106,20 +101,14 @@
         </span>
       </div>
 
-      <!-- アクションボタン -->
-      <div v-if="showQuickActions" class="mt-4 flex space-x-2">
+      <!-- アクションボタン（認証済みユーザーのみ） -->
+      <div v-if="showQuickActions && authStore.isLoggedIn" class="mt-4 flex space-x-2">
         <button
-          @click="$emit('addReview', shop)"
+          @click.stop="$emit('addReview', shop)"
           class="flex-1 bg-blue-50 text-blue-700 text-sm font-medium py-2 px-3 rounded-md hover:bg-blue-100 transition-colors"
         >
           レビュー追加
         </button>
-        <NuxtLink
-          :to="`/shops/${shop.id}`"
-          class="flex-1 bg-gray-50 text-gray-700 text-sm font-medium py-2 px-3 rounded-md hover:bg-gray-100 transition-colors text-center"
-        >
-          詳細
-        </NuxtLink>
       </div>
     </div>
   </div>
@@ -136,6 +125,8 @@ const props = withDefaults(defineProps<Props>(), {
   showActions: true,
   showQuickActions: false
 })
+
+const authStore = useAuthStore()
 
 const emit = defineEmits<{
   edit: [shop: any]
@@ -157,6 +148,11 @@ const closeActionMenu = () => {
 // ユーティリティ関数
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('ja-JP')
+}
+
+// カードクリック時の店舗詳細遷移
+const navigateToShop = () => {
+  navigateTo(`/shops/${props.shop.id}`)
 }
 
 // 外部クリックでメニューを閉じる

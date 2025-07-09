@@ -6,13 +6,13 @@
         <div class="md:flex md:items-center md:justify-between">
           <div class="min-w-0 flex-1">
             <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-              店舗管理
+              {{ authStore.isLoggedIn ? '店舗管理' : '店舗一覧' }}
             </h1>
             <p class="mt-1 text-sm text-gray-500">
-              登録済みの店舗を管理・編集できます
+              {{ authStore.isLoggedIn ? '登録済みの店舗を管理・編集できます' : '登録されている店舗を検索・閲覧できます' }}
             </p>
           </div>
-          <div class="mt-4 flex md:ml-4 md:mt-0">
+          <div v-if="authStore.isLoggedIn" class="mt-4 flex md:ml-4 md:mt-0">
             <button
               @click="showAddModal = true"
               class="btn-primary"
@@ -22,6 +22,11 @@
               </svg>
               店舗を追加
             </button>
+          </div>
+          <div v-else class="mt-4 flex md:ml-4 md:mt-0">
+            <NuxtLink to="/login" class="btn-primary">
+              ログインして店舗を追加
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -118,12 +123,10 @@
 </template>
 
 <script setup lang="ts">
-// 認証ミドルウェア適用
-definePageMeta({
-  middleware: 'auth'
-})
+// 店舗閲覧はログイン不要、操作時にログインチェック
 
 const { $api } = useNuxtApp()
+const authStore = useAuthStore()
 
 // リアクティブデータ
 const shops = ref<any[]>([])
@@ -157,9 +160,11 @@ const loadShops = async () => {
 
     const response = await $api.shops.list(params)
     shops.value = response.data || []
-  } catch (err) {
+  } catch (err: any) {
     console.error('Failed to load shops:', err)
-    error.value = '店舗データの取得に失敗しました'
+    console.error('Error status:', err.status)
+    console.error('Error data:', err.data)
+    error.value = `店舗データの取得に失敗しました (${err.status || 'Unknown'})`
   } finally {
     loading.value = false
   }

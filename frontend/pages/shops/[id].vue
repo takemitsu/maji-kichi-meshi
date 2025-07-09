@@ -57,24 +57,31 @@
               </div>
             </div>
             <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
-              <button
-                @click="editShop"
-                class="btn-secondary"
-              >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                編集
-              </button>
-              <button
-                @click="addReview"
-                class="btn-primary"
-              >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                </svg>
-                レビューを追加
-              </button>
+              <template v-if="authStore.isLoggedIn">
+                <button
+                  @click="editShop"
+                  class="btn-secondary"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                  編集
+                </button>
+                <button
+                  @click="addReview"
+                  class="btn-primary"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                  </svg>
+                  レビューを追加
+                </button>
+              </template>
+              <template v-else>
+                <NuxtLink to="/login" class="btn-primary">
+                  ログインしてレビューを追加
+                </NuxtLink>
+              </template>
             </div>
           </div>
         </div>
@@ -244,12 +251,19 @@
             <h3 class="mt-2 text-sm font-medium text-gray-900">レビューがありません</h3>
             <p class="mt-1 text-sm text-gray-500">この店舗の最初のレビューを書いてみましょう。</p>
             <div class="mt-6">
-              <button
-                @click="addReview"
-                class="btn-primary"
-              >
-                レビューを追加
-              </button>
+              <template v-if="authStore.isLoggedIn">
+                <button
+                  @click="addReview"
+                  class="btn-primary"
+                >
+                  レビューを追加
+                </button>
+              </template>
+              <template v-else>
+                <NuxtLink to="/login" class="btn-primary">
+                  ログインしてレビューを追加
+                </NuxtLink>
+              </template>
             </div>
           </div>
         </div>
@@ -259,13 +273,11 @@
 </template>
 
 <script setup lang="ts">
-// 認証ミドルウェア適用
-definePageMeta({
-  middleware: 'auth'
-})
+// 店舗詳細の閲覧はログイン不要、レビュー作成時にログインチェック
 
 const route = useRoute()
 const { $api } = useNuxtApp()
+const authStore = useAuthStore()
 
 // リアクティブデータ
 const shop = ref<any>(null)

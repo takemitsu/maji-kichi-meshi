@@ -114,4 +114,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->status === 'active';
     }
+
+    /**
+     * Check if user can access Filament admin panel
+     */
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        return $this->isModerator() && $this->isActive();
+    }
 }

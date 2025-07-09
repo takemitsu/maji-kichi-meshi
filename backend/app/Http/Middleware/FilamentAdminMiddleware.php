@@ -5,8 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Filament\Facades\Filament;
 
-class AdminMiddleware
+class FilamentAdminMiddleware
 {
     /**
      * Handle an incoming request.
@@ -15,8 +16,10 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->isModerator()) {
-            return redirect()->route('filament.admin.auth.login');
+        $user = Filament::auth()->user();
+        
+        if (!$user || !$user->isModerator()) {
+            abort(403, 'Unauthorized');
         }
 
         return $next($request);

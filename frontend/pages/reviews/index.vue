@@ -6,13 +6,13 @@
         <div class="md:flex md:items-center md:justify-between">
           <div class="min-w-0 flex-1">
             <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-              レビュー管理
+              {{ authStore.isLoggedIn ? 'レビュー管理' : 'レビュー一覧' }}
             </h1>
             <p class="mt-1 text-sm text-gray-500">
-              あなたの訪問記録とレビューを管理できます
+              {{ authStore.isLoggedIn ? 'あなたの訪問記録とレビューを管理できます' : 'みんなの訪問記録とレビューを見ることができます' }}
             </p>
           </div>
-          <div class="mt-4 flex md:ml-4 md:mt-0">
+          <div v-if="authStore.isLoggedIn" class="mt-4 flex md:ml-4 md:mt-0">
             <NuxtLink
               to="/reviews/create"
               class="btn-primary"
@@ -21,6 +21,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
               </svg>
               レビューを作成
+            </NuxtLink>
+          </div>
+          <div v-else class="mt-4 flex md:ml-4 md:mt-0">
+            <NuxtLink to="/login" class="btn-primary">
+              ログインしてレビューを作成
             </NuxtLink>
           </div>
         </div>
@@ -81,6 +86,12 @@
 
       <!-- ローディング -->
       <LoadingSpinner v-if="loading" />
+      
+      <!-- 検索/フィルタリング中 -->
+      <div v-if="searchLoading && !loading" class="flex items-center justify-center py-4">
+        <LoadingSpinner size="sm" />
+        <span class="ml-2 text-sm text-gray-600">検索中...</span>
+      </div>
 
       <!-- エラーメッセージ -->
       <AlertMessage
@@ -127,30 +138,29 @@
                     <span class="text-sm text-gray-500">
                       投稿日: {{ formatDate(review.created_at) }}
                     </span>
+                    <span v-if="review.user" class="text-sm text-gray-500">
+                      投稿者: {{ review.user.name }}
+                    </span>
                   </div>
                 </div>
               </div>
 
               <!-- アクションメニュー -->
               <div class="flex items-center space-x-2">
-                <NuxtLink
-                  :to="`/reviews/${review.id}`"
-                  class="text-sm text-blue-600 hover:text-blue-800"
-                >
-                  詳細
-                </NuxtLink>
-                <NuxtLink
-                  :to="`/reviews/${review.id}/edit`"
-                  class="text-sm text-gray-600 hover:text-gray-800"
-                >
-                  編集
-                </NuxtLink>
-                <button
-                  @click="deleteReview(review)"
-                  class="text-sm text-red-600 hover:text-red-800"
-                >
-                  削除
-                </button>
+                <template v-if="authStore.isLoggedIn && review.user && review.user.id === authStore.user?.id">
+                  <NuxtLink
+                    :to="`/reviews/${review.id}/edit`"
+                    class="text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    編集
+                  </NuxtLink>
+                  <button
+                    @click="deleteReview(review)"
+                    class="text-sm text-red-600 hover:text-red-800"
+                  >
+                    削除
+                  </button>
+                </template>
               </div>
             </div>
 
@@ -200,18 +210,20 @@
               </p>
             </div>
 
-            <!-- 画像（今後実装） -->
+            <!-- 画像 -->
             <div v-if="review.images && review.images.length > 0" class="mb-4">
               <label class="block text-sm font-medium text-gray-700 mb-2">写真</label>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <div
                   v-for="image in review.images.slice(0, 4)"
                   :key="image.id"
-                  class="aspect-square bg-gray-200 rounded-lg flex items-center justify-center"
+                  class="aspect-square bg-gray-200 rounded-lg overflow-hidden"
                 >
-                  <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
+                  <img
+                    :src="image.url"
+                    :alt="`レビュー画像 ${image.id}`"
+                    class="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -219,7 +231,6 @@
             <!-- フッター -->
             <div class="flex items-center justify-between pt-4 border-t border-gray-200">
               <div class="flex items-center space-x-4 text-sm text-gray-500">
-                <span>ID: {{ review.id }}</span>
                 <span v-if="review.updated_at !== review.created_at">
                   更新: {{ formatDate(review.updated_at) }}
                 </span>
@@ -263,17 +274,16 @@
 </template>
 
 <script setup lang="ts">
-// 認証ミドルウェア適用
-definePageMeta({
-  middleware: 'auth'
-})
+// レビュー閲覧はログイン不要、作成・編集時にログインチェック
 
 const route = useRoute()
 const { $api } = useNuxtApp()
+const authStore = useAuthStore()
 
 // リアクティブデータ
 const reviews = ref<any[]>([])
 const loading = ref(true)
+const searchLoading = ref(false)
 const error = ref('')
 const searchQuery = ref('')
 const selectedRating = ref('')
@@ -289,11 +299,17 @@ onMounted(() => {
 
 // 検索とフィルター
 const handleSearch = useDebounceFn(() => {
-  loadReviews()
+  searchLoading.value = true
+  loadReviews().finally(() => {
+    searchLoading.value = false
+  })
 }, 300)
 
 const handleFilter = () => {
-  loadReviews()
+  searchLoading.value = true
+  loadReviews().finally(() => {
+    searchLoading.value = false
+  })
 }
 
 // レビューデータ取得

@@ -21,9 +21,13 @@ export const useApi = () => {
     options: RequestInit = {}
   ): Promise<T> => {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...(options.headers as Record<string, string>)
+    }
+
+    // FormDataでない場合のみContent-Typeを設定
+    if (!(options.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json'
     }
 
     // 認証トークンがある場合は追加
@@ -145,7 +149,24 @@ export const useApi = () => {
         body: JSON.stringify(data)
       }),
       
-      delete: (id: number) => apiFetch(`/reviews/${id}`, { method: 'DELETE' })
+      delete: (id: number) => apiFetch(`/reviews/${id}`, { method: 'DELETE' }),
+      
+      // 画像管理
+      uploadImages: (reviewId: number, files: File[]) => {
+        const formData = new FormData()
+        files.forEach((file, index) => {
+          formData.append(`images[${index}]`, file)
+        })
+        
+        return apiFetch<{ data: any }>(`/reviews/${reviewId}/images`, {
+          method: 'POST',
+          body: formData,
+          headers: {} // FormDataの場合、Content-Typeヘッダーは自動設定
+        })
+      },
+      
+      deleteImage: (reviewId: number, imageId: number) => 
+        apiFetch(`/reviews/${reviewId}/images/${imageId}`, { method: 'DELETE' })
     },
 
     // ランキング関連

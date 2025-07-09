@@ -8,20 +8,23 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <div class="card">
         <h3 class="text-xl font-semibold mb-4">店舗検索</h3>
-        <p class="text-gray-600 mb-4">お気に入りの店舗を検索して登録しましょう</p>
-        <button class="btn-primary">店舗を検索</button>
+        <p class="text-gray-600 mb-4">お気に入りの店舗を検索・閲覧できます</p>
+        <NuxtLink to="/shops" class="btn-primary inline-block text-center">店舗を検索</NuxtLink>
+        <p class="text-xs text-gray-500 mt-2">※ 閲覧はログイン不要</p>
       </div>
       
       <div class="card">
         <h3 class="text-xl font-semibold mb-4">レビュー</h3>
-        <p class="text-gray-600 mb-4">訪問した店舗の評価とメモを記録</p>
-        <button class="btn-primary">レビューを見る</button>
+        <p class="text-gray-600 mb-4">他の人の訪問記録を閲覧できます</p>
+        <NuxtLink to="/reviews" class="btn-primary inline-block text-center">レビューを見る</NuxtLink>
+        <p class="text-xs text-gray-500 mt-2">※ 閲覧はログイン不要</p>
       </div>
       
       <div class="card">
-        <h3 class="text-xl font-semibold mb-4">マイランキング</h3>
-        <p class="text-gray-600 mb-4">個人的なランキングを作成・編集</p>
-        <button class="btn-primary">ランキングを見る</button>
+        <h3 class="text-xl font-semibold mb-4">ランキング</h3>
+        <p class="text-gray-600 mb-4">公開されているランキングを見ることができます</p>
+        <NuxtLink to="/rankings/public" class="btn-primary inline-block text-center">ランキングを見る</NuxtLink>
+        <p class="text-xs text-gray-500 mt-2">※ 閲覧はログイン不要</p>
       </div>
     </div>
     
@@ -31,7 +34,7 @@
         <p class="text-gray-600 mb-6">Google、GitHub、LINE、Twitterでログイン可能</p>
         <div class="space-x-4">
           <NuxtLink to="/login" class="btn-primary">ログイン</NuxtLink>
-          <button class="btn-secondary">ゲストで見る</button>
+          <NuxtLink to="/rankings/public" class="btn-secondary inline-block">ゲストで見る</NuxtLink>
         </div>
       </div>
     </div>
@@ -44,6 +47,15 @@ const authStore = useAuthStore()
 // 認証済みユーザーは自動的にダッシュボードにリダイレクト
 if (authStore.isLoggedIn) {
   await navigateTo('/dashboard')
+}
+
+// ボタンのクリックハンドラー
+const handleFeatureClick = (route: string) => {
+  if (authStore.isLoggedIn) {
+    navigateTo(route)
+  } else {
+    navigateTo('/login')
+  }
 }
 
 // メタデータ設定

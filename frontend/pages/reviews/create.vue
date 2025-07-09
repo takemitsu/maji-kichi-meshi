@@ -13,10 +13,13 @@
 
       <!-- エラーメッセージ -->
       <AlertMessage
-        v-if="error"
+        v-if="error.message"
         type="error"
-        :message="error"
-        @close="error = ''"
+        :title="error.title"
+        :message="error.message"
+        :retryable="error.retryable"
+        @close="clearError"
+        @retry="handleRetry"
       />
 
       <!-- フォーム -->
@@ -45,7 +48,7 @@
             <!-- 店舗検索 -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                店舗を検索
+                店舗を検索 <span class="text-red-500">*</span>
               </label>
               <div class="relative">
                 <input
@@ -64,7 +67,13 @@
             </div>
 
             <!-- 検索結果 -->
-            <div v-if="searchResults.length > 0" class="max-h-64 overflow-y-auto border border-gray-200 rounded-md">
+            <div v-if="searchResults.length > 0 || searchLoading" class="max-h-64 overflow-y-auto border border-gray-200 rounded-md">
+              <!-- 検索中 -->
+              <div v-if="searchLoading" class="flex items-center justify-center py-4">
+                <LoadingSpinner size="sm" />
+                <span class="ml-2 text-sm text-gray-600">検索中...</span>
+              </div>
+              <!-- 検索結果 -->
               <div
                 v-for="shop in searchResults"
                 :key="shop.id"
@@ -96,13 +105,17 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 星評価 <span class="text-red-500">*</span>
               </label>
-              <div class="flex items-center space-x-1">
+              <div class="flex items-center space-x-1" @keydown="handleStarKeydown">
                 <button
                   v-for="star in 5"
                   :key="star"
-                  @click="form.rating = star"
+                  @click="form.rating = star; validateRating()"
+                  @keydown.enter.prevent="form.rating = star; validateRating()"
+                  @keydown.space.prevent="form.rating = star; validateRating()"
                   type="button"
-                  class="focus:outline-none"
+                  class="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded transition-all"
+                  :aria-label="`${star}つ星を選択`"
+                  :aria-pressed="form.rating === star"
                 >
                   <svg
                     class="w-8 h-8 transition-colors"
@@ -114,6 +127,9 @@
                   </svg>
                 </button>
                 <span class="ml-2 text-sm text-gray-600">({{ form.rating }}/5)</span>
+              </div>
+              <div v-if="!validation.rating.valid" class="mt-1 text-sm text-red-600">
+                {{ validation.rating.message }}
               </div>
             </div>
 
@@ -133,9 +149,13 @@
                     :value="option.value"
                     type="radio"
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    @change="validateRepeatIntention()"
                   >
                   <span class="ml-2 text-sm text-gray-900">{{ option.label }}</span>
                 </label>
+              </div>
+              <div v-if="!validation.repeat_intention.valid" class="mt-1 text-sm text-red-600">
+                {{ validation.repeat_intention.message }}
               </div>
             </div>
           </div>
@@ -154,7 +174,11 @@
               class="input-field"
               :max="today"
               required
+              @change="validateVisitedAt()"
             >
+            <div v-if="!validation.visited_at.valid" class="mt-1 text-sm text-red-600">
+              {{ validation.visited_at.message }}
+            </div>
           </div>
         </div>
 
@@ -177,15 +201,13 @@
           </div>
         </div>
 
-        <!-- 写真アップロード（今後実装） -->
+        <!-- 写真アップロード -->
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4">写真</h3>
-          <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <p class="mt-2 text-sm text-gray-600">写真のアップロード機能は今後実装予定です</p>
-          </div>
+          <ImageUpload
+            v-model="uploadedImages"
+            :max-files="5"
+          />
         </div>
 
         <!-- 送信ボタン -->
@@ -225,7 +247,12 @@ const selectedShop = ref<any>(null)
 const shopSearchQuery = ref('')
 const searchResults = ref<any[]>([])
 const searchLoading = ref(false)
-const error = ref('')
+const error = ref({
+  message: '',
+  title: '',
+  retryable: false,
+  retryAction: null as (() => Promise<void>) | null
+})
 const submitting = ref(false)
 
 // フォームデータ
@@ -236,6 +263,17 @@ const form = ref({
   visited_at: '',
   comment: ''
 })
+
+// バリデーション
+const validation = ref({
+  shop_id: { valid: true, message: '' },
+  rating: { valid: true, message: '' },
+  repeat_intention: { valid: true, message: '' },
+  visited_at: { valid: true, message: '' }
+})
+
+// 画像アップロード
+const uploadedImages = ref<File[]>([])
 
 // リピート意向オプション
 const repeatOptions = [
@@ -266,9 +304,15 @@ const handleShopSearch = useDebounceFn(async () => {
     searchLoading.value = true
     const response = await $api.shops.list({ search: shopSearchQuery.value })
     searchResults.value = response.data || []
-  } catch (err) {
+  } catch (err: any) {
     console.error('Failed to search shops:', err)
     searchResults.value = []
+    setError({
+      title: '店舗検索エラー',
+      message: 'ネットワークエラーまたはサーバーエラーが発生しました。しばらく時間をおいて再度お試しください。',
+      retryable: true,
+      retryAction: () => handleShopSearch()
+    })
   } finally {
     searchLoading.value = false
   }
@@ -280,6 +324,7 @@ const selectShop = (shop: any) => {
   form.value.shop_id = shop.id
   shopSearchQuery.value = ''
   searchResults.value = []
+  validateShop()
 }
 
 // 店舗選択クリア
@@ -290,23 +335,146 @@ const clearSelectedShop = () => {
 
 // レビュー送信
 const submitReview = async () => {
+  if (!validateAll()) {
+    setError({
+      title: '入力エラー',
+      message: '必須項目を入力してください。',
+      retryable: false,
+      retryAction: null
+    })
+    return
+  }
+  
   if (!canSubmit.value) return
 
   try {
     submitting.value = true
+    
+    // まずレビューを作成
     const response = await $api.reviews.create(form.value)
+    const reviewId = response.data.id
+    
+    // 画像がある場合はアップロード
+    if (uploadedImages.value.length > 0) {
+      try {
+        await $api.reviews.uploadImages(reviewId, uploadedImages.value)
+      } catch (imageErr) {
+        console.error('Failed to upload images:', imageErr)
+        // 画像アップロードに失敗してもレビューは作成されているので、警告のみ表示
+        setError({
+          title: '画像アップロードエラー',
+          message: 'レビューは作成されましたが、画像のアップロードに失敗しました。',
+          retryable: false,
+          retryAction: null
+        })
+      }
+    }
     
     // 作成成功後、詳細ページに遷移
-    await router.push(`/reviews/${response.data.id}`)
+    await router.push(`/reviews/${reviewId}`)
   } catch (err: any) {
     console.error('Failed to create review:', err)
     if (err.response?.status === 422) {
-      error.value = 'フォームの入力内容を確認してください'
+      setError({
+        title: '入力エラー',
+        message: 'フォームの入力内容を確認してください。必須項目が未入力の可能性があります。',
+        retryable: false,
+        retryAction: null
+      })
+    } else if (err.response?.status === 401) {
+      setError({
+        title: '認証エラー',
+        message: 'ログインが必要です。再度ログインしてください。',
+        retryable: true,
+        retryAction: async () => {
+          await navigateTo('/login')
+        }
+      })
     } else {
-      error.value = 'レビューの作成に失敗しました'
+      setError({
+        title: 'レビュー作成エラー',
+        message: 'ネットワークエラーまたはサーバーエラーが発生しました。しばらく時間をおいて再度お試しください。',
+        retryable: true,
+        retryAction: () => submitReview()
+      })
     }
   } finally {
     submitting.value = false
+  }
+}
+
+// エラーハンドリング用ヘルパー関数
+const setError = (errorInfo: { title: string; message: string; retryable: boolean; retryAction: (() => Promise<void>) | null }) => {
+  error.value = errorInfo
+}
+
+const clearError = () => {
+  error.value = {
+    message: '',
+    title: '',
+    retryable: false,
+    retryAction: null
+  }
+}
+
+const handleRetry = async () => {
+  if (error.value.retryAction) {
+    await error.value.retryAction()
+  }
+}
+
+// バリデーション関数
+const validateRating = () => {
+  if (form.value.rating === 0) {
+    validation.value.rating = { valid: false, message: '星評価を選択してください' }
+  } else {
+    validation.value.rating = { valid: true, message: '' }
+  }
+}
+
+const validateRepeatIntention = () => {
+  if (!form.value.repeat_intention) {
+    validation.value.repeat_intention = { valid: false, message: 'リピート意向を選択してください' }
+  } else {
+    validation.value.repeat_intention = { valid: true, message: '' }
+  }
+}
+
+const validateVisitedAt = () => {
+  if (!form.value.visited_at) {
+    validation.value.visited_at = { valid: false, message: '訪問日を選択してください' }
+  } else {
+    validation.value.visited_at = { valid: true, message: '' }
+  }
+}
+
+const validateShop = () => {
+  if (!form.value.shop_id) {
+    validation.value.shop_id = { valid: false, message: '店舗を選択してください' }
+  } else {
+    validation.value.shop_id = { valid: true, message: '' }
+  }
+}
+
+const validateAll = () => {
+  validateRating()
+  validateRepeatIntention()
+  validateVisitedAt()
+  validateShop()
+  
+  return Object.values(validation.value).every(v => v.valid)
+}
+
+// 星評価のキーボードナビゲーション
+const handleStarKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
+    event.preventDefault()
+    form.value.rating = Math.max(1, form.value.rating - 1)
+    validateRating()
+  } else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+    event.preventDefault()
+    form.value.rating = Math.min(5, form.value.rating + 1)
+    validateRating()
   }
 }
 

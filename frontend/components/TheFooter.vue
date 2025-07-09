@@ -68,16 +68,30 @@
           <h4 class="text-sm font-semibold text-gray-900 mb-3">サポート</h4>
           <ul class="space-y-2">
             <li>
-              <a href="#" class="text-sm text-gray-600 hover:text-gray-900">ヘルプ</a>
+              <NuxtLink 
+                to="/privacy" 
+                class="text-sm text-gray-600 hover:text-gray-900"
+              >
+                プライバシーポリシー
+              </NuxtLink>
             </li>
             <li>
-              <a href="#" class="text-sm text-gray-600 hover:text-gray-900">お問い合わせ</a>
+              <NuxtLink 
+                to="/terms" 
+                class="text-sm text-gray-600 hover:text-gray-900"
+              >
+                利用規約
+              </NuxtLink>
             </li>
             <li>
-              <a href="#" class="text-sm text-gray-600 hover:text-gray-900">プライバシーポリシー</a>
+              <p class="text-sm text-gray-500">
+                個人開発プロジェクト
+              </p>
             </li>
             <li>
-              <a href="#" class="text-sm text-gray-600 hover:text-gray-900">利用規約</a>
+              <p class="text-sm text-gray-500">
+                利用は自己責任で
+              </p>
             </li>
           </ul>
         </div>
