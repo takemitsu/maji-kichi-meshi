@@ -1,9 +1,6 @@
 <template>
   <div class="flex items-center justify-center" :class="containerClass">
-    <div
-      class="animate-spin rounded-full border-b-2"
-      :class="spinnerClass"
-    ></div>
+    <div class="animate-spin rounded-full border-b-2" :class="spinnerClass"></div>
   </div>
 </template>
 
@@ -41,8 +38,5 @@ const containerClass = computed(() => ({
 }))
 
 // スピナークラス
-const spinnerClass = computed(() => [
-  sizeClasses[props.size],
-  colorClasses[props.color],
-])
+const spinnerClass = computed(() => [sizeClasses[props.size], colorClasses[props.color]])
 </script>

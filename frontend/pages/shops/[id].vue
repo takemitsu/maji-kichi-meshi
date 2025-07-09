@@ -5,12 +5,7 @@
       <LoadingSpinner v-if="loading" fullscreen />
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- 店舗詳細 -->
       <div v-if="shop && !loading">
@@ -18,9 +13,7 @@
         <nav class="flex mb-6" aria-label="Breadcrumb">
           <ol class="flex items-center space-x-4">
             <li>
-              <NuxtLink to="/shops" class="text-gray-500 hover:text-gray-700">
-                店舗一覧
-              </NuxtLink>
+              <NuxtLink to="/shops" class="text-gray-500 hover:text-gray-700"> 店舗一覧 </NuxtLink>
             </li>
             <li>
               <svg
@@ -50,9 +43,7 @@
               >
                 {{ shop.name }}
               </h1>
-              <div
-                class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6"
-              >
+              <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
                     class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
@@ -75,10 +66,7 @@
                   </svg>
                   {{ shop.address }}
                 </div>
-                <div
-                  v-if="shop.phone"
-                  class="mt-2 flex items-center text-sm text-gray-500"
-                >
+                <div v-if="shop.phone" class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
                     class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                     fill="none"
@@ -99,12 +87,7 @@
             <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
               <template v-if="authStore.isLoggedIn">
                 <button @click="editShop" class="btn-secondary">
-                  <svg
-                    class="w-4 h-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -115,12 +98,7 @@
                   編集
                 </button>
                 <button @click="addReview" class="btn-primary">
-                  <svg
-                    class="w-4 h-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -132,9 +110,7 @@
                 </button>
               </template>
               <template v-else>
-                <NuxtLink to="/login" class="btn-primary">
-                  ログインしてレビューを追加
-                </NuxtLink>
+                <NuxtLink to="/login" class="btn-primary"> ログインしてレビューを追加 </NuxtLink>
               </template>
             </div>
           </div>
@@ -148,9 +124,7 @@
               <h3 class="text-lg font-medium text-gray-900 mb-4">基本情報</h3>
 
               <!-- 画像プレースホルダー -->
-              <div
-                class="mb-6 h-64 bg-gray-200 rounded-lg flex items-center justify-center"
-              >
+              <div class="mb-6 h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                 <svg
                   class="w-16 h-16 text-gray-400"
                   fill="none"
@@ -168,30 +142,22 @@
 
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700"
-                    >店舗名</label
-                  >
+                  <label class="block text-sm font-medium text-gray-700">店舗名</label>
                   <p class="mt-1 text-sm text-gray-900">{{ shop.name }}</p>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700"
-                    >住所</label
-                  >
+                  <label class="block text-sm font-medium text-gray-700">住所</label>
                   <p class="mt-1 text-sm text-gray-900">{{ shop.address }}</p>
                 </div>
 
                 <div v-if="shop.phone">
-                  <label class="block text-sm font-medium text-gray-700"
-                    >電話番号</label
-                  >
+                  <label class="block text-sm font-medium text-gray-700">電話番号</label>
                   <p class="mt-1 text-sm text-gray-900">{{ shop.phone }}</p>
                 </div>
 
                 <div v-if="shop.website">
-                  <label class="block text-sm font-medium text-gray-700"
-                    >ウェブサイト</label
-                  >
+                  <label class="block text-sm font-medium text-gray-700">ウェブサイト</label>
                   <a
                     :href="shop.website"
                     target="_blank"
@@ -202,9 +168,7 @@
                 </div>
 
                 <div v-if="shop.description">
-                  <label class="block text-sm font-medium text-gray-700"
-                    >説明</label
-                  >
+                  <label class="block text-sm font-medium text-gray-700">説明</label>
                   <p class="mt-1 text-sm text-gray-900">
                     {{ shop.description }}
                   </p>
@@ -242,11 +206,7 @@
                 <div class="flex justify-between">
                   <span class="text-sm text-gray-600">平均評価</span>
                   <span class="text-sm font-medium text-gray-900">
-                    {{
-                      shop.average_rating
-                        ? `${shop.average_rating.toFixed(1)}★`
-                        : '未評価'
-                    }}
+                    {{ shop.average_rating ? `${shop.average_rating.toFixed(1)}★` : '未評価' }}
                   </span>
                 </div>
                 <div class="flex justify-between">
@@ -265,13 +225,8 @@
             </div>
 
             <!-- Google Places情報 -->
-            <div
-              v-if="shop.google_places_id"
-              class="bg-white rounded-lg shadow p-6"
-            >
-              <h3 class="text-lg font-medium text-gray-900 mb-4">
-                Google Places
-              </h3>
+            <div v-if="shop.google_places_id" class="bg-white rounded-lg shadow p-6">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Google Places</h3>
               <div class="space-y-3">
                 <div class="flex justify-between">
                   <span class="text-sm text-gray-600">Places ID</span>
@@ -285,12 +240,7 @@
                   class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
                 >
                   Google Mapsで開く
-                  <svg
-                    class="ml-1 w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -319,16 +269,10 @@
           </div>
 
           <div v-if="recentReviews.length > 0" class="divide-y divide-gray-200">
-            <div
-              v-for="review in recentReviews"
-              :key="review.id"
-              class="px-6 py-4"
-            >
+            <div v-for="review in recentReviews" :key="review.id" class="px-6 py-4">
               <div class="flex items-start space-x-4">
                 <div class="flex-shrink-0">
-                  <div
-                    class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center"
-                  >
+                  <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
                     <span class="text-sm font-medium text-gray-700">
                       {{ review.user?.name?.charAt(0).toUpperCase() }}
                     </span>
@@ -341,13 +285,9 @@
                     </p>
                     <div class="flex items-center">
                       <span class="text-sm text-yellow-400">★</span>
-                      <span class="text-sm text-gray-600">{{
-                        review.rating
-                      }}</span>
+                      <span class="text-sm text-gray-600">{{ review.rating }}</span>
                     </div>
-                    <span class="text-sm text-gray-500">{{
-                      formatDate(review.created_at)
-                    }}</span>
+                    <span class="text-sm text-gray-500">{{ formatDate(review.created_at) }}</span>
                   </div>
                   <p v-if="review.comment" class="mt-1 text-sm text-gray-700">
                     {{ review.comment }}
@@ -371,22 +311,14 @@
                 d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
               ></path>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">
-              レビューがありません
-            </h3>
-            <p class="mt-1 text-sm text-gray-500">
-              この店舗の最初のレビューを書いてみましょう。
-            </p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">レビューがありません</h3>
+            <p class="mt-1 text-sm text-gray-500">この店舗の最初のレビューを書いてみましょう。</p>
             <div class="mt-6">
               <template v-if="authStore.isLoggedIn">
-                <button @click="addReview" class="btn-primary">
-                  レビューを追加
-                </button>
+                <button @click="addReview" class="btn-primary">レビューを追加</button>
               </template>
               <template v-else>
-                <NuxtLink to="/login" class="btn-primary">
-                  ログインしてレビューを追加
-                </NuxtLink>
+                <NuxtLink to="/login" class="btn-primary"> ログインしてレビューを追加 </NuxtLink>
               </template>
             </div>
           </div>
@@ -462,15 +394,11 @@ onMounted(async () => {
 
 // メタデータ設定
 useHead(() => ({
-  title: shop.value
-    ? `${shop.value.name} - 店舗詳細 - マジキチメシ`
-    : '店舗詳細 - マジキチメシ',
+  title: shop.value ? `${shop.value.name} - 店舗詳細 - マジキチメシ` : '店舗詳細 - マジキチメシ',
   meta: [
     {
       name: 'description',
-      content: shop.value
-        ? `${shop.value.name}の詳細情報とレビュー`
-        : '店舗詳細ページ',
+      content: shop.value ? `${shop.value.name}の詳細情報とレビュー` : '店舗詳細ページ',
     },
   ],
 }))

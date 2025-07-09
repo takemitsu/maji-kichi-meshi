@@ -9,9 +9,7 @@
       <div class="card">
         <h3 class="text-xl font-semibold mb-4">店舗検索</h3>
         <p class="text-gray-600 mb-4">お気に入りの店舗を検索・閲覧できます</p>
-        <NuxtLink to="/shops" class="btn-primary inline-block text-center"
-          >店舗を検索</NuxtLink
-        >
+        <NuxtLink to="/shops" class="btn-primary inline-block text-center">店舗を検索</NuxtLink>
         <p class="text-xs text-gray-500 mt-2">※ 閲覧はログイン不要</p>
       </div>
 
@@ -26,12 +24,8 @@
 
       <div class="card">
         <h3 class="text-xl font-semibold mb-4">ランキング</h3>
-        <p class="text-gray-600 mb-4">
-          公開されているランキングを見ることができます
-        </p>
-        <NuxtLink
-          to="/rankings/public"
-          class="btn-primary inline-block text-center"
+        <p class="text-gray-600 mb-4">公開されているランキングを見ることができます</p>
+        <NuxtLink to="/rankings/public" class="btn-primary inline-block text-center"
           >ランキングを見る</NuxtLink
         >
         <p class="text-xs text-gray-500 mt-2">※ 閲覧はログイン不要</p>
@@ -41,14 +35,10 @@
     <div class="mt-12 text-center">
       <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-semibold mb-4">ログインして始めましょう</h2>
-        <p class="text-gray-600 mb-6">
-          Google、GitHub、LINE、Twitterでログイン可能
-        </p>
+        <p class="text-gray-600 mb-6">Google、GitHub、LINE、Twitterでログイン可能</p>
         <div class="space-x-4">
           <NuxtLink to="/login" class="btn-primary">ログイン</NuxtLink>
-          <NuxtLink to="/rankings/public" class="btn-secondary inline-block"
-            >ゲストで見る</NuxtLink
-          >
+          <NuxtLink to="/rankings/public" class="btn-secondary inline-block">ゲストで見る</NuxtLink>
         </div>
       </div>
     </div>

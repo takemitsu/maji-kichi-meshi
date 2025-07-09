@@ -96,9 +96,7 @@
                 @click="toggleUserMenu"
                 class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-900 focus:outline-none"
               >
-                <div
-                  class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"
-                >
+                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span class="text-white text-sm font-medium">
                     {{ authStore.user?.name?.charAt(0).toUpperCase() }}
                   </span>
@@ -150,12 +148,7 @@
             @click="toggleMobileMenu"
             class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
           >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 v-if="!isMobileMenuOpen"
                 stroke-linecap="round"
@@ -184,10 +177,7 @@
         leave-from-class="transform translate-y-0 opacity-100"
         leave-to-class="transform -translate-y-2 opacity-0"
       >
-        <div
-          v-if="isMobileMenuOpen"
-          class="md:hidden py-4 border-t border-gray-200"
-        >
+        <div v-if="isMobileMenuOpen" class="md:hidden py-4 border-t border-gray-200">
           <div class="space-y-1">
             <NuxtLink
               to="/"
@@ -222,8 +212,7 @@
                 to="/reviews"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 :class="{
-                  'text-blue-600 bg-blue-50':
-                    $route.path.startsWith('/reviews'),
+                  'text-blue-600 bg-blue-50': $route.path.startsWith('/reviews'),
                 }"
                 @click="closeMobileMenu"
               >
@@ -233,8 +222,7 @@
                 to="/rankings"
                 class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 :class="{
-                  'text-blue-600 bg-blue-50':
-                    $route.path.startsWith('/rankings'),
+                  'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
                 }"
                 @click="closeMobileMenu"
               >

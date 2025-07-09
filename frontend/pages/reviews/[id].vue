@@ -5,12 +5,7 @@
       <LoadingSpinner v-if="loading" fullscreen />
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- レビュー詳細 -->
       <div v-if="review && !loading">
@@ -35,9 +30,7 @@
                 ></path>
               </svg>
             </li>
-            <li class="text-gray-900 font-medium">
-              {{ review.shop?.name }} のレビュー
-            </li>
+            <li class="text-gray-900 font-medium">{{ review.shop?.name }} のレビュー</li>
           </ol>
         </nav>
 
@@ -55,9 +48,7 @@
                   {{ review.shop?.name }}
                 </NuxtLink>
               </h1>
-              <div
-                class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6"
-              >
+              <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
                     class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
@@ -99,23 +90,11 @@
               </div>
             </div>
             <div
-              v-if="
-                authStore.isLoggedIn &&
-                review.user &&
-                review.user.id === authStore.user?.id
-              "
+              v-if="authStore.isLoggedIn && review.user && review.user.id === authStore.user?.id"
               class="mt-4 flex space-x-3 md:ml-4 md:mt-0"
             >
-              <NuxtLink
-                :to="`/reviews/${review.id}/edit`"
-                class="btn-secondary"
-              >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+              <NuxtLink :to="`/reviews/${review.id}/edit`" class="btn-secondary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -129,12 +108,7 @@
                 @click="deleteReview"
                 class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
               >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -157,20 +131,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- 星評価 -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >星評価</label
-                >
+                <label class="block text-sm font-medium text-gray-700 mb-2">星評価</label>
                 <div class="flex items-center space-x-2">
                   <div class="flex">
                     <svg
                       v-for="star in 5"
                       :key="star"
                       class="w-6 h-6"
-                      :class="
-                        star <= review.rating
-                          ? 'text-yellow-400'
-                          : 'text-gray-300'
-                      "
+                      :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -179,24 +147,18 @@
                       ></path>
                     </svg>
                   </div>
-                  <span class="text-lg font-medium text-gray-900"
-                    >{{ review.rating }}/5</span
-                  >
+                  <span class="text-lg font-medium text-gray-900">{{ review.rating }}/5</span>
                 </div>
               </div>
 
               <!-- リピート意向 -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >リピート意向</label
-                >
+                <label class="block text-sm font-medium text-gray-700 mb-2">リピート意向</label>
                 <span
                   class="inline-flex items-center px-4 py-2 rounded-full text-base font-medium"
                   :class="{
-                    'bg-green-100 text-green-800':
-                      review.repeat_intention === 'yes',
-                    'bg-yellow-100 text-yellow-800':
-                      review.repeat_intention === 'maybe',
+                    'bg-green-100 text-green-800': review.repeat_intention === 'yes',
+                    'bg-yellow-100 text-yellow-800': review.repeat_intention === 'maybe',
                     'bg-red-100 text-red-800': review.repeat_intention === 'no',
                   }"
                 >
@@ -242,9 +204,7 @@
             <h3 class="text-lg font-medium text-gray-900 mb-4">詳細情報</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
               <div>
-                <label class="block font-medium text-gray-700"
-                  >レビューID</label
-                >
+                <label class="block font-medium text-gray-700">レビューID</label>
                 <p class="text-gray-900">{{ review.id }}</p>
               </div>
               <div>
@@ -279,24 +239,16 @@
             <NuxtLink :to="`/shops/${review.shop?.id}`" class="btn-secondary">
               店舗詳細を見る
             </NuxtLink>
-            <NuxtLink
-              :to="`/reviews?shop_id=${review.shop?.id}`"
-              class="btn-secondary"
-            >
+            <NuxtLink :to="`/reviews?shop_id=${review.shop?.id}`" class="btn-secondary">
               この店舗の他のレビューを見る
             </NuxtLink>
             <template v-if="authStore.isLoggedIn">
-              <NuxtLink
-                :to="`/reviews/create?shop_id=${review.shop?.id}`"
-                class="btn-primary"
-              >
+              <NuxtLink :to="`/reviews/create?shop_id=${review.shop?.id}`" class="btn-primary">
                 この店舗の新しいレビューを作成
               </NuxtLink>
             </template>
             <template v-else>
-              <NuxtLink to="/login" class="btn-primary">
-                ログインしてレビューを作成
-              </NuxtLink>
+              <NuxtLink to="/login" class="btn-primary"> ログインしてレビューを作成 </NuxtLink>
             </template>
           </div>
         </div>
@@ -345,9 +297,7 @@ const loadReview = async () => {
 // レビュー削除
 const deleteReview = async () => {
   if (
-    !confirm(
-      `「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`
-    )
+    !confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)
   ) {
     return
   }
@@ -411,9 +361,7 @@ useHead(() => ({
   meta: [
     {
       name: 'description',
-      content: review.value
-        ? `${review.value.shop?.name}のレビュー詳細`
-        : 'レビュー詳細ページ',
+      content: review.value ? `${review.value.shop?.name}のレビュー詳細` : 'レビュー詳細ページ',
     },
   ],
 }))

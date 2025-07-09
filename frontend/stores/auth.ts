@@ -128,9 +128,7 @@ export const useAuthStore = defineStore('auth', {
           }
         } else {
           if (process.dev) {
-            console.log(
-              'No auth data found in localStorage, staying unauthenticated'
-            )
+            console.log('No auth data found in localStorage, staying unauthenticated')
           }
         }
       }

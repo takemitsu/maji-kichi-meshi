@@ -20,12 +20,7 @@
           </div>
           <div v-if="authStore.isLoggedIn" class="mt-4 flex md:ml-4 md:mt-0">
             <button @click="showAddModal = true" class="btn-primary">
-              <svg
-                class="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -37,9 +32,7 @@
             </button>
           </div>
           <div v-else class="mt-4 flex md:ml-4 md:mt-0">
-            <NuxtLink to="/login" class="btn-primary">
-              ログインして店舗を追加
-            </NuxtLink>
+            <NuxtLink to="/login" class="btn-primary"> ログインして店舗を追加 </NuxtLink>
           </div>
         </div>
       </div>
@@ -50,9 +43,7 @@
           <!-- 検索 -->
           <div class="md:col-span-2">
             <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-              >
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
                   class="h-5 w-5 text-gray-400"
                   fill="none"
@@ -74,21 +65,12 @@
                 placeholder="店舗名で検索..."
                 class="input-field pl-10"
               />
-              <div
-                v-if="searchLoading"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              >
-                <div
-                  class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"
-                ></div>
+              <div v-if="searchLoading" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               </div>
             </div>
-            <div
-              v-if="searchQuery || selectedCategory"
-              class="mt-2 text-sm text-gray-500"
-            >
-              検索結果: {{ totalItems }}件中
-              {{ (currentPage - 1) * perPage + 1 }}〜{{
+            <div v-if="searchQuery || selectedCategory" class="mt-2 text-sm text-gray-500">
+              検索結果: {{ totalItems }}件中 {{ (currentPage - 1) * perPage + 1 }}〜{{
                 Math.min(currentPage * perPage, totalItems)
               }}件を表示
             </div>
@@ -96,17 +78,9 @@
 
           <!-- カテゴリフィルター -->
           <div>
-            <select
-              v-model="selectedCategory"
-              @change="handleCategoryFilter"
-              class="input-field"
-            >
+            <select v-model="selectedCategory" @change="handleCategoryFilter" class="input-field">
               <option value="">全てのカテゴリ</option>
-              <option
-                v-for="category in categories"
-                :key="category.id"
-                :value="category.id"
-              >
+              <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
               </option>
             </select>
@@ -118,12 +92,7 @@
       <LoadingSpinner v-if="loading" />
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- 店舗一覧 -->
       <div v-if="!loading && shops.length > 0" class="space-y-6">
@@ -174,12 +143,7 @@
         </p>
         <div class="mt-6">
           <button @click="showAddModal = true" class="btn-primary">
-            <svg
-              class="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"

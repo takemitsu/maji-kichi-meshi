@@ -16,11 +16,7 @@
             >
               ログインして始める
             </NuxtLink>
-            <NuxtLink
-              v-else
-              to="/dashboard"
-              class="text-sm text-blue-600 hover:text-blue-800"
-            >
+            <NuxtLink v-else to="/dashboard" class="text-sm text-blue-600 hover:text-blue-800">
               ダッシュボード
             </NuxtLink>
           </div>
@@ -31,34 +27,23 @@
           <h4 class="text-sm font-semibold text-gray-900 mb-3">機能</h4>
           <ul class="space-y-2">
             <li>
-              <NuxtLink
-                to="/shops"
-                class="text-sm text-gray-600 hover:text-gray-900"
-              >
+              <NuxtLink to="/shops" class="text-sm text-gray-600 hover:text-gray-900">
                 店舗一覧
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink
-                to="/reviews"
-                class="text-sm text-gray-600 hover:text-gray-900"
-              >
+              <NuxtLink to="/reviews" class="text-sm text-gray-600 hover:text-gray-900">
                 レビュー一覧
               </NuxtLink>
             </li>
             <li>
               <template v-if="authStore.isLoggedIn">
-                <NuxtLink
-                  to="/rankings"
-                  class="text-sm text-gray-600 hover:text-gray-900"
-                >
+                <NuxtLink to="/rankings" class="text-sm text-gray-600 hover:text-gray-900">
                   ランキング
                 </NuxtLink>
               </template>
               <template v-else>
-                <span class="text-sm text-gray-400"
-                  >ランキング（要ログイン）</span
-                >
+                <span class="text-sm text-gray-400">ランキング（要ログイン）</span>
               </template>
             </li>
           </ul>
@@ -69,18 +54,12 @@
           <h4 class="text-sm font-semibold text-gray-900 mb-3">サポート</h4>
           <ul class="space-y-2">
             <li>
-              <NuxtLink
-                to="/privacy"
-                class="text-sm text-gray-600 hover:text-gray-900"
-              >
+              <NuxtLink to="/privacy" class="text-sm text-gray-600 hover:text-gray-900">
                 プライバシーポリシー
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink
-                to="/terms"
-                class="text-sm text-gray-600 hover:text-gray-900"
-              >
+              <NuxtLink to="/terms" class="text-sm text-gray-600 hover:text-gray-900">
                 利用規約
               </NuxtLink>
             </li>

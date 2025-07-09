@@ -2,9 +2,7 @@
   <div class="space-y-4">
     <!-- ファイル選択 -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        画像を追加 (最大5枚)
-      </label>
+      <label class="block text-sm font-medium text-gray-700 mb-2"> 画像を追加 (最大5枚) </label>
       <div class="flex items-center space-x-4">
         <input
           ref="fileInput"
@@ -20,12 +18,7 @@
           class="btn-secondary"
           :disabled="images.length >= 5"
         >
-          <svg
-            class="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -40,10 +33,7 @@
     </div>
 
     <!-- 画像プレビュー -->
-    <div
-      v-if="images.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-    >
+    <div v-if="images.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       <div v-for="(image, index) in images" :key="index" class="relative group">
         <img
           :src="image.preview"
@@ -55,12 +45,7 @@
           @click="removeImage(index)"
           class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"

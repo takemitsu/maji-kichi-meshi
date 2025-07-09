@@ -3,9 +3,7 @@
     <div class="px-4 py-6 sm:px-0">
       <div class="mb-8">
         <h1 class="text-2xl font-bold text-gray-900">ダッシュボード</h1>
-        <p class="mt-2 text-sm text-gray-600">
-          おかえりなさい、{{ authStore.user?.name }}さん
-        </p>
+        <p class="mt-2 text-sm text-gray-600">おかえりなさい、{{ authStore.user?.name }}さん</p>
       </div>
 
       <!-- 統計情報 -->
@@ -13,9 +11,7 @@
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"
-              >
+              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                 <svg
                   class="w-4 h-4 text-white"
                   fill="none"
@@ -33,9 +29,7 @@
             </div>
             <div class="ml-5 w-0 flex-1">
               <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">
-                  登録店舗数
-                </dt>
+                <dt class="text-sm font-medium text-gray-500 truncate">登録店舗数</dt>
                 <dd class="text-lg font-medium text-gray-900">
                   {{ stats.shopsCount }}
                 </dd>
@@ -47,9 +41,7 @@
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center"
-              >
+              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                 <svg
                   class="w-4 h-4 text-white"
                   fill="none"
@@ -67,9 +59,7 @@
             </div>
             <div class="ml-5 w-0 flex-1">
               <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">
-                  レビュー数
-                </dt>
+                <dt class="text-sm font-medium text-gray-500 truncate">レビュー数</dt>
                 <dd class="text-lg font-medium text-gray-900">
                   {{ stats.reviewsCount }}
                 </dd>
@@ -81,9 +71,7 @@
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center"
-              >
+              <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
                 <svg
                   class="w-4 h-4 text-white"
                   fill="none"
@@ -101,9 +89,7 @@
             </div>
             <div class="ml-5 w-0 flex-1">
               <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">
-                  ランキング
-                </dt>
+                <dt class="text-sm font-medium text-gray-500 truncate">ランキング</dt>
                 <dd class="text-lg font-medium text-gray-900">
                   {{ stats.rankingsCount }}
                 </dd>
@@ -115,9 +101,7 @@
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center"
-              >
+              <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
                 <svg
                   class="w-4 h-4 text-white"
                   fill="none"
@@ -135,9 +119,7 @@
             </div>
             <div class="ml-5 w-0 flex-1">
               <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">
-                  カテゴリ数
-                </dt>
+                <dt class="text-sm font-medium text-gray-500 truncate">カテゴリ数</dt>
                 <dd class="text-lg font-medium text-gray-900">
                   {{ stats.categoriesCount }}
                 </dd>
@@ -151,39 +133,24 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">店舗管理</h3>
-          <p class="text-sm text-gray-600 mb-4">
-            お気に入りの店舗を登録・編集します
-          </p>
-          <NuxtLink
-            to="/shops"
-            class="btn-primary inline-block text-center w-full"
-          >
+          <p class="text-sm text-gray-600 mb-4">お気に入りの店舗を登録・編集します</p>
+          <NuxtLink to="/shops" class="btn-primary inline-block text-center w-full">
             店舗を管理
           </NuxtLink>
         </div>
 
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">レビュー</h3>
-          <p class="text-sm text-gray-600 mb-4">
-            訪問記録とレビューを作成・編集します
-          </p>
-          <NuxtLink
-            to="/reviews"
-            class="btn-primary inline-block text-center w-full"
-          >
+          <p class="text-sm text-gray-600 mb-4">訪問記録とレビューを作成・編集します</p>
+          <NuxtLink to="/reviews" class="btn-primary inline-block text-center w-full">
             レビューを管理
           </NuxtLink>
         </div>
 
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">ランキング</h3>
-          <p class="text-sm text-gray-600 mb-4">
-            個人的なランキングを作成・編集します
-          </p>
-          <NuxtLink
-            to="/rankings"
-            class="btn-primary inline-block text-center w-full"
-          >
+          <p class="text-sm text-gray-600 mb-4">個人的なランキングを作成・編集します</p>
+          <NuxtLink to="/rankings" class="btn-primary inline-block text-center w-full">
             ランキングを編集
           </NuxtLink>
         </div>
@@ -231,8 +198,6 @@ onMounted(async () => {
 // メタデータ設定
 useHead({
   title: 'ダッシュボード - マジキチメシ',
-  meta: [
-    { name: 'description', content: 'マジキチメシのダッシュボードページ' },
-  ],
+  meta: [{ name: 'description', content: 'マジキチメシのダッシュボードページ' }],
 })
 </script>

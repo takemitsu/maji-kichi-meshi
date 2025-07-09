@@ -16,12 +16,7 @@
           </div>
           <div class="mt-4 flex md:ml-4 md:mt-0">
             <NuxtLink to="/rankings" class="btn-secondary">
-              <svg
-                class="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -41,9 +36,7 @@
           <!-- 検索 -->
           <div>
             <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-              >
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
                   class="h-5 w-5 text-gray-400"
                   fill="none"
@@ -70,17 +63,9 @@
 
           <!-- カテゴリフィルター -->
           <div>
-            <select
-              v-model="selectedCategory"
-              @change="handleFilter"
-              class="input-field"
-            >
+            <select v-model="selectedCategory" @change="handleFilter" class="input-field">
               <option value="">全てのカテゴリ</option>
-              <option
-                v-for="category in categories"
-                :key="category.id"
-                :value="category.id"
-              >
+              <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
               </option>
             </select>
@@ -92,12 +77,7 @@
       <LoadingSpinner v-if="loading" />
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- 公開ランキング一覧 -->
       <div v-if="!loading && rankings.length > 0" class="space-y-6">
@@ -128,10 +108,7 @@
                   </span>
                 </div>
 
-                <p
-                  v-if="ranking.description"
-                  class="text-sm text-gray-600 mt-2"
-                >
+                <p v-if="ranking.description" class="text-sm text-gray-600 mt-2">
                   {{ ranking.description }}
                 </p>
 
@@ -149,12 +126,7 @@
                   </div>
 
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg
-                      class="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -166,12 +138,7 @@
                   </div>
 
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg
-                      class="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -183,12 +150,7 @@
                   </div>
 
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg
-                      class="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -203,10 +165,7 @@
 
               <!-- アクション -->
               <div class="flex items-center space-x-2">
-                <NuxtLink
-                  :to="`/rankings/${ranking.id}`"
-                  class="btn-primary text-sm"
-                >
+                <NuxtLink :to="`/rankings/${ranking.id}`" class="btn-primary text-sm">
                   詳細を見る
                 </NuxtLink>
               </div>
@@ -309,9 +268,7 @@
             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
           ></path>
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">
-          公開ランキングがありません
-        </h3>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">公開ランキングがありません</h3>
         <p class="mt-1 text-sm text-gray-500">
           {{
             searchQuery || selectedCategory
@@ -321,12 +278,7 @@
         </p>
         <div class="mt-6">
           <NuxtLink to="/rankings/create" class="btn-primary">
-            <svg
-              class="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"

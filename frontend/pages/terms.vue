@@ -5,14 +5,10 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-8">利用規約</h1>
 
         <div class="prose prose-lg max-w-none">
-          <p class="text-gray-600 mb-6">
-            最終更新日: {{ new Date().toLocaleDateString('ja-JP') }}
-          </p>
+          <p class="text-gray-600 mb-6">最終更新日: {{ new Date().toLocaleDateString('ja-JP') }}</p>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              1. 基本事項
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">1. 基本事項</h2>
             <div class="space-y-4">
               <p class="text-gray-700">
                 マジキチメシ（以下「本サービス」）は、個人が趣味で開発・運営する非営利のWebアプリケーションです。
@@ -29,34 +25,24 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              2. サービス概要
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">2. サービス概要</h2>
             <div class="space-y-4">
-              <p class="text-gray-700 mb-4">
-                本サービスは以下の機能を提供します：
-              </p>
+              <p class="text-gray-700 mb-4">本サービスは以下の機能を提供します：</p>
               <ul class="list-disc list-inside text-gray-700 space-y-1">
                 <li>吉祥寺地域の店舗情報の検索・閲覧</li>
                 <li>店舗レビューの投稿・閲覧</li>
                 <li>個人的な店舗ランキングの作成・共有</li>
                 <li>画像アップロード機能</li>
               </ul>
-              <p class="text-gray-700 mt-4">
-                ただし、これらの機能の継続的な提供は保証されません。
-              </p>
+              <p class="text-gray-700 mt-4">ただし、これらの機能の継続的な提供は保証されません。</p>
             </div>
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              3. 利用資格・アカウント
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">3. 利用資格・アカウント</h2>
             <div class="space-y-4">
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">
-                  3.1 利用資格
-                </h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">3.1 利用資格</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
                   <li>本規約に同意した方</li>
                   <li>Google、GitHub、LINE、Twitter等のOAuth認証が可能な方</li>
@@ -64,14 +50,10 @@
                 </ul>
               </div>
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">
-                  3.2 アカウント管理
-                </h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">3.2 アカウント管理</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
                   <li>アカウント情報の管理は各自の責任で行ってください</li>
-                  <li>
-                    アカウントの不正利用による損害は利用者の責任となります
-                  </li>
+                  <li>アカウントの不正利用による損害は利用者の責任となります</li>
                   <li>複数アカウントの作成は推奨しません</li>
                 </ul>
               </div>
@@ -79,12 +61,8 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              4. 禁止事項
-            </h2>
-            <p class="text-gray-700 mb-4">
-              本サービスの利用において、以下の行為を禁止します：
-            </p>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">4. 禁止事項</h2>
+            <p class="text-gray-700 mb-4">本サービスの利用において、以下の行為を禁止します：</p>
             <div class="space-y-4">
               <div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">
@@ -100,9 +78,7 @@
                 </ul>
               </div>
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">
-                  4.2 技術的な禁止事項
-                </h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">4.2 技術的な禁止事項</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
                   <li>システムへの不正アクセス、攻撃行為</li>
                   <li>過度なアクセス、サーバーに負荷をかける行為</li>
@@ -114,14 +90,10 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              5. 投稿コンテンツ
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">5. 投稿コンテンツ</h2>
             <div class="space-y-4">
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">
-                  5.1 投稿内容の責任
-                </h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">5.1 投稿内容の責任</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
                   <li>投稿内容については投稿者が全責任を負います</li>
                   <li>第三者との紛争が生じた場合は投稿者が解決してください</li>
@@ -129,9 +101,7 @@
                 </ul>
               </div>
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">
-                  5.2 投稿内容の取り扱い
-                </h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">5.2 投稿内容の取り扱い</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
                   <li>投稿内容は他のユーザーに公開されます</li>
                   <li>不適切な投稿は予告なく削除する場合があります</li>
@@ -142,14 +112,10 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              6. サービスの提供・変更・終了
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">6. サービスの提供・変更・終了</h2>
             <div class="space-y-4">
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">
-                  6.1 サービスの提供
-                </h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">6.1 サービスの提供</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
                   <li>本サービスは現状有姿で提供されます</li>
                   <li>継続的な提供、安定性、可用性は保証されません</li>
@@ -157,13 +123,9 @@
                 </ul>
               </div>
               <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">
-                  6.2 サービスの変更・終了
-                </h3>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">6.2 サービスの変更・終了</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
-                  <li>
-                    予告なくサービス内容を変更または終了する場合があります
-                  </li>
+                  <li>予告なくサービス内容を変更または終了する場合があります</li>
                   <li>サービス終了時のデータ移行・保存は保証されません</li>
                   <li>重要なデータは各自でバックアップを取ってください</li>
                 </ul>
@@ -172,13 +134,9 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              7. 免責事項
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">7. 免責事項</h2>
             <div class="bg-red-50 border border-red-200 rounded-lg p-6">
-              <h3 class="text-lg font-medium text-red-900 mb-4">
-                開発者の免責
-              </h3>
+              <h3 class="text-lg font-medium text-red-900 mb-4">開発者の免責</h3>
               <ul class="list-disc list-inside text-red-700 space-y-2">
                 <li>
                   <strong
@@ -198,9 +156,7 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              8. 利用停止・アカウント削除
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">8. 利用停止・アカウント削除</h2>
             <div class="space-y-4">
               <p class="text-gray-700">
                 以下の場合、予告なく利用を停止またはアカウントを削除する場合があります：
@@ -218,9 +174,7 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              9. 個人情報・プライバシー
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">9. 個人情報・プライバシー</h2>
             <p class="text-gray-700">
               個人情報の取り扱いについては、
               <NuxtLink to="/privacy" class="text-blue-600 hover:text-blue-800"
@@ -231,9 +185,7 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              10. 準拠法・管轄
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">10. 準拠法・管轄</h2>
             <p class="text-gray-700">
               本規約は日本法に準拠し、本サービスに関する紛争については、
               開発者の居住地を管轄する裁判所を第一審の専属的合意管轄裁判所とします。
@@ -241,9 +193,7 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              11. 規約の変更
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">11. 規約の変更</h2>
             <p class="text-gray-700">
               本規約は予告なく変更される場合があります。
               重要な変更がある場合は、サービス内で通知します。
@@ -252,9 +202,7 @@
           </section>
 
           <section class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
-              12. お問い合わせ
-            </h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">12. お問い合わせ</h2>
             <p class="text-gray-700">
               本規約に関するお問い合わせは、GitHubのIssuesまたはメール等でお願いします。
               ただし、個人開発のため迅速な対応は保証できません。

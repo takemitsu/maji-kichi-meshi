@@ -1,9 +1,5 @@
 import type { User } from '~/types/auth'
-import type {
-  ApiResponse,
-  PaginatedResponse,
-  Shop,
-} from '~/types/api'
+import type { ApiResponse, PaginatedResponse, Shop } from '~/types/api'
 
 export const useApi = () => {
   const config = useRuntimeConfig()
@@ -12,10 +8,7 @@ export const useApi = () => {
   const apiBase = config.public.apiBase
 
   // 基本的なFetch関数
-  const apiFetch = async <T>(
-    url: string,
-    options: RequestInit = {}
-  ): Promise<T> => {
+  const apiFetch = async <T>(url: string, options: RequestInit = {}): Promise<T> => {
     const headers: Record<string, string> = {
       Accept: 'application/json',
       ...(options.headers as Record<string, string>),
@@ -98,8 +91,7 @@ export const useApi = () => {
           body: JSON.stringify(data),
         }),
 
-      delete: (id: number) =>
-        apiFetch<{ message: string }>(`/shops/${id}`, { method: 'DELETE' }),
+      delete: (id: number) => apiFetch<{ message: string }>(`/shops/${id}`, { method: 'DELETE' }),
     },
 
     // カテゴリ関連
@@ -123,8 +115,7 @@ export const useApi = () => {
           body: JSON.stringify(data),
         }),
 
-      delete: (id: number) =>
-        apiFetch(`/categories/${id}`, { method: 'DELETE' }),
+      delete: (id: number) => apiFetch(`/categories/${id}`, { method: 'DELETE' }),
     },
 
     // レビュー関連

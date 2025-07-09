@@ -8,18 +8,11 @@
         >
           ランキングを作成
         </h1>
-        <p class="mt-1 text-sm text-gray-500">
-          あなただけの吉祥寺店舗ランキングを作成しましょう
-        </p>
+        <p class="mt-1 text-sm text-gray-500">あなただけの吉祥寺店舗ランキングを作成しましょう</p>
       </div>
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- フォーム -->
       <form @submit.prevent="submitRanking" class="space-y-6">
@@ -41,16 +34,12 @@
                 maxlength="100"
                 required
               />
-              <p class="mt-1 text-sm text-gray-500">
-                {{ form.title.length }}/100 文字
-              </p>
+              <p class="mt-1 text-sm text-gray-500">{{ form.title.length }}/100 文字</p>
             </div>
 
             <!-- 説明 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                説明（任意）
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> 説明（任意） </label>
               <textarea
                 v-model="form.description"
                 rows="3"
@@ -65,16 +54,10 @@
 
             <!-- カテゴリ -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                カテゴリ
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> カテゴリ </label>
               <select v-model="form.category_id" class="input-field">
                 <option value="">総合（全カテゴリ）</option>
-                <option
-                  v-for="category in categories"
-                  :key="category.id"
-                  :value="category.id"
-                >
+                <option v-for="category in categories" :key="category.id" :value="category.id">
                   {{ category.name }}
                 </option>
               </select>
@@ -82,9 +65,7 @@
 
             <!-- 公開設定 -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                公開設定
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> 公開設定 </label>
               <div class="space-y-2">
                 <label class="flex items-center">
                   <input
@@ -93,9 +74,7 @@
                     type="radio"
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                   />
-                  <span class="ml-2 text-sm text-gray-900"
-                    >非公開（自分だけ）</span
-                  >
+                  <span class="ml-2 text-sm text-gray-900">非公開（自分だけ）</span>
                 </label>
                 <label class="flex items-center">
                   <input
@@ -104,14 +83,10 @@
                     type="radio"
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                   />
-                  <span class="ml-2 text-sm text-gray-900"
-                    >公開（みんなが見られる）</span
-                  >
+                  <span class="ml-2 text-sm text-gray-900">公開（みんなが見られる）</span>
                 </label>
               </div>
-              <p class="mt-1 text-sm text-gray-500">
-                後から変更することもできます
-              </p>
+              <p class="mt-1 text-sm text-gray-500">後から変更することもできます</p>
             </div>
           </div>
         </div>
@@ -127,9 +102,7 @@
 
           <!-- 店舗検索 -->
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              店舗を検索して追加
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> 店舗を検索して追加 </label>
             <div class="relative">
               <input
                 v-model="shopSearchQuery"
@@ -138,9 +111,7 @@
                 placeholder="店舗名で検索..."
                 class="input-field"
               />
-              <div
-                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
-              >
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg
                   class="h-5 w-5 text-gray-400"
                   fill="none"
@@ -185,16 +156,11 @@
 
           <!-- 店舗が見つからない場合 -->
           <div
-            v-if="
-              shopSearchQuery && searchResults.length === 0 && !searchLoading
-            "
+            v-if="shopSearchQuery && searchResults.length === 0 && !searchLoading"
             class="mb-6 text-center py-4 text-gray-500"
           >
             <p class="text-sm">店舗が見つかりませんでした</p>
-            <NuxtLink
-              to="/shops"
-              class="text-sm text-blue-600 hover:text-blue-800"
-            >
+            <NuxtLink to="/shops" class="text-sm text-blue-600 hover:text-blue-800">
               新しい店舗を登録する
             </NuxtLink>
           </div>
@@ -216,14 +182,8 @@
               >
                 <div class="flex items-center space-x-3">
                   <!-- ドラッグハンドル -->
-                  <div
-                    class="cursor-move text-gray-400 group-hover:text-gray-600"
-                  >
-                    <svg
-                      class="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
+                  <div class="cursor-move text-gray-400 group-hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
                       ></path>
@@ -250,12 +210,7 @@
                   type="button"
                   class="text-red-600 hover:text-red-800"
                 >
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -284,9 +239,7 @@
               ></path>
             </svg>
             <p class="text-sm">まだ店舗が選択されていません</p>
-            <p class="text-sm">
-              上の検索ボックスから店舗を検索して追加してください
-            </p>
+            <p class="text-sm">上の検索ボックスから店舗を検索して追加してください</p>
           </div>
         </div>
 
@@ -298,12 +251,7 @@
             :disabled="!canSubmit || submitting"
             class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LoadingSpinner
-              v-if="submitting"
-              size="sm"
-              color="white"
-              class="mr-2"
-            />
+            <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
             {{ submitting ? '作成中...' : 'ランキングを作成' }}
           </button>
         </div>
@@ -457,8 +405,6 @@ onMounted(async () => {
 // メタデータ設定
 useHead({
   title: 'ランキング作成 - マジキチメシ',
-  meta: [
-    { name: 'description', content: '新しい店舗ランキングを作成しましょう' },
-  ],
+  meta: [{ name: 'description', content: '新しい店舗ランキングを作成しましょう' }],
 })
 </script>

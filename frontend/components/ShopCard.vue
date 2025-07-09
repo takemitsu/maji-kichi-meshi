@@ -19,9 +19,7 @@
           v-if="imageLoading"
           class="absolute inset-0 bg-gray-200 flex items-center justify-center"
         >
-          <div
-            class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
-          ></div>
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       </template>
       <template v-else>
@@ -50,17 +48,11 @@
           <h3
             class="text-lg font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
           >
-            <span
-              v-if="shop.highlightedName"
-              v-html="shop.highlightedName"
-            ></span>
+            <span v-if="shop.highlightedName" v-html="shop.highlightedName"></span>
             <span v-else>{{ shop.name }}</span>
           </h3>
           <p class="text-sm text-gray-500 mt-1">
-            <span
-              v-if="shop.highlightedAddress"
-              v-html="shop.highlightedAddress"
-            ></span>
+            <span v-if="shop.highlightedAddress" v-html="shop.highlightedAddress"></span>
             <span v-else>{{ shop.address }}</span>
           </p>
         </div>
@@ -132,11 +124,7 @@
       <div class="mt-4 flex items-center justify-between">
         <div class="flex items-center space-x-2">
           <div v-if="shop.average_rating" class="flex items-center">
-            <svg
-              class="w-4 h-4 text-yellow-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
+            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
               <path
                 d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
               ></path>
@@ -145,9 +133,7 @@
               {{ shop.average_rating.toFixed(1) }}
             </span>
           </div>
-          <span class="text-sm text-gray-500">
-            ({{ shop.reviews_count || 0 }}件)
-          </span>
+          <span class="text-sm text-gray-500"> ({{ shop.reviews_count || 0 }}件) </span>
         </div>
 
         <span class="text-xs text-gray-400">
@@ -156,10 +142,7 @@
       </div>
 
       <!-- アクションボタン（認証済みユーザーのみ） -->
-      <div
-        v-if="showQuickActions && authStore.isLoggedIn"
-        class="mt-4 flex space-x-2"
-      >
+      <div v-if="showQuickActions && authStore.isLoggedIn" class="mt-4 flex space-x-2">
         <button
           @click.stop="$emit('addReview', shop)"
           class="flex-1 bg-blue-50 text-blue-700 text-sm font-medium py-3 px-3 rounded-md hover:bg-blue-100 transition-colors touch-manipulation"

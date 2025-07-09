@@ -20,12 +20,7 @@
           </div>
           <div v-if="authStore.isLoggedIn" class="mt-4 flex md:ml-4 md:mt-0">
             <NuxtLink to="/reviews/create" class="btn-primary">
-              <svg
-                class="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -50,9 +45,7 @@
           <!-- 検索 -->
           <div class="md:col-span-2">
             <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-              >
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
                   class="h-5 w-5 text-gray-400"
                   fill="none"
@@ -79,11 +72,7 @@
 
           <!-- 評価フィルター -->
           <div>
-            <select
-              v-model="selectedRating"
-              @change="handleFilter"
-              class="input-field"
-            >
+            <select v-model="selectedRating" @change="handleFilter" class="input-field">
               <option value="">全ての評価</option>
               <option value="5">★★★★★ (5)</option>
               <option value="4">★★★★☆ (4)</option>
@@ -95,11 +84,7 @@
 
           <!-- リピート意向フィルター -->
           <div>
-            <select
-              v-model="selectedRepeatIntention"
-              @change="handleFilter"
-              class="input-field"
-            >
+            <select v-model="selectedRepeatIntention" @change="handleFilter" class="input-field">
               <option value="">リピート意向</option>
               <option value="yes">また行く</option>
               <option value="maybe">わからん</option>
@@ -113,21 +98,13 @@
       <LoadingSpinner v-if="loading" />
 
       <!-- 検索/フィルタリング中 -->
-      <div
-        v-if="searchLoading && !loading"
-        class="flex items-center justify-center py-4"
-      >
+      <div v-if="searchLoading && !loading" class="flex items-center justify-center py-4">
         <LoadingSpinner size="sm" />
         <span class="ml-2 text-sm text-gray-600">検索中...</span>
       </div>
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- レビュー一覧 -->
       <div v-if="!loading && reviews.length > 0" class="space-y-6">
@@ -141,9 +118,7 @@
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-start space-x-4">
                 <!-- 店舗画像 -->
-                <div
-                  class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0"
-                >
+                <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                   <template v-if="review.shop?.image_url">
                     <img
                       :src="review.shop.image_url"
@@ -201,9 +176,7 @@
               <div class="flex items-center space-x-2">
                 <template
                   v-if="
-                    authStore.isLoggedIn &&
-                    review.user &&
-                    review.user.id === authStore.user?.id
+                    authStore.isLoggedIn && review.user && review.user.id === authStore.user?.id
                   "
                 >
                   <NuxtLink
@@ -226,20 +199,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
               <!-- 星評価 -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >星評価</label
-                >
+                <label class="block text-sm font-medium text-gray-700 mb-2">星評価</label>
                 <div class="flex items-center space-x-1">
                   <div class="flex">
                     <svg
                       v-for="star in 5"
                       :key="star"
                       class="w-5 h-5"
-                      :class="
-                        star <= review.rating
-                          ? 'text-yellow-400'
-                          : 'text-gray-300'
-                      "
+                      :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -248,24 +215,18 @@
                       ></path>
                     </svg>
                   </div>
-                  <span class="text-sm text-gray-600 ml-2"
-                    >({{ review.rating }}/5)</span
-                  >
+                  <span class="text-sm text-gray-600 ml-2">({{ review.rating }}/5)</span>
                 </div>
               </div>
 
               <!-- リピート意向 -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >リピート意向</label
-                >
+                <label class="block text-sm font-medium text-gray-700 mb-2">リピート意向</label>
                 <span
                   class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
                   :class="{
-                    'bg-green-100 text-green-800':
-                      review.repeat_intention === 'yes',
-                    'bg-yellow-100 text-yellow-800':
-                      review.repeat_intention === 'maybe',
+                    'bg-green-100 text-green-800': review.repeat_intention === 'yes',
+                    'bg-yellow-100 text-yellow-800': review.repeat_intention === 'maybe',
                     'bg-red-100 text-red-800': review.repeat_intention === 'no',
                   }"
                 >
@@ -276,9 +237,7 @@
 
             <!-- コメント -->
             <div v-if="review.comment" class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >コメント</label
-              >
+              <label class="block text-sm font-medium text-gray-700 mb-2">コメント</label>
               <p class="text-gray-900 text-sm leading-relaxed">
                 {{ review.comment }}
               </p>
@@ -286,9 +245,7 @@
 
             <!-- 画像 -->
             <div v-if="review.images && review.images.length > 0" class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >写真</label
-              >
+              <label class="block text-sm font-medium text-gray-700 mb-2">写真</label>
               <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <div
                   v-for="image in review.images.slice(0, 4)"
@@ -304,28 +261,20 @@
                   />
                 </div>
               </div>
-              <div
-                v-if="review.images.length > 4"
-                class="mt-2 text-sm text-gray-500"
-              >
+              <div v-if="review.images.length > 4" class="mt-2 text-sm text-gray-500">
                 他{{ review.images.length - 4 }}枚の画像があります
               </div>
             </div>
 
             <!-- フッター -->
-            <div
-              class="flex items-center justify-between pt-4 border-t border-gray-200"
-            >
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
               <div class="flex items-center space-x-4 text-sm text-gray-500">
                 <span v-if="review.updated_at !== review.created_at">
                   更新: {{ formatDate(review.updated_at) }}
                 </span>
               </div>
               <div class="flex items-center space-x-2">
-                <NuxtLink
-                  :to="`/reviews/${review.id}`"
-                  class="btn-secondary text-sm"
-                >
+                <NuxtLink :to="`/reviews/${review.id}`" class="btn-secondary text-sm">
                   詳細を見る
                 </NuxtLink>
               </div>
@@ -360,9 +309,7 @@
             d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
           ></path>
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">
-          レビューがありません
-        </h3>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">レビューがありません</h3>
         <p class="mt-1 text-sm text-gray-500">
           {{
             searchQuery || selectedRating || selectedRepeatIntention
@@ -374,12 +321,7 @@
         </p>
         <div v-if="authStore.isLoggedIn" class="mt-6">
           <NuxtLink to="/reviews/create" class="btn-primary">
-            <svg
-              class="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -391,9 +333,7 @@
           </NuxtLink>
         </div>
         <div v-else class="mt-6">
-          <NuxtLink to="/login" class="btn-primary">
-            ログインしてレビューを作成
-          </NuxtLink>
+          <NuxtLink to="/login" class="btn-primary"> ログインしてレビューを作成 </NuxtLink>
         </div>
       </div>
     </div>
@@ -466,8 +406,7 @@ const loadReviews = async () => {
 
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedRating.value) params.rating = selectedRating.value
-    if (selectedRepeatIntention.value)
-      params.repeat_intention = selectedRepeatIntention.value
+    if (selectedRepeatIntention.value) params.repeat_intention = selectedRepeatIntention.value
     if (route.query.shop_id) params.shop_id = route.query.shop_id
 
     const response = await $api.reviews.list(params)
@@ -491,11 +430,7 @@ const loadReviews = async () => {
 
 // レビュー削除
 const deleteReview = async (review: any) => {
-  if (
-    !confirm(
-      `「${review.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`
-    )
-  ) {
+  if (!confirm(`「${review.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)) {
     return
   }
 

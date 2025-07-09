@@ -130,8 +130,7 @@ const typeStyles = {
     title: 'text-green-800',
     message: 'text-green-700',
     closeButton: 'text-green-500 hover:bg-green-100 focus:ring-green-600',
-    retryButton:
-      'text-green-800 bg-green-100 hover:bg-green-200 focus:ring-green-600',
+    retryButton: 'text-green-800 bg-green-100 hover:bg-green-200 focus:ring-green-600',
   },
   error: {
     alert: 'bg-red-50 border border-red-200',
@@ -147,8 +146,7 @@ const typeStyles = {
     title: 'text-yellow-800',
     message: 'text-yellow-700',
     closeButton: 'text-yellow-500 hover:bg-yellow-100 focus:ring-yellow-600',
-    retryButton:
-      'text-yellow-800 bg-yellow-100 hover:bg-yellow-200 focus:ring-yellow-600',
+    retryButton: 'text-yellow-800 bg-yellow-100 hover:bg-yellow-200 focus:ring-yellow-600',
   },
   info: {
     alert: 'bg-blue-50 border border-blue-200',
@@ -156,8 +154,7 @@ const typeStyles = {
     title: 'text-blue-800',
     message: 'text-blue-700',
     closeButton: 'text-blue-500 hover:bg-blue-100 focus:ring-blue-600',
-    retryButton:
-      'text-blue-800 bg-blue-100 hover:bg-blue-200 focus:ring-blue-600',
+    retryButton: 'text-blue-800 bg-blue-100 hover:bg-blue-200 focus:ring-blue-600',
   },
 }
 
@@ -228,9 +225,7 @@ const iconComponents = {
 // 計算されたクラス
 const alertClasses = computed(() => typeStyles[props.type].alert)
 const iconClasses = computed(() => typeStyles[props.type].icon)
-const titleClasses = computed(() =>
-  props.title ? typeStyles[props.type].title : ''
-)
+const titleClasses = computed(() => (props.title ? typeStyles[props.type].title : ''))
 const messageClasses = computed(() => typeStyles[props.type].message)
 const closeButtonClasses = computed(() => typeStyles[props.type].closeButton)
 const retryButtonClasses = computed(() => typeStyles[props.type].retryButton)

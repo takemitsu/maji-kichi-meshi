@@ -16,12 +16,7 @@
           </div>
           <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
             <NuxtLink to="/rankings/public" class="btn-secondary">
-              <svg
-                class="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -38,12 +33,7 @@
               公開ランキング
             </NuxtLink>
             <NuxtLink to="/rankings/create" class="btn-primary">
-              <svg
-                class="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -63,9 +53,7 @@
           <!-- 検索 -->
           <div>
             <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-              >
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
                   class="h-5 w-5 text-gray-400"
                   fill="none"
@@ -92,17 +80,9 @@
 
           <!-- カテゴリフィルター -->
           <div>
-            <select
-              v-model="selectedCategory"
-              @change="handleFilter"
-              class="input-field"
-            >
+            <select v-model="selectedCategory" @change="handleFilter" class="input-field">
               <option value="">全てのカテゴリ</option>
-              <option
-                v-for="category in categories"
-                :key="category.id"
-                :value="category.id"
-              >
+              <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
               </option>
             </select>
@@ -110,11 +90,7 @@
 
           <!-- 公開状態フィルター -->
           <div>
-            <select
-              v-model="selectedVisibility"
-              @change="handleFilter"
-              class="input-field"
-            >
+            <select v-model="selectedVisibility" @change="handleFilter" class="input-field">
               <option value="">全ての状態</option>
               <option value="public">公開</option>
               <option value="private">非公開</option>
@@ -127,12 +103,7 @@
       <LoadingSpinner v-if="loading" />
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- ランキング一覧 -->
       <div v-if="!loading && rankings.length > 0" class="space-y-6">
@@ -167,21 +138,13 @@
                   </span>
                 </div>
 
-                <p
-                  v-if="ranking.description"
-                  class="text-sm text-gray-600 mt-2"
-                >
+                <p v-if="ranking.description" class="text-sm text-gray-600 mt-2">
                   {{ ranking.description }}
                 </p>
 
                 <div class="flex items-center space-x-4 mt-3">
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg
-                      class="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -192,12 +155,7 @@
                     {{ ranking.category?.name || '総合' }}
                   </div>
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg
-                      class="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -208,12 +166,7 @@
                     {{ ranking.shops_count || 0 }}店舗
                   </div>
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg
-                      class="w-4 h-4 mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -324,9 +277,7 @@
             d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
           ></path>
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">
-          ランキングがありません
-        </h3>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">ランキングがありません</h3>
         <p class="mt-1 text-sm text-gray-500">
           {{
             searchQuery || selectedCategory || selectedVisibility
@@ -336,12 +287,7 @@
         </p>
         <div class="mt-6">
           <NuxtLink to="/rankings/create" class="btn-primary">
-            <svg
-              class="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -391,8 +337,7 @@ const loadRankings = async () => {
     const params: Record<string, any> = {}
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedCategory.value) params.category_id = selectedCategory.value
-    if (selectedVisibility.value)
-      params.is_public = selectedVisibility.value === 'public'
+    if (selectedVisibility.value) params.is_public = selectedVisibility.value === 'public'
 
     const response = await $api.rankings.myRankings(params)
     rankings.value = response.data || []
@@ -416,9 +361,7 @@ const loadCategories = async () => {
 
 // ランキング削除
 const deleteRanking = async (ranking: any) => {
-  if (
-    !confirm(`「${ranking.title}」を削除しますか？この操作は元に戻せません。`)
-  ) {
+  if (!confirm(`「${ranking.title}」を削除しますか？この操作は元に戻せません。`)) {
     return
   }
 
@@ -444,8 +387,6 @@ onMounted(async () => {
 // メタデータ設定
 useHead({
   title: 'ランキング管理 - マジキチメシ',
-  meta: [
-    { name: 'description', content: '個人的な店舗ランキングの管理ページ' },
-  ],
+  meta: [{ name: 'description', content: '個人的な店舗ランキングの管理ページ' }],
 })
 </script>

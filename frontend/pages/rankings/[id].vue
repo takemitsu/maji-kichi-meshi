@@ -5,12 +5,7 @@
       <LoadingSpinner v-if="loading" fullscreen />
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- ランキング詳細 -->
       <div v-if="ranking && !loading">
@@ -67,9 +62,7 @@
                 </span>
               </div>
 
-              <div
-                class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6"
-              >
+              <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <div
                     class="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center mr-2"
@@ -140,16 +133,8 @@
 
             <!-- アクション（自分のランキングの場合のみ） -->
             <div v-if="isOwner" class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
-              <NuxtLink
-                :to="`/rankings/${ranking.id}/edit`"
-                class="btn-secondary"
-              >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+              <NuxtLink :to="`/rankings/${ranking.id}/edit`" class="btn-secondary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -163,12 +148,7 @@
                 @click="deleteRanking"
                 class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
               >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -185,16 +165,11 @@
         <!-- ランキング本体 -->
         <div class="bg-white rounded-lg shadow">
           <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">
-              {{ ranking.title }} ランキング
-            </h3>
+            <h3 class="text-lg font-medium text-gray-900">{{ ranking.title }} ランキング</h3>
           </div>
 
           <!-- 店舗ランキング -->
-          <div
-            v-if="ranking.shops && ranking.shops.length > 0"
-            class="divide-y divide-gray-200"
-          >
+          <div v-if="ranking.shops && ranking.shops.length > 0" class="divide-y divide-gray-200">
             <div
               v-for="(shop, index) in ranking.shops"
               :key="shop.id"
@@ -205,12 +180,9 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
                   :class="{
-                    'bg-yellow-100 text-yellow-800 ring-2 ring-yellow-400':
-                      index === 0,
-                    'bg-gray-100 text-gray-800 ring-2 ring-gray-400':
-                      index === 1,
-                    'bg-orange-100 text-orange-800 ring-2 ring-orange-400':
-                      index === 2,
+                    'bg-yellow-100 text-yellow-800 ring-2 ring-yellow-400': index === 0,
+                    'bg-gray-100 text-gray-800 ring-2 ring-gray-400': index === 1,
+                    'bg-orange-100 text-orange-800 ring-2 ring-orange-400': index === 2,
                     'bg-blue-50 text-blue-800': index >= 3,
                   }"
                 >
@@ -250,10 +222,7 @@
 
                     <!-- 統計情報 -->
                     <div class="ml-4 text-right">
-                      <div
-                        v-if="shop.average_rating"
-                        class="flex items-center justify-end mb-1"
-                      >
+                      <div v-if="shop.average_rating" class="flex items-center justify-end mb-1">
                         <svg
                           class="w-4 h-4 text-yellow-400 mr-1"
                           fill="currentColor"
@@ -292,17 +261,10 @@
                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"
               ></path>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">
-              店舗が登録されていません
-            </h3>
-            <p class="mt-1 text-sm text-gray-500">
-              まだランキングに店舗が追加されていません。
-            </p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">店舗が登録されていません</h3>
+            <p class="mt-1 text-sm text-gray-500">まだランキングに店舗が追加されていません。</p>
             <div v-if="isOwner" class="mt-6">
-              <NuxtLink
-                :to="`/rankings/${ranking.id}/edit`"
-                class="btn-primary"
-              >
+              <NuxtLink :to="`/rankings/${ranking.id}/edit`" class="btn-primary">
                 店舗を追加する
               </NuxtLink>
             </div>
@@ -314,9 +276,7 @@
           <h3 class="text-lg font-medium text-gray-900 mb-4">詳細情報</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
             <div>
-              <label class="block font-medium text-gray-700"
-                >ランキングID</label
-              >
+              <label class="block font-medium text-gray-700">ランキングID</label>
               <p class="text-gray-900">{{ ranking.id }}</p>
             </div>
             <div>
@@ -348,9 +308,7 @@
               :to="ranking.is_public ? '/rankings/public' : '/rankings'"
               class="btn-secondary"
             >
-              {{
-                ranking.is_public ? '公開ランキング' : 'マイランキング'
-              }}一覧に戻る
+              {{ ranking.is_public ? '公開ランキング' : 'マイランキング' }}一覧に戻る
             </NuxtLink>
 
             <NuxtLink
@@ -411,11 +369,7 @@ const loadRanking = async () => {
 
 // ランキング削除
 const deleteRanking = async () => {
-  if (
-    !confirm(
-      `「${ranking.value.title}」を削除しますか？この操作は元に戻せません。`
-    )
-  ) {
+  if (!confirm(`「${ranking.value.title}」を削除しますか？この操作は元に戻せません。`)) {
     return
   }
 
@@ -454,9 +408,7 @@ useHead(() => ({
   meta: [
     {
       name: 'description',
-      content: ranking.value
-        ? `${ranking.value.title}の詳細ランキング`
-        : 'ランキング詳細ページ',
+      content: ranking.value ? `${ranking.value.title}の詳細ランキング` : 'ランキング詳細ページ',
     },
   ],
 }))

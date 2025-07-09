@@ -8,9 +8,7 @@
         >
           レビューを作成
         </h1>
-        <p class="mt-1 text-sm text-gray-500">
-          訪問した店舗の評価とメモを記録しましょう
-        </p>
+        <p class="mt-1 text-sm text-gray-500">訪問した店舗の評価とメモを記録しましょう</p>
       </div>
 
       <!-- エラーメッセージ -->
@@ -43,12 +41,7 @@
               type="button"
               class="text-gray-400 hover:text-gray-600"
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -73,9 +66,7 @@
                   placeholder="店舗名で検索..."
                   class="input-field"
                 />
-                <div
-                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
-                >
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                   <svg
                     class="h-5 w-5 text-gray-400"
                     fill="none"
@@ -91,9 +82,7 @@
                   </svg>
                 </div>
               </div>
-              <p class="mt-1 text-sm text-gray-500">
-                2文字以上入力すると検索が開始されます
-              </p>
+              <p class="mt-1 text-sm text-gray-500">2文字以上入力すると検索が開始されます</p>
             </div>
 
             <!-- 検索結果 -->
@@ -102,10 +91,7 @@
               class="max-h-64 overflow-y-auto border border-gray-200 rounded-md"
             >
               <!-- 検索中 -->
-              <div
-                v-if="searchLoading"
-                class="flex items-center justify-center py-4"
-              >
+              <div v-if="searchLoading" class="flex items-center justify-center py-4">
                 <LoadingSpinner size="sm" />
                 <span class="ml-2 text-sm text-gray-600">検索中...</span>
               </div>
@@ -124,21 +110,13 @@
             <!-- 検索案内・結果なし -->
             <div v-if="shopSearchQuery" class="text-center py-4">
               <div v-if="shopSearchQuery.length < 2" class="text-gray-500">
-                <p class="text-sm">
-                  あと{{ 2 - shopSearchQuery.length }}文字入力してください
-                </p>
+                <p class="text-sm">あと{{ 2 - shopSearchQuery.length }}文字入力してください</p>
               </div>
-              <div
-                v-else-if="searchResults.length === 0 && !searchLoading"
-                class="text-gray-500"
-              >
+              <div v-else-if="searchResults.length === 0 && !searchLoading" class="text-gray-500">
                 <p class="text-sm mb-2">
                   「{{ shopSearchQuery }}」の検索結果が見つかりませんでした
                 </p>
-                <NuxtLink
-                  to="/shops"
-                  class="text-sm text-blue-600 hover:text-blue-800"
-                >
+                <NuxtLink to="/shops" class="text-sm text-blue-600 hover:text-blue-800">
                   新しい店舗を登録する
                 </NuxtLink>
               </div>
@@ -156,25 +134,28 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 星評価 <span class="text-red-500">*</span>
               </label>
-              <div
-                class="flex items-center space-x-1"
-                @keydown="handleStarKeydown"
-              >
+              <div class="flex items-center space-x-1" @keydown="handleStarKeydown">
                 <button
                   v-for="star in 5"
                   :key="star"
-                  @click="() => {
-                    form.rating = star
-                    validateRating()
-                  }"
-                  @keydown.enter.prevent="() => {
-                    form.rating = star
-                    validateRating()
-                  }"
-                  @keydown.space.prevent="() => {
-                    form.rating = star
-                    validateRating()
-                  }"
+                  @click="
+                    () => {
+                      form.rating = star
+                      validateRating()
+                    }
+                  "
+                  @keydown.enter.prevent="
+                    () => {
+                      form.rating = star
+                      validateRating()
+                    }
+                  "
+                  @keydown.space.prevent="
+                    () => {
+                      form.rating = star
+                      validateRating()
+                    }
+                  "
                   type="button"
                   class="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded transition-all"
                   :aria-label="`${star}つ星を選択`"
@@ -195,14 +176,9 @@
                     ></path>
                   </svg>
                 </button>
-                <span class="ml-2 text-sm text-gray-600"
-                  >({{ form.rating }}/5)</span
-                >
+                <span class="ml-2 text-sm text-gray-600">({{ form.rating }}/5)</span>
               </div>
-              <div
-                v-if="!validation.rating.valid"
-                class="mt-1 text-sm text-red-600"
-              >
+              <div v-if="!validation.rating.valid" class="mt-1 text-sm text-red-600">
                 {{ validation.rating.message }}
               </div>
             </div>
@@ -225,15 +201,10 @@
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                     @change="validateRepeatIntention()"
                   />
-                  <span class="ml-2 text-sm text-gray-900">{{
-                    option.label
-                  }}</span>
+                  <span class="ml-2 text-sm text-gray-900">{{ option.label }}</span>
                 </label>
               </div>
-              <div
-                v-if="!validation.repeat_intention.valid"
-                class="mt-1 text-sm text-red-600"
-              >
+              <div v-if="!validation.repeat_intention.valid" class="mt-1 text-sm text-red-600">
                 {{ validation.repeat_intention.message }}
               </div>
             </div>
@@ -255,10 +226,7 @@
               required
               @change="validateVisitedAt()"
             />
-            <div
-              v-if="!validation.visited_at.valid"
-              class="mt-1 text-sm text-red-600"
-            >
+            <div v-if="!validation.visited_at.valid" class="mt-1 text-sm text-red-600">
               {{ validation.visited_at.message }}
             </div>
           </div>
@@ -268,18 +236,14 @@
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4">コメント</h3>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              感想・メモ（任意）
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> 感想・メモ（任意） </label>
             <textarea
               v-model="form.comment"
               rows="6"
               class="input-field"
               placeholder="味の感想、雰囲気、サービスなど、自由に記録してください..."
             ></textarea>
-            <p class="mt-2 text-sm text-gray-500">
-              {{ form.comment.length }}/1000 文字
-            </p>
+            <p class="mt-2 text-sm text-gray-500">{{ form.comment.length }}/1000 文字</p>
           </div>
         </div>
 
@@ -297,12 +261,7 @@
             :disabled="!canSubmit || submitting"
             class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LoadingSpinner
-              v-if="submitting"
-              size="sm"
-              color="white"
-              class="mr-2"
-            />
+            <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
             {{ submitting ? '作成中...' : 'レビューを作成' }}
           </button>
         </div>
@@ -445,8 +404,7 @@ const submitReview = async () => {
         // 画像アップロードに失敗してもレビューは作成されているので、警告のみ表示
         setError({
           title: '画像アップロードエラー',
-          message:
-            'レビューは作成されましたが、画像のアップロードに失敗しました。',
+          message: 'レビューは作成されましたが、画像のアップロードに失敗しました。',
           retryable: false,
           retryAction: null,
         })
@@ -460,8 +418,7 @@ const submitReview = async () => {
     if (err.response?.status === 422) {
       setError({
         title: '入力エラー',
-        message:
-          'フォームの入力内容を確認してください。必須項目が未入力の可能性があります。',
+        message: 'フォームの入力内容を確認してください。必須項目が未入力の可能性があります。',
         retryable: false,
         retryAction: null,
       })

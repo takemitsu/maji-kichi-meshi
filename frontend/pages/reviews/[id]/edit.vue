@@ -17,25 +17,14 @@
       </div>
 
       <!-- エラーメッセージ -->
-      <AlertMessage
-        v-if="error"
-        type="error"
-        :message="error"
-        @close="error = ''"
-      />
+      <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
       <!-- フォーム -->
-      <form
-        v-if="!loading && review"
-        @submit.prevent="submitReview"
-        class="space-y-6"
-      >
+      <form v-if="!loading && review" @submit.prevent="submitReview" class="space-y-6">
         <!-- 店舗情報（読み取り専用） -->
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4">店舗情報</h3>
-          <div
-            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-          >
+          <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
             <div>
               <h4 class="font-medium text-gray-900">{{ review.shop?.name }}</h4>
               <p class="text-sm text-gray-600">{{ review.shop?.address }}</p>
@@ -82,9 +71,7 @@
                     ></path>
                   </svg>
                 </button>
-                <span class="ml-2 text-sm text-gray-600"
-                  >({{ form.rating }}/5)</span
-                >
+                <span class="ml-2 text-sm text-gray-600">({{ form.rating }}/5)</span>
               </div>
             </div>
 
@@ -105,9 +92,7 @@
                     type="radio"
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                   />
-                  <span class="ml-2 text-sm text-gray-900">{{
-                    option.label
-                  }}</span>
+                  <span class="ml-2 text-sm text-gray-900">{{ option.label }}</span>
                 </label>
               </div>
             </div>
@@ -135,18 +120,14 @@
         <div class="bg-white rounded-lg shadow p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4">コメント</h3>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              感想・メモ（任意）
-            </label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"> 感想・メモ（任意） </label>
             <textarea
               v-model="form.comment"
               rows="6"
               class="input-field"
               placeholder="味の感想、雰囲気、サービスなど、自由に記録してください..."
             ></textarea>
-            <p class="mt-2 text-sm text-gray-500">
-              {{ (form.comment || '').length }}/1000 文字
-            </p>
+            <p class="mt-2 text-sm text-gray-500">{{ (form.comment || '').length }}/1000 文字</p>
           </div>
         </div>
 
@@ -158,11 +139,7 @@
           <div v-if="existingImages.length > 0" class="mb-6">
             <h4 class="text-sm font-medium text-gray-700 mb-2">現在の画像</h4>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div
-                v-for="image in existingImages"
-                :key="image.id"
-                class="relative group"
-              >
+              <div v-for="image in existingImages" :key="image.id" class="relative group">
                 <img
                   :src="image.url"
                   :alt="`既存画像 ${image.id}`"
@@ -173,12 +150,7 @@
                   @click="deleteExistingImage(image.id)"
                   class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -193,13 +165,8 @@
 
           <!-- 新しい画像の追加 -->
           <div v-if="existingImages.length < 5">
-            <h4 class="text-sm font-medium text-gray-700 mb-2">
-              新しい画像を追加
-            </h4>
-            <ImageUpload
-              v-model="newImages"
-              :max-files="5 - existingImages.length"
-            />
+            <h4 class="text-sm font-medium text-gray-700 mb-2">新しい画像を追加</h4>
+            <ImageUpload v-model="newImages" :max-files="5 - existingImages.length" />
           </div>
 
           <div v-else class="text-sm text-gray-500">
@@ -225,9 +192,7 @@
         <!-- 送信ボタン -->
         <div class="flex items-center justify-between pt-6">
           <div class="flex space-x-4">
-            <NuxtLink :to="`/reviews/${review.id}`" class="btn-secondary">
-              キャンセル
-            </NuxtLink>
+            <NuxtLink :to="`/reviews/${review.id}`" class="btn-secondary"> キャンセル </NuxtLink>
             <button
               @click="deleteReview"
               type="button"
@@ -241,12 +206,7 @@
             :disabled="!canSubmit || submitting"
             class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LoadingSpinner
-              v-if="submitting"
-              size="sm"
-              color="white"
-              class="mr-2"
-            />
+            <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
             {{ submitting ? '更新中...' : 'レビューを更新' }}
           </button>
         </div>
@@ -297,11 +257,7 @@ const today = new Date().toISOString().split('T')[0]
 
 // バリデーション
 const canSubmit = computed(() => {
-  return (
-    form.value.rating > 0 &&
-    form.value.repeat_intention &&
-    form.value.visited_at
-  )
+  return form.value.rating > 0 && form.value.repeat_intention && form.value.visited_at
 })
 
 // レビューデータ取得
@@ -351,8 +307,7 @@ const submitReview = async () => {
         await $api.reviews.uploadImages(reviewId.value, newImages.value)
       } catch (imageErr) {
         console.error('Failed to upload images:', imageErr)
-        error.value =
-          'レビューは更新されましたが、画像のアップロードに失敗しました'
+        error.value = 'レビューは更新されましたが、画像のアップロードに失敗しました'
       }
     }
 
@@ -375,9 +330,7 @@ const submitReview = async () => {
 // レビュー削除
 const deleteReview = async () => {
   if (
-    !confirm(
-      `「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`
-    )
+    !confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)
   ) {
     return
   }
@@ -401,9 +354,7 @@ const deleteExistingImage = async (imageId: number) => {
 
   try {
     await $api.reviews.deleteImage(reviewId.value, imageId)
-    existingImages.value = existingImages.value.filter(
-      img => img.id !== imageId
-    )
+    existingImages.value = existingImages.value.filter(img => img.id !== imageId)
   } catch (err) {
     console.error('Failed to delete image:', err)
     error.value = '画像の削除に失敗しました'
@@ -428,9 +379,7 @@ useHead(() => ({
   meta: [
     {
       name: 'description',
-      content: review.value
-        ? `${review.value.shop?.name}のレビューを編集`
-        : 'レビュー編集ページ',
+      content: review.value ? `${review.value.shop?.name}のレビューを編集` : 'レビュー編集ページ',
     },
   ],
 }))

@@ -11,15 +11,8 @@
 
         <!-- エラー状態 -->
         <div v-else-if="error" class="space-y-4">
-          <div
-            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100"
-          >
-            <svg
-              class="h-6 w-6 text-red-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -44,9 +37,7 @@
 
         <!-- 成功状態（一瞬表示される） -->
         <div v-else class="space-y-4">
-          <div
-            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100"
-          >
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
             <svg
               class="h-6 w-6 text-green-600"
               fill="none"
@@ -100,9 +91,7 @@ onMounted(async () => {
 
     // エラーケースの処理
     if (authError || success === 'false') {
-      throw new Error(
-        (error_description as string) || 'OAuth認証に失敗しました'
-      )
+      throw new Error((error_description as string) || 'OAuth認証に失敗しました')
     }
 
     // 必須パラメータの確認
@@ -118,9 +107,7 @@ onMounted(async () => {
     }
 
     // 認証情報をストアに保存（有効期限も含める）
-    const expiresInSeconds = expires_in
-      ? parseInt(expires_in as string)
-      : undefined
+    const expiresInSeconds = expires_in ? parseInt(expires_in as string) : undefined
     authStore.setAuth(userData, access_token as string, expiresInSeconds)
 
     // URLパラメータをクリア
@@ -133,8 +120,7 @@ onMounted(async () => {
     await navigateTo('/dashboard')
   } catch (err) {
     console.error('OAuth callback error:', err)
-    error.value =
-      err instanceof Error ? err.message : '予期しないエラーが発生しました'
+    error.value = err instanceof Error ? err.message : '予期しないエラーが発生しました'
   } finally {
     isProcessing.value = false
   }
