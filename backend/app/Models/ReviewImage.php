@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
+use App\Services\ImageService;
 
 class ReviewImage extends Model
 {
@@ -12,10 +14,16 @@ class ReviewImage extends Model
 
     protected $fillable = [
         'review_id',
-        'original_path',
-        'large_path',
-        'medium_path',
+        'filename',
+        'original_name',
         'thumbnail_path',
+        'small_path',
+        'medium_path',
+        'large_path',
+        'file_size',
+        'mime_type',
+        'moderation_status',
+        'moderation_notes',
     ];
 
     /**
@@ -27,19 +35,19 @@ class ReviewImage extends Model
     }
 
     /**
-     * Get full URL for original image
+     * Get full URL for thumbnail image
      */
-    public function getOriginalUrlAttribute()
+    public function getThumbnailUrlAttribute()
     {
-        return $this->original_path ? Storage::url($this->original_path) : null;
+        return $this->thumbnail_path ? Storage::disk('public')->url($this->thumbnail_path) : null;
     }
 
     /**
-     * Get full URL for large image
+     * Get full URL for small image
      */
-    public function getLargeUrlAttribute()
+    public function getSmallUrlAttribute()
     {
-        return $this->large_path ? Storage::url($this->large_path) : null;
+        return $this->small_path ? Storage::disk('public')->url($this->small_path) : null;
     }
 
     /**
@@ -47,15 +55,15 @@ class ReviewImage extends Model
      */
     public function getMediumUrlAttribute()
     {
-        return $this->medium_path ? Storage::url($this->medium_path) : null;
+        return $this->medium_path ? Storage::disk('public')->url($this->medium_path) : null;
     }
 
     /**
-     * Get full URL for thumbnail image
+     * Get full URL for large image
      */
-    public function getThumbnailUrlAttribute()
+    public function getLargeUrlAttribute()
     {
-        return $this->thumbnail_path ? Storage::url($this->thumbnail_path) : null;
+        return $this->large_path ? Storage::disk('public')->url($this->large_path) : null;
     }
 
     /**
@@ -64,11 +72,48 @@ class ReviewImage extends Model
     public function getUrlsAttribute()
     {
         return [
-            'original' => $this->original_url,
-            'large' => $this->large_url,
-            'medium' => $this->medium_url,
             'thumbnail' => $this->thumbnail_url,
+            'small' => $this->small_url,
+            'medium' => $this->medium_url,
+            'large' => $this->large_url,
         ];
+    }
+
+    /**
+     * Create ReviewImage from uploaded file
+     *
+     * @param int $reviewId
+     * @param UploadedFile $file
+     * @return self
+     */
+    public static function createFromUpload(int $reviewId, UploadedFile $file): self
+    {
+        $imageService = new ImageService();
+        
+        // 画像ファイルのバリデーション
+        if (!$imageService->isSupportedImageType($file->getMimeType())) {
+            throw new \InvalidArgumentException('Unsupported image type: ' . $file->getMimeType());
+        }
+        
+        if (!$imageService->isValidSize($file->getSize())) {
+            throw new \InvalidArgumentException('Image file size too large');
+        }
+        
+        // 画像をアップロード・リサイズ
+        $uploadResult = $imageService->uploadAndResize($file, 'reviews');
+        
+        // ReviewImageを作成
+        return self::create([
+            'review_id' => $reviewId,
+            'filename' => $uploadResult['filename'],
+            'original_name' => $uploadResult['original_name'],
+            'thumbnail_path' => $uploadResult['paths']['thumbnail'],
+            'small_path' => $uploadResult['paths']['small'],
+            'medium_path' => $uploadResult['paths']['medium'],
+            'large_path' => $uploadResult['paths']['large'],
+            'file_size' => $uploadResult['size'],
+            'mime_type' => $uploadResult['mime_type'],
+        ]);
     }
 
     /**
@@ -77,17 +122,70 @@ class ReviewImage extends Model
     public function deleteFiles()
     {
         $paths = array_filter([
-            $this->original_path,
-            $this->large_path,
-            $this->medium_path,
             $this->thumbnail_path,
+            $this->small_path,
+            $this->medium_path,
+            $this->large_path,
         ]);
 
-        foreach ($paths as $path) {
-            if (Storage::exists($path)) {
-                Storage::delete($path);
-            }
-        }
+        $imageService = new ImageService();
+        return $imageService->deleteImages($paths);
+    }
+
+    /**
+     * Relationship with moderator
+     */
+    public function moderator()
+    {
+        return $this->belongsTo(User::class, 'moderated_by');
+    }
+
+    /**
+     * Check if image is published
+     */
+    public function isPublished(): bool
+    {
+        return $this->moderation_status === 'published';
+    }
+
+    /**
+     * Check if image is under review
+     */
+    public function isUnderReview(): bool
+    {
+        return $this->moderation_status === 'under_review';
+    }
+
+    /**
+     * Check if image is rejected
+     */
+    public function isRejected(): bool
+    {
+        return $this->moderation_status === 'rejected';
+    }
+
+    /**
+     * Scope for published images only
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('moderation_status', 'published');
+    }
+
+    /**
+     * Scope for images under review
+     */
+    public function scopeUnderReview($query)
+    {
+        return $query->where('moderation_status', 'under_review');
+    }
+
+    /**
+     * Scope for rejected images
+     */
+    public function scopeRejected($query)
+    {
+        return $query->where('moderation_status', 'rejected');
     }
 
     /**

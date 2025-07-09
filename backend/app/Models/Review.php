@@ -123,4 +123,19 @@ class Review extends Model
     {
         return $this->images()->exists();
     }
+
+    /**
+     * Boot method to handle model events
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Delete associated images when review is deleted
+        static::deleting(function ($review) {
+            $review->images()->each(function ($image) {
+                $image->delete();
+            });
+        });
+    }
 }

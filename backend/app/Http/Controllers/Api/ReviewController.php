@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReviewResource;
 use App\Models\Review;
+use App\Models\ReviewImage;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ReviewController extends Controller
 {
@@ -72,6 +74,8 @@ class ReviewController extends Controller
             'repeat_intention' => 'required|in:また行く,わからん,行かない',
             'memo' => 'nullable|string|max:1000',
             'visited_at' => 'required|date|before_or_equal:today',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
         ]);
 
         if ($validator->fails()) {
@@ -95,10 +99,30 @@ class ReviewController extends Controller
         $data = $validator->validated();
         $data['user_id'] = Auth::id();
 
-        $review = Review::create($data);
-        $review->load(['user', 'shop', 'images']);
+        DB::beginTransaction();
+        try {
+            // Create review
+            $review = Review::create($data);
 
-        return (new ReviewResource($review))->response()->setStatusCode(201);
+            // Upload images if provided
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $imageFile) {
+                    ReviewImage::createFromUpload($review->id, $imageFile);
+                }
+            }
+
+            $review->load(['user', 'shop', 'images']);
+            
+            DB::commit();
+            return (new ReviewResource($review))->response()->setStatusCode(201);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Failed to create review',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -181,5 +205,90 @@ class ReviewController extends Controller
         $reviews = $query->paginate($perPage);
 
         return ReviewResource::collection($reviews);
+    }
+
+    /**
+     * Upload additional images to an existing review
+     */
+    public function uploadImages(Request $request, Review $review)
+    {
+        // Check if user owns the review
+        if ($review->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'images' => 'required|array|min:1|max:5',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Validation failed',
+                'messages' => $validator->errors()
+            ], 422);
+        }
+
+        // Check current image count
+        $currentImageCount = $review->images()->count();
+        $newImageCount = count($request->file('images'));
+        
+        if ($currentImageCount + $newImageCount > 5) {
+            return response()->json([
+                'error' => 'Maximum 5 images allowed per review'
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $uploadedImages = [];
+
+            foreach ($request->file('images') as $imageFile) {
+                $reviewImage = ReviewImage::createFromUpload($review->id, $imageFile);
+                $uploadedImages[] = $reviewImage;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Images uploaded successfully',
+                'data' => [
+                    'uploaded_count' => count($uploadedImages),
+                    'images' => collect($uploadedImages)->map(function ($image) {
+                        return [
+                            'id' => $image->id,
+                            'urls' => $image->urls,
+                        ];
+                    })
+                ]
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Failed to upload images',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete a specific image from a review
+     */
+    public function deleteImage(Review $review, ReviewImage $image)
+    {
+        // Check if user owns the review
+        if ($review->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if image belongs to the review
+        if ($image->review_id !== $review->id) {
+            return response()->json(['error' => 'Image does not belong to this review'], 404);
+        }
+
+        $image->delete();
+
+        return response()->json(['message' => 'Image deleted successfully'], 200);
     }
 }

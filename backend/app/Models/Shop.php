@@ -19,6 +19,7 @@ class Shop extends Model
         'website',
         'google_place_id',
         'is_closed',
+        'status',
     ];
 
     protected $casts = [
@@ -96,5 +97,37 @@ class Shop extends Model
     public function scopeOpen($query)
     {
         return $query->where('is_closed', false);
+    }
+
+    /**
+     * Scope for active shops only
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Check if shop is active
+     */
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    /**
+     * Check if shop is hidden
+     */
+    public function isHidden(): bool
+    {
+        return $this->status === 'hidden';
+    }
+
+    /**
+     * Relationship with moderator
+     */
+    public function moderator()
+    {
+        return $this->belongsTo(User::class, 'moderated_by');
     }
 }

@@ -16,7 +16,11 @@ class ReviewImageResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'filename' => $this->filename,
+            'original_name' => $this->original_name,
             'urls' => $this->urls,
+            'file_size' => $this->file_size,
+            'mime_type' => $this->mime_type,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

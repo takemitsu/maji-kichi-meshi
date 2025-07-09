@@ -22,6 +22,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'role',
+        'status',
     ];
 
     /**
@@ -32,6 +34,8 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
+        'role',
+        'status',
     ];
 
     /**
@@ -85,5 +89,29 @@ class User extends Authenticatable implements JWTSubject
     public function rankings()
     {
         return $this->hasMany(Ranking::class);
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is moderator (admin or moderator)
+     */
+    public function isModerator(): bool
+    {
+        return in_array($this->role, ['admin', 'moderator']);
+    }
+
+    /**
+     * Check if user is active
+     */
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
     }
 }
