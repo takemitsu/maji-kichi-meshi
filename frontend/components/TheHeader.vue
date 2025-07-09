@@ -344,6 +344,6 @@ watch(
   () => router.currentRoute.value.path,
   () => {
     closeMobileMenu()
-  }
+  },
 )
 </script>

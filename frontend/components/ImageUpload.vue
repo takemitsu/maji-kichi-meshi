@@ -143,7 +143,7 @@ const removeImage = (index: number) => {
 const updateModelValue = () => {
   emit(
     'update:modelValue',
-    images.value.map(img => img.file)
+    images.value.map(img => img.file),
   )
 }
 
@@ -155,6 +155,6 @@ watch(
       images.value = []
     }
   },
-  { deep: true }
+  { deep: true },
 )
 </script>

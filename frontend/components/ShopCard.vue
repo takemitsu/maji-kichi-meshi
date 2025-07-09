@@ -254,7 +254,7 @@ onMounted(() => {
       },
       {
         rootMargin: '50px',
-      }
+      },
     )
 
     observer.observe(imageContainer.value)

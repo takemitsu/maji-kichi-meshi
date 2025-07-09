@@ -19,7 +19,7 @@ export function useSearchHighlight() {
 
     return text.replace(
       regex,
-      '<mark class="bg-yellow-200 text-yellow-900 font-medium rounded px-1">$1</mark>'
+      '<mark class="bg-yellow-200 text-yellow-900 font-medium rounded px-1">$1</mark>',
     )
   }
 
