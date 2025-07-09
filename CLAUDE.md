@@ -73,6 +73,9 @@ php artisan migrate
 # シーダー実行
 php artisan db:seed
 
+# シーダー実行（データベース初期化）
+php artisan migrate:fresh --seed
+
 # キャッシュクリア
 php artisan cache:clear
 php artisan config:clear
@@ -80,6 +83,10 @@ php artisan route:clear
 
 # Filament管理画面
 php artisan filament:install
+
+# 管理者ログイン情報
+# takemitsu@notespace.jp / admin2024
+# admin@majikichi-meshi.com / admin123
 ```
 
 ### Frontend (Vue/Nuxt)
@@ -212,6 +219,14 @@ maji-kichi-meshi/
 - PostgreSQL新規導入予定（MySQL環境との比較検討）
 - 管理画面はLaravel Filamentで効率開発
 
+## 技術的発見・注意事項
+
+### Laravel 11 hashedキャストの動作
+- `'password' => 'hashed'` キャストは自動的にパスワードをハッシュ化
+- `User::create()` では正常動作、`User::updateOrCreate()` では動作しない場合がある
+- 手動ハッシュ化（`Hash::make()`）と併用すると二重ハッシュ化される
+- シーダーでは平文パスワードを使用し、キャストによる自動ハッシュ化に依存する
+
 ## Development Progress
 
 ### Phase 1: Authentication & Foundation ✅ 完了
@@ -261,8 +276,19 @@ maji-kichi-meshi/
 - [x] ESLint v9 + Prettier設定
 - [x] 開発環境コード品質向上
 
-### Phase 6: Enhancement (後続)
-- [ ] Google Places API 連携
+### Phase 6: Management System Completion ✅ 完了
+- [x] CategoryResource実装（Filament管理画面）
+- [x] 基本シーダー実装（AdminSeeder, ShopSeeder, ReviewSeeder, RankingSeeder）
+- [x] Laravel 11 hashedキャスト対応
+- [x] 管理システム完全実装
+
+### Phase 7: Enhancement (後続)
+- [ ] Google Places API 連携（設計完了 - 詳細はTODO.md参照）
+- [ ] **アプリライク匿名ユーザー機能**（設計完了 - 詳細はdocs/app-like-anonymous-user-todo.md参照）
+  - 初回アクセス時の自動匿名ユーザー登録
+  - プロフィール後付けシステム
+  - OAuth同期システム（アカウント作成→データ同期へ役割転換）
+  - 現代的なアプリと同等のUX実現
 - [ ] 通報システム実装
 - [ ] 統計ダッシュボード
 - [ ] パフォーマンス最適化
