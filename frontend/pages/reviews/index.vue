@@ -109,7 +109,7 @@
             :key="review.id"
             class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200"
           >
-          <div class="p-6">
+            <div class="p-6">
             <!-- ヘッダー部分 -->
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-start space-x-4">
@@ -262,8 +262,8 @@
                 </NuxtLink>
               </div>
             </div>
+            </div>
           </div>
-        </div>
         
         <!-- ページネーション -->
         <div v-if="totalPages > 1" class="flex justify-center">
