@@ -19,13 +19,13 @@ class CategoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->resource->id,
-            'name' => $this->resource->name,
-            'slug' => $this->resource->slug,
-            'type' => $this->resource->type,
-            'shops_count' => $this->when($this->resource->relationLoaded('shops'), $this->resource->shops->count()),
-            'created_at' => $this->resource->created_at,
-            'updated_at' => $this->resource->updated_at,
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'type' => $this->type,
+            'shops_count' => $this->when($this->relationLoaded('shops'), $this->shops->count()),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

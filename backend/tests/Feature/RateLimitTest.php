@@ -73,14 +73,15 @@ class RateLimitTest extends TestCase
     /** @test */
     public function image_upload_is_rate_limited_to_20_per_hour()
     {
-        // まずレビューを作成
-        $review = Review::factory()->create([
-            'user_id' => $this->user->id,
-            'shop_id' => $this->shop->id,
-        ]);
-
-        // 20回まで成功
+        // 20回まで成功するため、複数のレビューを作成
         for ($i = 0; $i < 20; $i++) {
+            // 各アップロードごとに新しいレビューを作成
+            $shop = Shop::factory()->create(['status' => 'active']);
+            $review = Review::factory()->create([
+                'user_id' => $this->user->id,
+                'shop_id' => $shop->id,
+            ]);
+
             $file = UploadedFile::fake()->image('test' . ($i + 1) . '.jpg');
 
             $response = $this->withHeaders([
@@ -93,6 +94,12 @@ class RateLimitTest extends TestCase
         }
 
         // 21回目は制限にかかる
+        $shop = Shop::factory()->create(['status' => 'active']);
+        $review = Review::factory()->create([
+            'user_id' => $this->user->id,
+            'shop_id' => $shop->id,
+        ]);
+        
         $file = UploadedFile::fake()->image('test21.jpg');
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
@@ -142,11 +149,14 @@ class RateLimitTest extends TestCase
     {
         // 10回まで成功
         for ($i = 0; $i < 10; $i++) {
+            // 各ランキングに異なる店舗を使用
+            $shop = Shop::factory()->create(['status' => 'active']);
+            
             $response = $this->withHeaders([
                 'Authorization' => 'Bearer ' . $this->token,
                 'Content-Type' => 'application/json',
             ])->postJson('/api/rankings', [
-                'shop_id' => $this->shop->id,
+                'shop_id' => $shop->id,
                 'category_id' => $this->category->id,
                 'rank_position' => $i + 1,
                 'title' => 'Test Ranking ' . ($i + 1),
@@ -158,11 +168,12 @@ class RateLimitTest extends TestCase
         }
 
         // 11回目は制限にかかる
+        $shop = Shop::factory()->create(['status' => 'active']);
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
             'Content-Type' => 'application/json',
         ])->postJson('/api/rankings', [
-            'shop_id' => $this->shop->id,
+            'shop_id' => $shop->id,
             'category_id' => $this->category->id,
             'rank_position' => 11,
             'title' => 'Test Ranking 11',

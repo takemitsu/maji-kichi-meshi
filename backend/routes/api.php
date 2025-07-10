@@ -47,51 +47,51 @@ Route::get('/public-rankings', [RankingController::class, 'publicRankings']);
 Route::middleware('auth:api')->group(function () {
     // Shop management (authenticated users can create/update shops)
     Route::post('/shops', [ShopController::class, 'store'])
-        ->middleware('throttle:10,60');
+        ->middleware('throttle:shop-creation');
     Route::put('/shops/{shop}', [ShopController::class, 'update'])
-        ->middleware('throttle:20,60');
+        ->middleware('throttle:20,60,user');
     Route::delete('/shops/{shop}', [ShopController::class, 'destroy'])
-        ->middleware('throttle:5,60');
+        ->middleware('throttle:5,60,user');
 
     // Shop image management
     Route::post('/shops/{shop}/images', [ShopController::class, 'uploadImages'])
-        ->middleware('throttle:15,60');  // 1時間に15回まで
+        ->middleware('throttle:15,60,user');  // 1時間に15回まで
     Route::delete('/shops/{shop}/images/{image}', [ShopController::class, 'deleteImage'])
-        ->middleware('throttle:30,60');
+        ->middleware('throttle:30,60,user');
     Route::put('/shops/{shop}/images/reorder', [ShopController::class, 'reorderImages'])
-        ->middleware('throttle:10,60');
+        ->middleware('throttle:10,60,user');
 
     // Category management (admin only - will add middleware later)
     Route::post('/categories', [CategoryController::class, 'store'])
-        ->middleware('throttle:5,60');
+        ->middleware('throttle:5,60,user');
     Route::put('/categories/{category}', [CategoryController::class, 'update'])
-        ->middleware('throttle:10,60');
+        ->middleware('throttle:10,60,user');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
-        ->middleware('throttle:5,60');
+        ->middleware('throttle:5,60,user');
 
     // Review management
     Route::post('/reviews', [ReviewController::class, 'store'])
-        ->middleware('throttle:5,60');  // 1時間に5回まで
+        ->middleware('throttle:review-creation');  // 1時間に5回まで
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])
-        ->middleware('throttle:10,60');
+        ->middleware('throttle:10,60,user');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])
-        ->middleware('throttle:10,60');
+        ->middleware('throttle:10,60,user');
     Route::get('/my-reviews', [ReviewController::class, 'myReviews'])
-        ->middleware('throttle:100,60');  // 読み取りは緩め
+        ->middleware('throttle:100,60,user');  // 読み取りは緩め
 
     // Review image management
     Route::post('/reviews/{review}/images', [ReviewController::class, 'uploadImages'])
-        ->middleware('throttle:20,60');  // 1時間に20回まで
+        ->middleware('throttle:image-upload');  // 1時間に20回まで
     Route::delete('/reviews/{review}/images/{image}', [ReviewController::class, 'deleteImage'])
-        ->middleware('throttle:30,60');
+        ->middleware('throttle:30,60,user');
 
     // Ranking management
     Route::post('/rankings', [RankingController::class, 'store'])
-        ->middleware('throttle:10,60');
+        ->middleware('throttle:ranking-creation');
     Route::put('/rankings/{ranking}', [RankingController::class, 'update'])
-        ->middleware('throttle:20,60');
+        ->middleware('throttle:20,60,user');
     Route::delete('/rankings/{ranking}', [RankingController::class, 'destroy'])
-        ->middleware('throttle:10,60');
+        ->middleware('throttle:10,60,user');
     Route::get('/my-rankings', [RankingController::class, 'myRankings'])
-        ->middleware('throttle:100,60');  // 読み取りは緩め
+        ->middleware('throttle:100,60,user');  // 読み取りは緩め
 });
