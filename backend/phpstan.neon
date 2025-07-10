@@ -7,3 +7,14 @@ parameters:
         - app/
     parallel:
         maximumNumberOfProcesses: 1
+    
+    # Laravel JsonResource の魔術メソッドによるプロパティアクセスを許可
+    ignoreErrors:
+        - '#Access to an undefined property App\\Http\\Resources\\.*::\$.*#'
+        - '#Call to an undefined method App\\Http\\Resources\\.*::relationLoaded\(\)#'
+        - '#Call to an undefined method App\\Http\\Resources\\.*::hasImages\(\)#'
+        - '#Relation .* is not found in App\\Models\\.* model#'
+        - '#Access to an undefined property App\\Models\\OAuthProvider::\$user#'
+        - '#Parameter .* of static method Tymon\\JWTAuth\\JWT::invalidate\(\) expects bool#'
+        - '#Access to an undefined property App\\Filament\\Pages\\TwoFactorSettings::\$password#'
+        - '#Parameter .* of method Filament\\Pages\\BasePage::validate\(\) expects array#'
