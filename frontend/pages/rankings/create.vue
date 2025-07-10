@@ -367,8 +367,8 @@ const submitRanking = async () => {
 
     const rankingData = {
       title: form.value.title.trim(),
-      description: form.value.description?.trim() || null,
-      category_id: form.value.category_id || null,
+      description: form.value.description?.trim() || undefined,
+      category_id: form.value.category_id || undefined,
       is_public: form.value.is_public,
       shops: shopsData,
     }

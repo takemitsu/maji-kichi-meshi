@@ -354,7 +354,7 @@ const handleShopSearch = useDebounceFn(async () => {
       message:
         'ネットワークエラーまたはサーバーエラーが発生しました。しばらく時間をおいて再度お試しください。',
       retryable: true,
-      retryAction: () => handleShopSearch(),
+      retryAction: async () => await handleShopSearch(),
     })
   } finally {
     searchLoading.value = false

@@ -1,5 +1,5 @@
 import type { User } from '~/types/auth'
-import type { ApiResponse, PaginatedResponse, Shop, Category, Review, Ranking, ErrorResponse } from '~/types/api'
+import type { ApiResponse, PaginatedResponse, Shop, Category, Review, Ranking, ReviewImage, ErrorResponse } from '~/types/api'
 
 export const useApi = () => {
   const config = useRuntimeConfig()
@@ -73,7 +73,15 @@ export const useApi = () => {
     // 店舗関連
     shops: {
       list: (params?: Record<string, string | number>) => {
-        const query = params ? `?${new URLSearchParams(params).toString()}` : ''
+        const query = params ? `?${new URLSearchParams(
+          Object.entries(params).reduce(
+            (acc, [key, value]) => {
+              acc[key] = String(value)
+              return acc
+            },
+            {} as Record<string, string>,
+          ),
+        ).toString()}` : ''
         return apiFetch<PaginatedResponse<Shop>>(`/shops${query}`)
       },
 

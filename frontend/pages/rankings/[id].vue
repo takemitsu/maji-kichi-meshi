@@ -105,7 +105,7 @@
                       d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"
                     ></path>
                   </svg>
-                  {{ ranking.shops?.length || 0 }}店舗
+                  {{ ranking.shop ? 1 : 0 }}店舗
                 </div>
 
                 <div class="mt-2 flex items-center text-sm text-gray-500">
@@ -169,27 +169,16 @@
           </div>
 
           <!-- 店舗ランキング -->
-          <div v-if="ranking.shops && ranking.shops.length > 0" class="divide-y divide-gray-200">
+          <div v-if="ranking.shop" class="divide-y divide-gray-200">
             <div
-              v-for="(shop, index) in ranking.shops"
-              :key="shop.id"
               class="p-6 hover:bg-gray-50 transition-colors"
             >
               <div class="flex items-center space-x-4">
                 <!-- 順位 -->
                 <div
-                  class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
-                  :class="{
-                    'bg-yellow-100 text-yellow-800 ring-2 ring-yellow-400': index === 0,
-                    'bg-gray-100 text-gray-800 ring-2 ring-gray-400': index === 1,
-                    'bg-orange-100 text-orange-800 ring-2 ring-orange-400': index === 2,
-                    'bg-blue-50 text-blue-800': index >= 3,
-                  }"
+                  class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold bg-yellow-100 text-yellow-800 ring-2 ring-yellow-400"
                 >
-                  <span v-if="index < 3">
-                    {{ index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉' }}
-                  </span>
-                  <span v-else>{{ index + 1 }}</span>
+                  🥇
                 </div>
 
                 <!-- 店舗情報 -->
@@ -198,20 +187,20 @@
                     <div class="flex-1">
                       <h4 class="text-lg font-semibold text-gray-900">
                         <NuxtLink
-                          :to="`/shops/${shop.id}`"
+                          :to="`/shops/${ranking.shop.id}`"
                           class="hover:text-blue-600 transition-colors"
                         >
-                          {{ shop.name }}
+                          {{ ranking.shop.name }}
                         </NuxtLink>
                       </h4>
                       <p class="text-sm text-gray-600 mt-1">
-                        {{ shop.address }}
+                        {{ ranking.shop.address }}
                       </p>
 
                       <!-- カテゴリタグ -->
                       <div class="mt-2 flex flex-wrap gap-2">
                         <span
-                          v-for="category in shop.categories"
+                          v-for="category in ranking.shop.categories"
                           :key="category.id"
                           class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
                         >
@@ -222,7 +211,7 @@
 
                     <!-- 統計情報 -->
                     <div class="ml-4 text-right">
-                      <div v-if="shop.average_rating" class="flex items-center justify-end mb-1">
+                      <div v-if="ranking.shop.average_rating" class="flex items-center justify-end mb-1">
                         <svg
                           class="w-4 h-4 text-yellow-400 mr-1"
                           fill="currentColor"
@@ -233,11 +222,11 @@
                           ></path>
                         </svg>
                         <span class="text-sm font-medium text-gray-900">
-                          {{ shop.average_rating.toFixed(1) }}
+                          {{ ranking.shop.average_rating.toFixed(1) }}
                         </span>
                       </div>
                       <div class="text-xs text-gray-500">
-                        {{ shop.reviews_count || 0 }}件のレビュー
+                        {{ ranking.shop.review_count || 0 }}件のレビュー
                       </div>
                     </div>
                   </div>
@@ -376,7 +365,7 @@ const loadRanking = async () => {
 
 // ランキング削除
 const deleteRanking = async () => {
-  if (!confirm(`「${ranking.value.title}」を削除しますか？この操作は元に戻せません。`)) {
+  if (!ranking.value || !confirm(`「${ranking.value.title}」を削除しますか？この操作は元に戻せません。`)) {
     return
   }
 

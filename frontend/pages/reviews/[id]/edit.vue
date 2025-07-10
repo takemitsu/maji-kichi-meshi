@@ -141,7 +141,7 @@
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div v-for="image in existingImages" :key="image.id" class="relative group">
                 <img
-                  :src="image.url"
+                  :src="image.urls.small"
                   :alt="`既存画像 ${image.id}`"
                   class="w-full h-32 object-cover rounded-lg"
                 />
@@ -342,7 +342,7 @@ const submitReview = async () => {
 // レビュー削除
 const deleteReview = async () => {
   if (
-    !confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)
+    !review.value || !confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)
   ) {
     return
   }

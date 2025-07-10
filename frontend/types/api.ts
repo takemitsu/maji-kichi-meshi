@@ -40,12 +40,18 @@ export interface Shop {
   website?: string
   google_place_id?: string
   is_closed: boolean
+  status: string
   average_rating: number
   review_count: number
   categories: Category[]
+  images?: ShopImage[]
   distance?: number
   created_at: string
   updated_at: string
+  // 動的プロパティ（検索時のハイライト、画像URL等）
+  image_url?: string
+  highlightedName?: string
+  highlightedAddress?: string
 }
 
 export interface Category {
@@ -53,6 +59,7 @@ export interface Category {
   name: string
   slug: string
   type: 'basic' | 'time' | 'ranking'
+  shops_count?: number
   created_at: string
   updated_at: string
 }
@@ -62,7 +69,7 @@ export interface Review {
   rating: number
   repeat_intention: string
   repeat_intention_text: string
-  memo?: string
+  comment?: string
   visited_at: string
   has_images: boolean
   images: ReviewImage[]
@@ -73,6 +80,8 @@ export interface Review {
   shop: {
     id: number
     name: string
+    address?: string
+    image_url?: string
   }
   created_at: string
   updated_at: string
@@ -80,10 +89,33 @@ export interface Review {
 
 export interface ReviewImage {
   id: number
-  file_path: string
+  filename: string
+  original_name: string
+  urls: {
+    thumbnail: string
+    small: string
+    medium: string
+    large: string
+  }
   file_size: number
   mime_type: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ShopImage {
+  id: number
+  uuid: string
   original_name: string
+  urls: {
+    thumbnail: string
+    small: string
+    medium: string
+    large: string
+  }
+  file_size: number
+  mime_type: string
+  sort_order: number
   created_at: string
   updated_at: string
 }
@@ -106,6 +138,8 @@ export interface Ranking {
   category: Category
   created_at: string
   updated_at: string
+  // 集計プロパティ
+  shops_count?: number
 }
 
 export interface ErrorResponse {

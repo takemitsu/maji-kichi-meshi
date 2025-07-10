@@ -190,7 +190,7 @@
                 @click="openImageModal(image)"
               >
                 <img
-                  :src="image.url"
+                  :src="image.urls.medium"
                   :alt="`レビュー画像 ${image.id}`"
                   class="w-full h-full object-cover"
                   @error="handleImageError(image)"
@@ -304,7 +304,7 @@ const loadReview = async () => {
 // レビュー削除
 const deleteReview = async () => {
   if (
-    !confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)
+    !review.value || !confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)
   ) {
     return
   }
@@ -329,7 +329,7 @@ const openImageModal = (image: ReviewImage) => {
 
 // 画像エラーハンドリング
 const handleImageError = (image: ReviewImage) => {
-  console.error('Failed to load image:', image.file_path)
+  console.error('Failed to load image:', image.filename)
   // 画像が読み込めない場合の処理（プレースホルダー表示など）
 }
 

@@ -173,27 +173,19 @@
 
             <!-- 上位店舗プレビュー -->
             <div
-              v-if="ranking.shops && ranking.shops.length > 0"
+              v-if="ranking.shop"
               class="border-t border-gray-200 pt-4"
             >
-              <h4 class="text-sm font-medium text-gray-700 mb-3">上位店舗</h4>
+              <h4 class="text-sm font-medium text-gray-700 mb-3">店舗</h4>
               <div class="space-y-2">
                 <div
-                  v-for="(shop, index) in ranking.shops.slice(0, 5)"
-                  :key="shop.id"
                   class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
                 >
                   <!-- 順位 -->
                   <div
-                    class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                    :class="{
-                      'bg-yellow-100 text-yellow-800': index === 0,
-                      'bg-gray-100 text-gray-800': index === 1,
-                      'bg-orange-100 text-orange-800': index === 2,
-                      'bg-blue-100 text-blue-800': index >= 3,
-                    }"
+                    class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-yellow-100 text-yellow-800"
                   >
-                    {{ index + 1 }}
+                    1
                   </div>
 
                   <!-- 店舗情報 -->
@@ -201,16 +193,16 @@
                     <div class="flex items-center justify-between">
                       <div>
                         <p class="text-sm font-medium text-gray-900">
-                          {{ shop.name }}
+                          {{ ranking.shop.name }}
                         </p>
                         <p class="text-xs text-gray-500">
-                          {{ shop.address }}
+                          {{ ranking.shop.address }}
                         </p>
                       </div>
 
                       <!-- 評価情報（もしあれば） -->
                       <div
-                        v-if="shop.average_rating"
+                        v-if="ranking.shop.average_rating"
                         class="flex items-center text-xs text-gray-500"
                       >
                         <svg
@@ -222,21 +214,13 @@
                             d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
                           ></path>
                         </svg>
-                        {{ shop.average_rating.toFixed(1) }}
+                        {{ ranking.shop.average_rating.toFixed(1) }}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div v-if="ranking.shops.length > 5" class="mt-3 text-center">
-                <NuxtLink
-                  :to="`/rankings/${ranking.id}`"
-                  class="text-sm text-blue-600 hover:text-blue-800"
-                >
-                  残り{{ ranking.shops.length - 5 }}店舗を見る
-                </NuxtLink>
-              </div>
             </div>
 
             <!-- 空の状態 -->
@@ -346,7 +330,7 @@ const loadRankings = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, string | number | boolean> = {
+    const params: Record<string, string | number> = {
       page: currentPage.value,
       per_page: perPage.value,
     }

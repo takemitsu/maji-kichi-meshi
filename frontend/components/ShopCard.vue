@@ -133,7 +133,7 @@
               {{ shop.average_rating.toFixed(1) }}
             </span>
           </div>
-          <span class="text-sm text-gray-500"> ({{ shop.reviews_count || 0 }}件) </span>
+          <span class="text-sm text-gray-500"> ({{ shop.review_count || 0 }}件) </span>
         </div>
 
         <span class="text-xs text-gray-400">

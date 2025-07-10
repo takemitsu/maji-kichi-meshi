@@ -225,7 +225,7 @@ const loadShops = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, string | number | boolean> = {
+    const params: Record<string, string | number> = {
       page: currentPage.value,
       per_page: perPage.value,
     }

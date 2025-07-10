@@ -200,7 +200,7 @@
                 <div class="flex justify-between">
                   <span class="text-sm text-gray-600">レビュー数</span>
                   <span class="text-sm font-medium text-gray-900"
-                    >{{ shop.reviews_count || 0 }}件</span
+                    >{{ shop.review_count || 0 }}件</span
                   >
                 </div>
                 <div class="flex justify-between">
@@ -225,17 +225,17 @@
             </div>
 
             <!-- Google Places情報 -->
-            <div v-if="shop.google_places_id" class="bg-white rounded-lg shadow p-6">
+            <div v-if="shop.google_place_id" class="bg-white rounded-lg shadow p-6">
               <h3 class="text-lg font-medium text-gray-900 mb-4">Google Places</h3>
               <div class="space-y-3">
                 <div class="flex justify-between">
                   <span class="text-sm text-gray-600">Places ID</span>
                   <span class="text-sm font-mono text-gray-900 truncate">{{
-                    shop.google_places_id
+                    shop.google_place_id
                   }}</span>
                 </div>
                 <a
-                  :href="`https://www.google.com/maps/place/?q=place_id:${shop.google_places_id}`"
+                  :href="`https://www.google.com/maps/place/?q=place_id:${shop.google_place_id}`"
                   target="_blank"
                   class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
                 >

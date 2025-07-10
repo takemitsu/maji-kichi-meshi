@@ -257,7 +257,7 @@
                   @click.stop="openImageModal(image)"
                 >
                   <img
-                    :src="image.url"
+                    :src="image.urls.thumbnail"
                     :alt="`レビュー画像 ${image.id}`"
                     class="w-full h-full object-cover"
                     @error="handleReviewImageError(image)"
@@ -402,7 +402,7 @@ const loadReviews = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, string | number | boolean> = {
+    const params: Record<string, string | number> = {
       page: currentPage.value,
       per_page: perPage.value,
     }
@@ -410,7 +410,7 @@ const loadReviews = async () => {
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedRating.value) params.rating = selectedRating.value
     if (selectedRepeatIntention.value) params.repeat_intention = selectedRepeatIntention.value
-    if (route.query.shop_id) params.shop_id = route.query.shop_id
+    if (route.query.shop_id) params.shop_id = String(route.query.shop_id)
 
     const response = await $api.reviews.list(params)
 

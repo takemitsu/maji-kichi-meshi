@@ -163,7 +163,7 @@
                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"
                       ></path>
                     </svg>
-                    {{ ranking.shops_count || 0 }}店舗
+                    {{ ranking.shop ? 1 : 0 }}店舗
                   </div>
                   <div class="flex items-center text-sm text-gray-500">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,46 +204,38 @@
 
             <!-- 上位店舗プレビュー -->
             <div
-              v-if="ranking.shops && ranking.shops.length > 0"
+              v-if="ranking.shop"
               class="border-t border-gray-200 pt-4"
             >
-              <h4 class="text-sm font-medium text-gray-700 mb-3">上位店舗</h4>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <h4 class="text-sm font-medium text-gray-700 mb-3">店舗</h4>
+              <div class="grid grid-cols-1 gap-3">
                 <div
-                  v-for="(shop, index) in ranking.shops.slice(0, 3)"
-                  :key="shop.id"
                   class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
                 >
                   <!-- 順位 -->
                   <div
-                    class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                    :class="{
-                      'bg-yellow-100 text-yellow-800': index === 0,
-                      'bg-gray-100 text-gray-800': index === 1,
-                      'bg-orange-100 text-orange-800': index === 2,
-                    }"
+                    class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-yellow-100 text-yellow-800"
                   >
-                    {{ index + 1 }}
+                    1
                   </div>
 
                   <!-- 店舗情報 -->
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 truncate">
-                      {{ shop.name }}
+                      {{ ranking.shop.name }}
                     </p>
                     <p class="text-xs text-gray-500 truncate">
-                      {{ shop.address }}
+                      {{ ranking.shop.address }}
                     </p>
                   </div>
                 </div>
               </div>
-
-              <div v-if="ranking.shops.length > 3" class="mt-3 text-center">
+              <div class="pt-3">
                 <NuxtLink
                   :to="`/rankings/${ranking.id}`"
                   class="text-sm text-blue-600 hover:text-blue-800"
                 >
-                  残り{{ ranking.shops.length - 3 }}店舗を見る
+                  詳細を見る
                 </NuxtLink>
               </div>
             </div>
@@ -361,13 +353,13 @@ const loadRankings = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, string | number | boolean> = {
+    const params: Record<string, string | number> = {
       page: currentPage.value,
       per_page: perPage.value,
     }
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedCategory.value) params.category_id = selectedCategory.value
-    if (selectedVisibility.value) params.is_public = selectedVisibility.value === 'public'
+    if (selectedVisibility.value) params.is_public = selectedVisibility.value === 'public' ? '1' : '0'
 
     const response = await $api.rankings.myRankings(params)
     
