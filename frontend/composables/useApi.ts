@@ -1,5 +1,5 @@
 import type { User } from '~/types/auth'
-import type { ApiResponse, PaginatedResponse, Shop } from '~/types/api'
+import type { ApiResponse, PaginatedResponse, Shop, Category, Review, Ranking, ErrorResponse } from '~/types/api'
 
 export const useApi = () => {
   const config = useRuntimeConfig()
@@ -44,9 +44,9 @@ export const useApi = () => {
         // JSONパースに失敗した場合
       }
 
-      const error = new Error(`API Error: ${response.status}`)
-      ;(error as any).status = response.status
-      ;(error as any).data = errorData
+      const error = new Error(`API Error: ${response.status}`) as Error & { status: number; data: ErrorResponse | null }
+      error.status = response.status
+      error.data = errorData
 
       throw error
     }
@@ -72,7 +72,7 @@ export const useApi = () => {
 
     // 店舗関連
     shops: {
-      list: (params?: Record<string, any>) => {
+      list: (params?: Record<string, string | number>) => {
         const query = params ? `?${new URLSearchParams(params).toString()}` : ''
         return apiFetch<PaginatedResponse<Shop>>(`/shops${query}`)
       },
@@ -96,55 +96,55 @@ export const useApi = () => {
 
     // カテゴリ関連
     categories: {
-      list: (params?: Record<string, any>) => {
-        const query = params ? `?${new URLSearchParams(params).toString()}` : ''
-        return apiFetch<{ data: any[] }>(`/categories${query}`)
+      list: (params?: Record<string, string | number>) => {
+        const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+        return apiFetch<PaginatedResponse<Category>>(`/categories${query}`)
       },
 
-      get: (id: number) => apiFetch<{ data: any }>(`/categories/${id}`),
+      get: (id: number) => apiFetch<ApiResponse<Category>>(`/categories/${id}`),
 
-      create: (data: any) =>
-        apiFetch<{ data: any }>('/categories', {
+      create: (data: Partial<Category>) =>
+        apiFetch<ApiResponse<Category>>('/categories', {
           method: 'POST',
           body: JSON.stringify(data),
         }),
 
-      update: (id: number, data: any) =>
-        apiFetch<{ data: any }>(`/categories/${id}`, {
+      update: (id: number, data: Partial<Category>) =>
+        apiFetch<ApiResponse<Category>>(`/categories/${id}`, {
           method: 'PUT',
           body: JSON.stringify(data),
         }),
 
-      delete: (id: number) => apiFetch(`/categories/${id}`, { method: 'DELETE' }),
+      delete: (id: number) => apiFetch<{ message: string }>(`/categories/${id}`, { method: 'DELETE' }),
     },
 
     // レビュー関連
     reviews: {
-      list: (params?: Record<string, any>) => {
-        const query = params ? `?${new URLSearchParams(params).toString()}` : ''
-        return apiFetch<{ data: any[] }>(`/reviews${query}`)
+      list: (params?: Record<string, string | number>) => {
+        const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+        return apiFetch<PaginatedResponse<Review>>(`/reviews${query}`)
       },
 
-      myReviews: (params?: Record<string, any>) => {
-        const query = params ? `?${new URLSearchParams(params).toString()}` : ''
-        return apiFetch<{ data: any[] }>(`/my-reviews${query}`)
+      myReviews: (params?: Record<string, string | number>) => {
+        const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+        return apiFetch<PaginatedResponse<Review>>(`/my-reviews${query}`)
       },
 
-      get: (id: number) => apiFetch<{ data: any }>(`/reviews/${id}`),
+      get: (id: number) => apiFetch<ApiResponse<Review>>(`/reviews/${id}`),
 
-      create: (data: any) =>
-        apiFetch<{ data: any }>('/reviews', {
+      create: (data: Partial<Review>) =>
+        apiFetch<ApiResponse<Review>>('/reviews', {
           method: 'POST',
           body: JSON.stringify(data),
         }),
 
-      update: (id: number, data: any) =>
-        apiFetch<{ data: any }>(`/reviews/${id}`, {
+      update: (id: number, data: Partial<Review>) =>
+        apiFetch<ApiResponse<Review>>(`/reviews/${id}`, {
           method: 'PUT',
           body: JSON.stringify(data),
         }),
 
-      delete: (id: number) => apiFetch(`/reviews/${id}`, { method: 'DELETE' }),
+      delete: (id: number) => apiFetch<{ message: string }>(`/reviews/${id}`, { method: 'DELETE' }),
 
       // 画像管理
       uploadImages: (reviewId: number, files: File[]) => {
@@ -153,7 +153,7 @@ export const useApi = () => {
           formData.append(`images[${index}]`, file)
         })
 
-        return apiFetch<{ data: any }>(`/reviews/${reviewId}/images`, {
+        return apiFetch<ApiResponse<{ images: ReviewImage[] }>>(`/reviews/${reviewId}/images`, {
           method: 'POST',
           body: formData,
           headers: {}, // FormDataの場合、Content-Typeヘッダーは自動設定
@@ -161,43 +161,43 @@ export const useApi = () => {
       },
 
       deleteImage: (reviewId: number, imageId: number) =>
-        apiFetch(`/reviews/${reviewId}/images/${imageId}`, {
+        apiFetch<{ message: string }>(`/reviews/${reviewId}/images/${imageId}`, {
           method: 'DELETE',
         }),
     },
 
     // ランキング関連
     rankings: {
-      list: (params?: Record<string, any>) => {
-        const query = params ? `?${new URLSearchParams(params).toString()}` : ''
-        return apiFetch<{ data: any[] }>(`/rankings${query}`)
+      list: (params?: Record<string, string | number>) => {
+        const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+        return apiFetch<PaginatedResponse<Ranking>>(`/rankings${query}`)
       },
 
-      publicRankings: (params?: Record<string, any>) => {
-        const query = params ? `?${new URLSearchParams(params).toString()}` : ''
-        return apiFetch<{ data: any[] }>(`/public-rankings${query}`)
+      publicRankings: (params?: Record<string, string | number>) => {
+        const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+        return apiFetch<PaginatedResponse<Ranking>>(`/public-rankings${query}`)
       },
 
-      myRankings: (params?: Record<string, any>) => {
-        const query = params ? `?${new URLSearchParams(params).toString()}` : ''
-        return apiFetch<{ data: any[] }>(`/my-rankings${query}`)
+      myRankings: (params?: Record<string, string | number>) => {
+        const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+        return apiFetch<PaginatedResponse<Ranking>>(`/my-rankings${query}`)
       },
 
-      get: (id: number) => apiFetch<{ data: any }>(`/rankings/${id}`),
+      get: (id: number) => apiFetch<ApiResponse<Ranking>>(`/rankings/${id}`),
 
-      create: (data: any) =>
-        apiFetch<{ data: any }>('/rankings', {
+      create: (data: Partial<Ranking>) =>
+        apiFetch<ApiResponse<Ranking>>('/rankings', {
           method: 'POST',
           body: JSON.stringify(data),
         }),
 
-      update: (id: number, data: any) =>
-        apiFetch<{ data: any }>(`/rankings/${id}`, {
+      update: (id: number, data: Partial<Ranking>) =>
+        apiFetch<ApiResponse<Ranking>>(`/rankings/${id}`, {
           method: 'PUT',
           body: JSON.stringify(data),
         }),
 
-      delete: (id: number) => apiFetch(`/rankings/${id}`, { method: 'DELETE' }),
+      delete: (id: number) => apiFetch<{ message: string }>(`/rankings/${id}`, { method: 'DELETE' }),
     },
   }
 

@@ -315,6 +315,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Ranking, Category } from '~/types/api'
+
 // 認証ミドルウェア適用
 definePageMeta({
   middleware: 'auth',
@@ -323,8 +325,8 @@ definePageMeta({
 const { $api } = useNuxtApp()
 
 // リアクティブデータ
-const rankings = ref<any[]>([])
-const categories = ref<any[]>([])
+const rankings = ref<Ranking[]>([])
+const categories = ref<Category[]>([])
 const loading = ref(true)
 const error = ref('')
 const searchQuery = ref('')
@@ -359,7 +361,7 @@ const loadRankings = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, any> = {
+    const params: Record<string, string | number | boolean> = {
       page: currentPage.value,
       per_page: perPage.value,
     }
@@ -397,7 +399,7 @@ const loadCategories = async () => {
 }
 
 // ランキング削除
-const deleteRanking = async (ranking: any) => {
+const deleteRanking = async (ranking: Ranking) => {
   if (!confirm(`「${ranking.title}」を削除しますか？この操作は元に戻せません。`)) {
     return
   }

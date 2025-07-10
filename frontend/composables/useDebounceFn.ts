@@ -1,7 +1,7 @@
-export const useDebounceFn = (fn: Function, delay: number = 300) => {
+export const useDebounceFn = <T extends unknown[]>(fn: (...args: T) => void, delay: number = 300) => {
   let timeoutId: NodeJS.Timeout
 
-  return (...args: any[]) => {
+  return (...args: T) => {
     clearTimeout(timeoutId)
     timeoutId = setTimeout(() => fn(...args), delay)
   }

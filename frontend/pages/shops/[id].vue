@@ -329,6 +329,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Shop, Review } from '~/types/api'
+
 // 店舗詳細の閲覧はログイン不要、レビュー作成時にログインチェック
 
 const route = useRoute()
@@ -336,8 +338,8 @@ const { $api } = useNuxtApp()
 const authStore = useAuthStore()
 
 // リアクティブデータ
-const shop = ref<any>(null)
-const recentReviews = ref<any[]>([])
+const shop = ref<Shop | null>(null)
+const recentReviews = ref<Review[]>([])
 const loading = ref(true)
 const error = ref('')
 
@@ -349,10 +351,15 @@ const loadShop = async () => {
     loading.value = true
     const response = await $api.shops.get(shopId.value)
     shop.value = response.data
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to load shop:', err)
-    if (err.response?.status === 404) {
-      error.value = '店舗が見つかりませんでした'
+    if (err && typeof err === 'object' && 'response' in err) {
+      const errorObj = err as { response: { status: number } }
+      if (errorObj.response?.status === 404) {
+        error.value = '店舗が見つかりませんでした'
+      } else {
+        error.value = '店舗データの取得に失敗しました'
+      }
     } else {
       error.value = '店舗データの取得に失敗しました'
     }

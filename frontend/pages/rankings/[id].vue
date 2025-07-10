@@ -330,13 +330,15 @@
 </template>
 
 <script setup lang="ts">
+import type { Ranking } from '~/types/api'
+
 const route = useRoute()
 const router = useRouter()
 const { $api } = useNuxtApp()
 const authStore = useAuthStore()
 
 // リアクティブデータ
-const ranking = ref<any>(null)
+const ranking = ref<Ranking | null>(null)
 const loading = ref(true)
 const error = ref('')
 
@@ -353,12 +355,17 @@ const loadRanking = async () => {
     loading.value = true
     const response = await $api.rankings.get(rankingId.value)
     ranking.value = response.data
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to load ranking:', err)
-    if (err.status === 404) {
-      error.value = 'ランキングが見つかりませんでした'
-    } else if (err.status === 403) {
-      error.value = 'このランキングを閲覧する権限がありません'
+    if (err && typeof err === 'object' && 'status' in err) {
+      const errorObj = err as { status: number }
+      if (errorObj.status === 404) {
+        error.value = 'ランキングが見つかりませんでした'
+      } else if (errorObj.status === 403) {
+        error.value = 'このランキングを閲覧する権限がありません'
+      } else {
+        error.value = 'ランキングデータの取得に失敗しました'
+      }
     } else {
       error.value = 'ランキングデータの取得に失敗しました'
     }
@@ -376,10 +383,15 @@ const deleteRanking = async () => {
   try {
     await $api.rankings.delete(rankingId.value)
     await router.push('/rankings')
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to delete ranking:', err)
-    if (err.status === 403) {
-      error.value = 'このランキングを削除する権限がありません'
+    if (err && typeof err === 'object' && 'status' in err) {
+      const errorObj = err as { status: number }
+      if (errorObj.status === 403) {
+        error.value = 'このランキングを削除する権限がありません'
+      } else {
+        error.value = 'ランキングの削除に失敗しました'
+      }
     } else {
       error.value = 'ランキングの削除に失敗しました'
     }

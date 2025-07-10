@@ -261,6 +261,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Category, Shop } from '~/types/api'
+
 // 認証ミドルウェア適用
 definePageMeta({
   middleware: 'auth',
@@ -270,10 +272,10 @@ const router = useRouter()
 const { $api } = useNuxtApp()
 
 // リアクティブデータ
-const categories = ref<any[]>([])
-const selectedShops = ref<any[]>([])
+const categories = ref<Category[]>([])
+const selectedShops = ref<Shop[]>([])
 const shopSearchQuery = ref('')
-const searchResults = ref<any[]>([])
+const searchResults = ref<Shop[]>([])
 const searchLoading = ref(false)
 const error = ref('')
 const submitting = ref(false)
@@ -285,7 +287,7 @@ const form = ref({
   description: '',
   category_id: '',
   is_public: false,
-  shops: [] as any[],
+  shops: [] as { shop_id: number; position: number }[],
 })
 
 // バリデーション
@@ -313,7 +315,7 @@ const handleShopSearch = useDebounceFn(async () => {
 }, 300)
 
 // 店舗追加
-const addShop = (shop: any) => {
+const addShop = (shop: Shop) => {
   if (!isShopSelected(shop.id)) {
     selectedShops.value.push(shop)
     shopSearchQuery.value = ''
@@ -375,10 +377,15 @@ const submitRanking = async () => {
 
     // 作成成功後、詳細ページに遷移
     await router.push(`/rankings/${response.data.id}`)
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to create ranking:', err)
-    if (err.status === 422) {
-      error.value = 'フォームの入力内容を確認してください'
+    if (err && typeof err === 'object' && 'status' in err) {
+      const errorObj = err as { status: number }
+      if (errorObj.status === 422) {
+        error.value = 'フォームの入力内容を確認してください'
+      } else {
+        error.value = 'ランキングの作成に失敗しました'
+      }
     } else {
       error.value = 'ランキングの作成に失敗しました'
     }

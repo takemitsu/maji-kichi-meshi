@@ -342,6 +342,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Review, ReviewImage } from '~/types/api'
+
 // レビュー閲覧はログイン不要、作成・編集時にログインチェック
 
 const route = useRoute()
@@ -349,14 +351,14 @@ const { $api } = useNuxtApp()
 const authStore = useAuthStore()
 
 // リアクティブデータ
-const reviews = ref<any[]>([])
+const reviews = ref<Review[]>([])
 const loading = ref(true)
 const searchLoading = ref(false)
 const error = ref('')
 const searchQuery = ref('')
 const selectedRating = ref('')
 const selectedRepeatIntention = ref('')
-const selectedImage = ref<any>(null)
+const selectedImage = ref<ReviewImage | null>(null)
 
 // ページネーション
 const currentPage = ref(1)
@@ -400,7 +402,7 @@ const loadReviews = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, any> = {
+    const params: Record<string, string | number | boolean> = {
       page: currentPage.value,
       per_page: perPage.value,
     }
@@ -430,7 +432,7 @@ const loadReviews = async () => {
 }
 
 // レビュー削除
-const deleteReview = async (review: any) => {
+const deleteReview = async (review: Review) => {
   if (!confirm(`「${review.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)) {
     return
   }
@@ -463,14 +465,14 @@ const getRepeatIntentionText = (intention: string) => {
 }
 
 // 画像モーダル制御
-const openImageModal = (image: any) => {
+const openImageModal = (image: ReviewImage) => {
   selectedImage.value = image
   // 将来的にはモーダルコンポーネントを表示
   console.log('Image modal opened:', image)
 }
 
 // レビュー詳細ページに遷移
-const navigateToReview = (review: any) => {
+const navigateToReview = (review: Review) => {
   navigateTo(`/reviews/${review.id}`)
 }
 
@@ -481,7 +483,7 @@ const handleShopImageError = (event: Event) => {
   console.log('Shop image failed to load')
 }
 
-const handleReviewImageError = (image: any) => {
+const handleReviewImageError = (image: ReviewImage) => {
   console.log('Review image failed to load:', image)
 }
 

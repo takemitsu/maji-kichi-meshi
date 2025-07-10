@@ -155,8 +155,10 @@
 </template>
 
 <script setup lang="ts">
+import type { Shop } from '~/types/api'
+
 interface Props {
-  shop: any
+  shop: Shop
   showActions?: boolean
   showQuickActions?: boolean
 }

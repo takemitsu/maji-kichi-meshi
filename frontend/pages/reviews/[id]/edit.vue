@@ -216,6 +216,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Review, ReviewImage } from '~/types/api'
+
 // 認証ミドルウェア適用
 definePageMeta({
   middleware: 'auth',
@@ -226,13 +228,13 @@ const router = useRouter()
 const { $api } = useNuxtApp()
 
 // リアクティブデータ
-const review = ref<any>(null)
+const review = ref<Review | null>(null)
 const loading = ref(true)
 const error = ref('')
 const submitting = ref(false)
 
 // 画像関連
-const existingImages = ref<any[]>([])
+const existingImages = ref<ReviewImage[]>([])
 const newImages = ref<File[]>([])
 
 const reviewId = computed(() => parseInt(route.params.id as string))
@@ -277,12 +279,17 @@ const loadReview = async () => {
 
     // 既存の画像を設定
     existingImages.value = review.value.images || []
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to load review:', err)
-    if (err.response?.status === 404) {
-      error.value = 'レビューが見つかりませんでした'
-    } else if (err.response?.status === 403) {
-      error.value = 'このレビューを編集する権限がありません'
+    if (err && typeof err === 'object' && 'response' in err) {
+      const errorObj = err as { response: { status: number } }
+      if (errorObj.response?.status === 404) {
+        error.value = 'レビューが見つかりませんでした'
+      } else if (errorObj.response?.status === 403) {
+        error.value = 'このレビューを編集する権限がありません'
+      } else {
+        error.value = 'レビューデータの取得に失敗しました'
+      }
     } else {
       error.value = 'レビューデータの取得に失敗しました'
     }
@@ -313,12 +320,17 @@ const submitReview = async () => {
 
     // 更新成功後、詳細ページに遷移
     await router.push(`/reviews/${reviewId.value}`)
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to update review:', err)
-    if (err.response?.status === 422) {
-      error.value = 'フォームの入力内容を確認してください'
-    } else if (err.response?.status === 403) {
-      error.value = 'このレビューを編集する権限がありません'
+    if (err && typeof err === 'object' && 'response' in err) {
+      const errorObj = err as { response: { status: number } }
+      if (errorObj.response?.status === 422) {
+        error.value = 'フォームの入力内容を確認してください'
+      } else if (errorObj.response?.status === 403) {
+        error.value = 'このレビューを編集する権限がありません'
+      } else {
+        error.value = 'レビューの更新に失敗しました'
+      }
     } else {
       error.value = 'レビューの更新に失敗しました'
     }
@@ -338,10 +350,15 @@ const deleteReview = async () => {
   try {
     await $api.reviews.delete(reviewId.value)
     await router.push('/reviews')
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to delete review:', err)
-    if (err.response?.status === 403) {
-      error.value = 'このレビューを削除する権限がありません'
+    if (err && typeof err === 'object' && 'response' in err) {
+      const errorObj = err as { response: { status: number } }
+      if (errorObj.response?.status === 403) {
+        error.value = 'このレビューを削除する権限がありません'
+      } else {
+        error.value = 'レビューの削除に失敗しました'
+      }
     } else {
       error.value = 'レビューの削除に失敗しました'
     }

@@ -271,6 +271,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Shop } from '~/types/api'
+
 // 認証ミドルウェア適用
 definePageMeta({
   middleware: 'auth',
@@ -281,9 +283,9 @@ const router = useRouter()
 const { $api } = useNuxtApp()
 
 // リアクティブデータ
-const selectedShop = ref<any>(null)
+const selectedShop = ref<Shop | null>(null)
 const shopSearchQuery = ref('')
-const searchResults = ref<any[]>([])
+const searchResults = ref<Shop[]>([])
 const searchLoading = ref(false)
 const error = ref({
   message: '',
@@ -344,7 +346,7 @@ const handleShopSearch = useDebounceFn(async () => {
     searchLoading.value = true
     const response = await $api.shops.list({ search: shopSearchQuery.value })
     searchResults.value = response.data || []
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to search shops:', err)
     searchResults.value = []
     setError({
@@ -360,7 +362,7 @@ const handleShopSearch = useDebounceFn(async () => {
 }, 300)
 
 // 店舗選択
-const selectShop = (shop: any) => {
+const selectShop = (shop: Shop) => {
   selectedShop.value = shop
   form.value.shop_id = shop.id
   shopSearchQuery.value = ''
@@ -413,24 +415,35 @@ const submitReview = async () => {
 
     // 作成成功後、詳細ページに遷移
     await router.push(`/reviews/${reviewId}`)
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to create review:', err)
-    if (err.response?.status === 422) {
-      setError({
-        title: '入力エラー',
-        message: 'フォームの入力内容を確認してください。必須項目が未入力の可能性があります。',
-        retryable: false,
-        retryAction: null,
-      })
-    } else if (err.response?.status === 401) {
-      setError({
-        title: '認証エラー',
-        message: 'ログインが必要です。再度ログインしてください。',
-        retryable: true,
-        retryAction: async () => {
-          await navigateTo('/login')
-        },
-      })
+    if (err && typeof err === 'object' && 'response' in err) {
+      const errorObj = err as { response: { status: number } }
+      if (errorObj.response?.status === 422) {
+        setError({
+          title: '入力エラー',
+          message: 'フォームの入力内容を確認してください。必須項目が未入力の可能性があります。',
+          retryable: false,
+          retryAction: null,
+        })
+      } else if (errorObj.response?.status === 401) {
+        setError({
+          title: '認証エラー',
+          message: 'ログインが必要です。再度ログインしてください。',
+          retryable: true,
+          retryAction: async () => {
+            await navigateTo('/login')
+          },
+        })
+      } else {
+        setError({
+          title: 'レビュー作成エラー',
+          message:
+            'ネットワークエラーまたはサーバーエラーが発生しました。しばらく時間をおいて再度お試しください。',
+          retryable: true,
+          retryAction: () => submitReview(),
+        })
+      }
     } else {
       setError({
         title: 'レビュー作成エラー',

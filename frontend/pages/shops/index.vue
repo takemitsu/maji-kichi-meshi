@@ -163,14 +163,16 @@
 </template>
 
 <script setup lang="ts">
+import type { Shop, Category } from '~/types/api'
+
 // 店舗閲覧はログイン不要、操作時にログインチェック
 
 const { $api } = useNuxtApp()
 const authStore = useAuthStore()
 
 // リアクティブデータ
-const shops = ref<any[]>([])
-const categories = ref<any[]>([])
+const shops = ref<Shop[]>([])
+const categories = ref<Category[]>([])
 const loading = ref(true)
 const searchLoading = ref(false)
 const error = ref('')
@@ -189,7 +191,7 @@ const totalPages = ref(0)
 const { highlightText } = useSearchHighlight()
 
 // 表示用の店舗データ拡張
-const enhanceShopForDisplay = (shop: any) => {
+const enhanceShopForDisplay = (shop: Shop) => {
   if (!searchQuery.value) return shop
 
   return {
@@ -223,7 +225,7 @@ const loadShops = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, any> = {
+    const params: Record<string, string | number | boolean> = {
       page: currentPage.value,
       per_page: perPage.value,
     }
@@ -242,11 +244,16 @@ const loadShops = async () => {
       totalItems.value = response.meta.total
       totalPages.value = response.meta.last_page
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to load shops:', err)
-    console.error('Error status:', err.status)
-    console.error('Error data:', err.data)
-    error.value = `店舗データの取得に失敗しました (${err.status || 'Unknown'})`
+    if (err && typeof err === 'object' && 'status' in err) {
+      const errorObj = err as { status: number; data?: unknown }
+      console.error('Error status:', errorObj.status)
+      console.error('Error data:', errorObj.data)
+      error.value = `店舗データの取得に失敗しました (${errorObj.status})`
+    } else {
+      error.value = '店舗データの取得に失敗しました'
+    }
   } finally {
     loading.value = false
   }
@@ -263,12 +270,12 @@ const loadCategories = async () => {
 }
 
 // 店舗操作
-const editShop = (shop: any) => {
+const editShop = (shop: Shop) => {
   // 編集モーダルを開く（今後実装）
   console.log('Edit shop:', shop)
 }
 
-const deleteShop = async (shop: any) => {
+const deleteShop = async (shop: Shop) => {
   if (!confirm(`「${shop.name}」を削除しますか？この操作は元に戻せません。`)) {
     return
   }

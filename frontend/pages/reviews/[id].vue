@@ -261,6 +261,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Review, ReviewImage } from '~/types/api'
+
 // レビュー詳細閲覧はログイン不要、編集・削除時にログインチェック
 
 const route = useRoute()
@@ -269,10 +271,10 @@ const { $api } = useNuxtApp()
 const authStore = useAuthStore()
 
 // リアクティブデータ
-const review = ref<any>(null)
+const review = ref<Review | null>(null)
 const loading = ref(true)
 const error = ref('')
-const selectedImage = ref<any>(null)
+const selectedImage = ref<ReviewImage | null>(null)
 
 const reviewId = computed(() => parseInt(route.params.id as string))
 
@@ -282,10 +284,15 @@ const loadReview = async () => {
     loading.value = true
     const response = await $api.reviews.get(reviewId.value)
     review.value = response.data
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to load review:', err)
-    if (err.response?.status === 404) {
-      error.value = 'レビューが見つかりませんでした'
+    if (err && typeof err === 'object' && 'response' in err) {
+      const errorObj = err as { response: { status: number } }
+      if (errorObj.response?.status === 404) {
+        error.value = 'レビューが見つかりませんでした'
+      } else {
+        error.value = 'レビューデータの取得に失敗しました'
+      }
     } else {
       error.value = 'レビューデータの取得に失敗しました'
     }
@@ -312,7 +319,7 @@ const deleteReview = async () => {
 }
 
 // 画像モーダル
-const openImageModal = (image: any) => {
+const openImageModal = (image: ReviewImage) => {
   selectedImage.value = image
 }
 
@@ -321,8 +328,8 @@ const openImageModal = (image: any) => {
 // }
 
 // 画像エラーハンドリング
-const handleImageError = (image: any) => {
-  console.error('Failed to load image:', image.url)
+const handleImageError = (image: ReviewImage) => {
+  console.error('Failed to load image:', image.file_path)
   // 画像が読み込めない場合の処理（プレースホルダー表示など）
 }
 

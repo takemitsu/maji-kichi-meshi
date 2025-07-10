@@ -306,11 +306,13 @@
 </template>
 
 <script setup lang="ts">
+import type { Ranking, Category } from '~/types/api'
+
 const { $api } = useNuxtApp()
 
 // リアクティブデータ
-const rankings = ref<any[]>([])
-const categories = ref<any[]>([])
+const rankings = ref<Ranking[]>([])
+const categories = ref<Category[]>([])
 const loading = ref(true)
 const error = ref('')
 const searchQuery = ref('')
@@ -344,7 +346,7 @@ const loadRankings = async () => {
   try {
     loading.value = true
 
-    const params: Record<string, any> = {
+    const params: Record<string, string | number | boolean> = {
       page: currentPage.value,
       per_page: perPage.value,
     }

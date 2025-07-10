@@ -37,7 +37,7 @@ export default [
       },
     },
     rules: {
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -97,7 +97,7 @@ export default [
       'vue/require-default-prop': 'off',
       'vue/no-v-html': 'off',
       'vue/require-explicit-emits': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
