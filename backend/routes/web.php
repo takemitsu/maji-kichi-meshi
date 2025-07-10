@@ -4,7 +4,24 @@ use App\Http\Controllers\Admin\TwoFactorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json([
+        'app' => 'マジキチメシ API',
+        'version' => '1.0.0',
+        'status' => 'running',
+        'message' => 'This is an API-only application. Please use the API endpoints.',
+        'api_documentation' => [
+            'base_url' => request()->getSchemeAndHttpHost() . '/api',
+            'authentication' => 'OAuth 2.0 via /api/auth/{provider}',
+            'supported_providers' => ['google', 'github', 'line', 'twitter'],
+            'endpoints' => [
+                'shops' => '/api/shops',
+                'categories' => '/api/categories', 
+                'reviews' => '/api/reviews',
+                'rankings' => '/api/rankings'
+            ]
+        ],
+        'admin_panel' => request()->getSchemeAndHttpHost() . '/admin'
+    ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 });
 
 // Laravel 11 auth middleware用のloginルート定義
