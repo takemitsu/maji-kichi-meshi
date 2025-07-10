@@ -473,15 +473,9 @@ DB_PASSWORD=your_db_password
 JWT_SECRET=  # 64文字のランダム文字列
 JWT_TTL=10080  # 1週間(分)
 
-# OAuth設定（本番用キー）
+# OAuth設定（Google専用）
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
-LINE_CLIENT_ID=your_line_client_id
-LINE_CLIENT_SECRET=your_line_client_secret
-TWITTER_CLIENT_ID=your_twitter_client_id
-TWITTER_CLIENT_SECRET=your_twitter_client_secret
 
 # フロントエンドURL
 FRONTEND_URL=https://your-domain.com
