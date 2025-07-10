@@ -15,7 +15,7 @@
         <button
           type="button"
           @click="fileInput?.click()"
-          class="btn-secondary"
+          class="btn-secondary flex items-center"
           :disabled="images.length >= 5"
         >
           <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">

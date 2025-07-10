@@ -90,7 +90,7 @@
               v-if="authStore.isLoggedIn && review.user && review.user.id === authStore.user?.id"
               class="mt-4 flex space-x-3 md:ml-4 md:mt-0"
             >
-              <NuxtLink :to="`/reviews/${review.id}/edit`" class="btn-secondary">
+              <NuxtLink :to="`/reviews/${review.id}/edit`" class="btn-secondary flex items-center">
                 <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
@@ -103,7 +103,7 @@
               </NuxtLink>
               <button
                 @click="deleteReview"
-                class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+                class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors flex items-center"
               >
                 <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                   <path

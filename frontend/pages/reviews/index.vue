@@ -19,7 +19,7 @@
             </p>
           </div>
           <div v-if="authStore.isLoggedIn" class="mt-4 flex md:ml-4 md:mt-0">
-            <NuxtLink to="/reviews/create" class="btn-primary">
+            <NuxtLink to="/reviews/create" class="btn-primary flex items-center">
               <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
@@ -317,7 +317,7 @@
           }}
         </p>
         <div v-if="authStore.isLoggedIn" class="mt-6">
-          <NuxtLink to="/reviews/create" class="btn-primary">
+          <NuxtLink to="/reviews/create" class="btn-primary flex items-center">
             <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"

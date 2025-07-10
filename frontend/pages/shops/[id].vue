@@ -83,7 +83,7 @@
             </div>
             <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
               <template v-if="authStore.isLoggedIn">
-                <button @click="editShop" class="btn-secondary">
+                <button @click="editShop" class="btn-secondary flex items-center">
                   <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
@@ -94,7 +94,7 @@
                   </svg>
                   編集
                 </button>
-                <button @click="addReview" class="btn-primary">
+                <button @click="addReview" class="btn-primary flex items-center">
                   <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
