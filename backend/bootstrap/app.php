@@ -16,7 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // セキュリティミドルウェアをグローバルに適用
+        $middleware->append([
+            \App\Http\Middleware\SecurityHeadersMiddleware::class,
+            \App\Http\Middleware\SecurityLoggingMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // JWT例外の適切な処理
