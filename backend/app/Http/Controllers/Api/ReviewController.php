@@ -68,17 +68,31 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // フロントエンドからのcommentをmemoに変換
+        $requestData = $request->all();
+        if (isset($requestData['comment'])) {
+            $requestData['memo'] = $requestData['comment'];
+            unset($requestData['comment']);
+        }
+
+        $validator = Validator::make($requestData, [
             'shop_id' => 'required|exists:shops,id',
             'rating' => 'required|integer|min:1|max:5',
-            'repeat_intention' => 'required|in:また行く,わからん,行かない',
+            'repeat_intention' => 'required|in:yes,maybe,no',
             'memo' => 'nullable|string|max:1000',
             'visited_at' => 'required|date|before_or_equal:today',
             'images' => 'nullable|array|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048', // 2MB
         ]);
 
         if ($validator->fails()) {
+            \Log::warning('Review creation validation failed', [
+                'errors' => $validator->errors(),
+                'request_data' => $requestData, // 変換後のデータをログに出力
+                'original_request' => $request->all(), // 元のリクエストも記録
+                'user_id' => auth('api')->id(),
+            ]);
+
             return response()->json([
                 'error' => 'Validation failed',
                 'messages' => $validator->errors(),
@@ -91,6 +105,12 @@ class ReviewController extends Controller
             ->first();
 
         if ($existingReview) {
+            \Log::warning('Duplicate review attempt', [
+                'user_id' => Auth::id(),
+                'shop_id' => $request->shop_id,
+                'existing_review_id' => $existingReview->id,
+            ]);
+
             return response()->json([
                 'error' => 'You have already reviewed this shop. Please update your existing review instead.',
             ], 422);
@@ -148,7 +168,7 @@ class ReviewController extends Controller
 
         $validator = Validator::make($request->all(), [
             'rating' => 'sometimes|required|integer|min:1|max:5',
-            'repeat_intention' => 'sometimes|required|in:また行く,わからん,行かない',
+            'repeat_intention' => 'sometimes|required|in:yes,maybe,no',
             'memo' => 'nullable|string|max:1000',
             'visited_at' => 'sometimes|required|date|before_or_equal:today',
         ]);
@@ -221,10 +241,33 @@ class ReviewController extends Controller
 
         $validator = Validator::make($request->all(), [
             'images' => 'required|array|min:1|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048', // 2MB（現在のPHP制限に合わせる）
         ]);
 
         if ($validator->fails()) {
+            \Log::warning('Review image upload validation failed', [
+                'errors' => $validator->errors(),
+                'request_data' => $request->all(),
+                'files_info' => collect($request->file('images') ?? [])->map(function ($file) {
+                    if (!$file || !$file->isValid()) {
+                        return [
+                            'error' => 'Invalid file',
+                            'is_valid' => false,
+                        ];
+                    }
+
+                    return [
+                        'original_name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                        'extension' => $file->getClientOriginalExtension(),
+                        'is_valid' => $file->isValid(),
+                    ];
+                }),
+                'user_id' => auth('api')->id(),
+                'review_id' => $review->id,
+            ]);
+
             return response()->json([
                 'error' => 'Validation failed',
                 'messages' => $validator->errors(),
@@ -266,6 +309,12 @@ class ReviewController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
+            \Log::error('Image upload failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'review_id' => $review->id,
+            ]);
 
             return response()->json([
                 'error' => 'Failed to upload images',

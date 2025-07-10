@@ -15,12 +15,12 @@ Route::get('/', function () {
             'supported_providers' => ['google'],
             'endpoints' => [
                 'shops' => '/api/shops',
-                'categories' => '/api/categories', 
+                'categories' => '/api/categories',
                 'reviews' => '/api/reviews',
-                'rankings' => '/api/rankings'
-            ]
+                'rankings' => '/api/rankings',
+            ],
         ],
-        'admin_panel' => request()->getSchemeAndHttpHost() . '/admin'
+        'admin_panel' => request()->getSchemeAndHttpHost() . '/admin',
     ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 });
 
@@ -29,9 +29,15 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return response()->json([
         'message' => 'This is an API-only application. Please use OAuth authentication via /api/auth/google',
-        'oauth_providers' => ['google']
+        'oauth_providers' => ['google'],
     ], 401);
 })->name('login');
+
+// OAuth routes (need sessions, so in web routes)
+Route::prefix('api/auth')->group(function () {
+    Route::get('/{provider}', [App\Http\Controllers\Api\AuthController::class, 'oauthRedirect'])->name('api.auth.redirect');
+    Route::get('/{provider}/callback', [App\Http\Controllers\Api\AuthController::class, 'oauthCallback'])->name('api.auth.callback');
+});
 
 // Admin Two-Factor Authentication Routes
 Route::middleware(['auth'])->prefix('admin/two-factor')->name('admin.two-factor.')->group(function () {

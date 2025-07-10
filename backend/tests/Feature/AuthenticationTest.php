@@ -83,7 +83,7 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(400)
             ->assertJson([
-                'message' => 'Invalid OAuth provider',
+                'message' => 'Invalid OAuth provider: Driver [invalid-provider] not supported.',
             ]);
     }
 

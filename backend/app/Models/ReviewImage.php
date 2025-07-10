@@ -39,7 +39,12 @@ class ReviewImage extends Model
      */
     public function getThumbnailUrlAttribute()
     {
-        return $this->thumbnail_path ? Storage::disk('public')->url($this->thumbnail_path) : null;
+        if (!$this->thumbnail_path) {
+            return;
+        }
+        $imageService = new ImageService;
+
+        return $imageService->getImageUrl($this->thumbnail_path);
     }
 
     /**
@@ -47,7 +52,12 @@ class ReviewImage extends Model
      */
     public function getSmallUrlAttribute()
     {
-        return $this->small_path ? Storage::disk('public')->url($this->small_path) : null;
+        if (!$this->small_path) {
+            return;
+        }
+        $imageService = new ImageService;
+
+        return $imageService->getImageUrl($this->small_path);
     }
 
     /**
@@ -55,7 +65,12 @@ class ReviewImage extends Model
      */
     public function getMediumUrlAttribute()
     {
-        return $this->medium_path ? Storage::disk('public')->url($this->medium_path) : null;
+        if (!$this->medium_path) {
+            return;
+        }
+        $imageService = new ImageService;
+
+        return $imageService->getImageUrl($this->medium_path);
     }
 
     /**
@@ -63,7 +78,12 @@ class ReviewImage extends Model
      */
     public function getLargeUrlAttribute()
     {
-        return $this->large_path ? Storage::disk('public')->url($this->large_path) : null;
+        if (!$this->large_path) {
+            return;
+        }
+        $imageService = new ImageService;
+
+        return $imageService->getImageUrl($this->large_path);
     }
 
     /**

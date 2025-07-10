@@ -50,49 +50,61 @@ class RankingController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'shop_id' => 'required|exists:shops,id',
-            'category_id' => 'required|exists:categories,id',
-            'rank_position' => 'required|integer|min:1',
-            'is_public' => 'boolean',
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+        try {
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'category_id' => 'nullable|exists:categories,id',
+                'is_public' => 'boolean',
+                'shops' => 'required|array|min:1',
+                'shops.*.shop_id' => 'required|exists:shops,id',
+                'shops.*.position' => 'required|integer|min:1',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::warning('Ranking creation validation failed', [
+                'errors' => $e->errors(),
+                'request_data' => $request->all(),
+                'user_id' => auth('api')->id(),
+            ]);
+            throw $e;
+        }
 
         DB::beginTransaction();
 
         try {
             $userId = Auth::id();
             $categoryId = $request->category_id;
-            $newPosition = $request->rank_position;
+            $createdRankings = [];
 
-            $existingRankingAtPosition = Ranking::where('user_id', $userId)
-                ->where('category_id', $categoryId)
-                ->where('rank_position', $newPosition)
-                ->first();
-
-            if ($existingRankingAtPosition) {
+            // Clear existing rankings for this user and category (if category is specified)
+            if ($categoryId) {
                 Ranking::where('user_id', $userId)
                     ->where('category_id', $categoryId)
-                    ->where('rank_position', '>=', $newPosition)
-                    ->increment('rank_position');
+                    ->delete();
             }
 
-            $ranking = Ranking::create([
-                'user_id' => $userId,
-                'shop_id' => $request->shop_id,
-                'category_id' => $categoryId,
-                'rank_position' => $newPosition,
-                'is_public' => $request->boolean('is_public', false),
-                'title' => $request->title,
-                'description' => $request->description,
-            ]);
+            // Create new rankings
+            foreach ($request->shops as $shopData) {
+                $ranking = Ranking::create([
+                    'user_id' => $userId,
+                    'shop_id' => $shopData['shop_id'],
+                    'category_id' => $categoryId,
+                    'rank_position' => $shopData['position'],
+                    'is_public' => $request->boolean('is_public', false),
+                    'title' => $request->title,
+                    'description' => $request->description,
+                ]);
+
+                $createdRankings[] = $ranking;
+            }
 
             DB::commit();
 
-            $ranking->load(['user', 'shop', 'category']);
+            // Return the first ranking with loaded relationships
+            $firstRanking = $createdRankings[0];
+            $firstRanking->load(['user', 'shop', 'category']);
 
-            return (new RankingResource($ranking))->response()->setStatusCode(201);
+            return (new RankingResource($firstRanking))->response()->setStatusCode(201);
         } catch (\Exception $e) {
             DB::rollback();
 

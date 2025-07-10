@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShopController;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Authentication routes
+// Authentication routes (API only, no OAuth)
 Route::prefix('auth')->group(function () {
     // Protected routes (must come first to avoid route conflicts)
     Route::middleware('auth:api')->group(function () {
@@ -27,10 +28,6 @@ Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::get('/token-info', [AuthController::class, 'tokenInfo'])->name('auth.token-info');
     });
-
-    // Public OAuth routes (must come after protected routes)
-    Route::get('/{provider}', [AuthController::class, 'oauthRedirect'])->name('auth.redirect');
-    Route::get('/{provider}/callback', [AuthController::class, 'oauthCallback'])->name('auth.callback');
 });
 
 // Public routes (no authentication required)
@@ -43,6 +40,10 @@ Route::get('/reviews/{review}', [ReviewController::class, 'show']);
 Route::get('/rankings', [RankingController::class, 'index']);
 Route::get('/rankings/{ranking}', [RankingController::class, 'show']);
 Route::get('/public-rankings', [RankingController::class, 'publicRankings']);
+
+// Image serving (public access with moderation check)
+Route::get('/images/{size}/{filename}', [ImageController::class, 'serve'])
+    ->middleware('throttle:60,1'); // 1分間に60回まで
 
 // Protected routes (authentication required)
 Route::middleware('auth:api')->group(function () {

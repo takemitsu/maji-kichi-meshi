@@ -184,9 +184,15 @@ class RankingApiTest extends TestCase
         $category = Category::first();
 
         $response = $this->postJson('/api/rankings', [
-            'shop_id' => $shop->id,
+            'title' => 'Test Ranking',
+            'description' => 'Test description',
             'category_id' => $category->id,
-            'rank_position' => 1,
+            'shops' => [
+                [
+                    'shop_id' => $shop->id,
+                    'position' => 1,
+                ]
+            ],
         ]);
 
         $response->assertStatus(401);
@@ -203,28 +209,32 @@ class RankingApiTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/rankings', [
-            'shop_id' => $shop->id,
-            'category_id' => $category->id,
-            'rank_position' => 1,
-            'is_public' => true,
             'title' => 'My favorite shop',
             'description' => 'This is my number one choice',
+            'category_id' => $category->id,
+            'is_public' => true,
+            'shops' => [
+                [
+                    'shop_id' => $shop->id,
+                    'position' => 1,
+                ]
+            ],
         ]);
 
         $response->assertStatus(201)
             ->assertJson([
                 'data' => [
-                    'rank_position' => 1,
                     'is_public' => true,
                     'title' => 'My favorite shop',
                     'description' => 'This is my number one choice',
                 ],
             ]);
 
+        // ランキング作成後のデータベース確認
         $this->assertDatabaseHas('rankings', [
             'user_id' => $user->id,
-            'shop_id' => $shop->id,
-            'rank_position' => 1,
+            'title' => 'My favorite shop',
+            'description' => 'This is my number one choice',
         ]);
     }
 
@@ -237,17 +247,22 @@ class RankingApiTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/rankings', [
-            'shop_id' => 999, // Invalid: non-existent shop
+            'title' => 'Test',
             'category_id' => 999, // Invalid: non-existent category
-            'rank_position' => 0, // Invalid: position must be >= 1
+            'shops' => [
+                [
+                    'shop_id' => 999, // Invalid: non-existent shop
+                    'position' => 0, // Invalid: position must be >= 1
+                ]
+            ],
         ]);
 
         $response->assertStatus(422);
 
         $errors = $response->json('errors');
-        $this->assertArrayHasKey('shop_id', $errors);
+        $this->assertArrayHasKey('shops.0.shop_id', $errors);
         $this->assertArrayHasKey('category_id', $errors);
-        $this->assertArrayHasKey('rank_position', $errors);
+        $this->assertArrayHasKey('shops.0.position', $errors);
     }
 
     /** @test */
@@ -279,22 +294,27 @@ class RankingApiTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/rankings', [
-            'shop_id' => $shop3->id,
+            'title' => 'New ranking',
             'category_id' => $category->id,
-            'rank_position' => 1,
+            'shops' => [
+                [
+                    'shop_id' => $shop3->id,
+                    'position' => 1,
+                ]
+            ],
         ]);
 
         $response->assertStatus(201);
 
-        // Check that positions were adjusted
+        // Check that old rankings were replaced with new ranking
         $rankings = Ranking::where('user_id', $user->id)
             ->where('category_id', $category->id)
             ->ordered()
             ->get();
 
+        // Only one ranking should remain (the new one)
+        $this->assertCount(1, $rankings);
         $this->assertEquals($shop3->id, $rankings[0]->shop_id); // New shop at position 1
-        $this->assertEquals($shop1->id, $rankings[1]->shop_id); // Old position 1 moved to 2
-        $this->assertEquals($shop2->id, $rankings[2]->shop_id); // Old position 2 moved to 3
     }
 
     /** @test */

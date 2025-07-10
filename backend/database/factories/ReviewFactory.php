@@ -22,7 +22,7 @@ class ReviewFactory extends Factory
             'user_id' => User::factory(),
             'shop_id' => Shop::factory(),
             'rating' => $this->faker->numberBetween(1, 5),
-            'repeat_intention' => $this->faker->randomElement(['また行く', 'わからん', '行かない']),
+            'repeat_intention' => $this->faker->randomElement(['yes', 'maybe', 'no']),
             'memo' => $this->faker->optional(0.7)->paragraph(),
             'visited_at' => $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
         ];
@@ -35,7 +35,7 @@ class ReviewFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'rating' => $this->faker->numberBetween(4, 5),
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
         ]);
     }
 
@@ -46,7 +46,7 @@ class ReviewFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'rating' => $this->faker->numberBetween(1, 2),
-            'repeat_intention' => $this->faker->randomElement(['わからん', '行かない']),
+            'repeat_intention' => $this->faker->randomElement(['maybe', 'no']),
         ]);
     }
 

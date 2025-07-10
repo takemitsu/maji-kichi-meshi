@@ -31,7 +31,7 @@ class ReviewApiTest extends TestCase
             'user_id' => $user->id,
             'shop_id' => $shop->id,
             'rating' => 4,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
         ]);
 
         $response = $this->getJson('/api/reviews');
@@ -123,7 +123,7 @@ class ReviewApiTest extends TestCase
         $response = $this->postJson('/api/reviews', [
             'shop_id' => $shop->id,
             'rating' => 4,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
             'visited_at' => '2024-01-01',
         ]);
 
@@ -142,7 +142,7 @@ class ReviewApiTest extends TestCase
         ])->postJson('/api/reviews', [
             'shop_id' => $shop->id,
             'rating' => 4,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
             'memo' => 'Good food!',
             'visited_at' => '2024-01-01',
         ]);
@@ -151,7 +151,7 @@ class ReviewApiTest extends TestCase
             ->assertJson([
                 'data' => [
                     'rating' => 4,
-                    'repeat_intention' => 'また行く',
+                    'repeat_intention' => 'yes',
                     'memo' => 'Good food!',
                 ],
             ]);
@@ -206,7 +206,7 @@ class ReviewApiTest extends TestCase
         ])->postJson('/api/reviews', [
             'shop_id' => $shop->id,
             'rating' => 3,
-            'repeat_intention' => 'わからん',
+            'repeat_intention' => 'maybe',
             'visited_at' => '2024-01-01',
         ]);
 
@@ -234,7 +234,7 @@ class ReviewApiTest extends TestCase
         ])->putJson("/api/reviews/{$review->id}", [
             'rating' => 5,
             'memo' => 'Updated memo',
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
         ]);
 
         $response->assertStatus(200)
@@ -242,7 +242,7 @@ class ReviewApiTest extends TestCase
                 'data' => [
                     'rating' => 5,
                     'memo' => 'Updated memo',
-                    'repeat_intention' => 'また行く',
+                    'repeat_intention' => 'yes',
                 ],
             ]);
 

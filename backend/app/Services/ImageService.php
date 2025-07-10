@@ -101,7 +101,16 @@ class ImageService
      */
     public function getImageUrl(string $path): string
     {
-        return Storage::disk('public')->url($path);
+        // パスからサイズとファイル名を抽出
+        // 例: "images/shops/medium/filename.jpg" → "medium/filename.jpg"
+        $pathParts = explode('/', $path);
+        $size = $pathParts[count($pathParts) - 2]; // サイズディレクトリ
+        $filename = $pathParts[count($pathParts) - 1]; // ファイル名
+
+        // APIのImageControllerを通したURLを生成（サイズ情報を含める）
+        $appUrl = config('app.url');
+
+        return "{$appUrl}/api/images/{$size}/{$filename}";
     }
 
     /**

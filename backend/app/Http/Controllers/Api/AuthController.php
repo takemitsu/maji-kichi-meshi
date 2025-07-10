@@ -23,7 +23,9 @@ class AuthController extends Controller
         try {
             return Socialite::driver($provider)->redirect();
         } catch (\Exception $e) {
-            return $this->errorResponse('Invalid OAuth provider', 400);
+            \Log::error('OAuth redirect error: ' . $e->getMessage());
+
+            return $this->errorResponse('Invalid OAuth provider: ' . $e->getMessage(), 400);
         }
     }
 

@@ -32,6 +32,11 @@ class RateLimitServiceProvider extends ServiceProvider
             $user = $request->user();
             $key = $user ? 'user:' . $user->id : 'ip:' . $request->ip();
 
+            // 開発環境では制限を緩和
+            if (app()->environment('local')) {
+                return Limit::perMinute(10)->by($key);
+            }
+
             return Limit::perHour(5)->by($key);
         });
 

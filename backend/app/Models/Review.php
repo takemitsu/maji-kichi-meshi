@@ -108,12 +108,12 @@ class Review extends Model
     public function getRepeatIntentionTextAttribute()
     {
         $intentions = [
-            'また行く' => 'また行く',
-            'わからん' => 'わからん',
-            '行かない' => '行かない',
+            'yes' => 'また行く',
+            'maybe' => 'わからん',
+            'no' => '行かない',
         ];
 
-        return $intentions[$this->repeat_intention];
+        return $intentions[$this->repeat_intention] ?? '未設定';
     }
 
     /**

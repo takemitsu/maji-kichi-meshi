@@ -36,7 +36,7 @@ class ImageUploadTest extends TestCase
         $response = $this->actingAs($user, 'api')->postJson('/api/reviews', [
             'shop_id' => $shop->id,
             'rating' => 4,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
             'memo' => 'Test review with images',
             'visited_at' => '2024-01-15',
             'images' => $images,
@@ -192,7 +192,7 @@ class ImageUploadTest extends TestCase
         $response = $this->actingAs($user, 'api')->postJson('/api/reviews', [
             'shop_id' => $shop->id,
             'rating' => 4,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
             'visited_at' => '2024-01-15',
             'images' => [$file],
         ]);
@@ -211,7 +211,7 @@ class ImageUploadTest extends TestCase
         $response = $this->actingAs($user, 'api')->postJson('/api/reviews', [
             'shop_id' => $shop->id,
             'rating' => 4,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
             'visited_at' => '2024-01-15',
             'images' => [$largeFile],
         ]);

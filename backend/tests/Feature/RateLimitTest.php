@@ -46,7 +46,7 @@ class RateLimitTest extends TestCase
             ])->postJson('/api/reviews', [
                 'shop_id' => $shop->id,
                 'rating' => 5,
-                'repeat_intention' => 'また行く',
+                'repeat_intention' => 'yes',
                 'memo' => 'Test review ' . ($i + 1),
                 'visited_at' => now()->format('Y-m-d'),
             ]);
@@ -62,7 +62,7 @@ class RateLimitTest extends TestCase
         ])->postJson('/api/reviews', [
             'shop_id' => $shop6->id,
             'rating' => 5,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
             'memo' => 'Test review 6',
             'visited_at' => now()->format('Y-m-d'),
         ]);
@@ -156,12 +156,16 @@ class RateLimitTest extends TestCase
                 'Authorization' => 'Bearer ' . $this->token,
                 'Content-Type' => 'application/json',
             ])->postJson('/api/rankings', [
-                'shop_id' => $shop->id,
-                'category_id' => $this->category->id,
-                'rank_position' => $i + 1,
                 'title' => 'Test Ranking ' . ($i + 1),
                 'description' => 'Test description',
+                'category_id' => $this->category->id,
                 'is_public' => true,
+                'shops' => [
+                    [
+                        'shop_id' => $shop->id,
+                        'position' => 1,
+                    ]
+                ],
             ]);
 
             $response->assertStatus(201);
@@ -173,12 +177,16 @@ class RateLimitTest extends TestCase
             'Authorization' => 'Bearer ' . $this->token,
             'Content-Type' => 'application/json',
         ])->postJson('/api/rankings', [
-            'shop_id' => $shop->id,
-            'category_id' => $this->category->id,
-            'rank_position' => 11,
             'title' => 'Test Ranking 11',
             'description' => 'Test description',
+            'category_id' => $this->category->id,
             'is_public' => true,
+            'shops' => [
+                [
+                    'shop_id' => $shop->id,
+                    'position' => 1,
+                ]
+            ],
         ]);
 
         $response->assertStatus(429); // Too Many Requests
@@ -203,13 +211,16 @@ class RateLimitTest extends TestCase
             ])->postJson('/api/reviews', [
                 'shop_id' => $shop->id,
                 'rating' => 5,
-                'repeat_intention' => 'また行く',
+                'repeat_intention' => 'yes',
                 'memo' => 'User1 review ' . ($i + 1),
                 'visited_at' => now()->format('Y-m-d'),
             ]);
 
             $response->assertStatus(201);
         }
+
+        // レート制限キャッシュをクリアしてユーザー2のテストを開始
+        \Illuminate\Support\Facades\Cache::flush();
 
         // ユーザー2は同じIPからでも5回作成できる（異なる店舗で）
         for ($i = 0; $i < 5; $i++) {
@@ -220,7 +231,7 @@ class RateLimitTest extends TestCase
             ])->postJson('/api/reviews', [
                 'shop_id' => $shop->id,
                 'rating' => 4,
-                'repeat_intention' => 'また行く',
+                'repeat_intention' => 'yes',
                 'memo' => 'User2 review ' . ($i + 1),
                 'visited_at' => now()->format('Y-m-d'),
             ]);
@@ -236,7 +247,7 @@ class RateLimitTest extends TestCase
         ])->postJson('/api/reviews', [
             'shop_id' => $shop->id,
             'rating' => 5,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
             'memo' => 'User1 review 6',
             'visited_at' => now()->format('Y-m-d'),
         ]);
@@ -251,7 +262,7 @@ class RateLimitTest extends TestCase
         ])->postJson('/api/reviews', [
             'shop_id' => $shop->id,
             'rating' => 4,
-            'repeat_intention' => 'また行く',
+            'repeat_intention' => 'yes',
             'memo' => 'User2 review 6',
             'visited_at' => now()->format('Y-m-d'),
         ]);
