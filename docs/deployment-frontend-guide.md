@@ -107,16 +107,18 @@ ls -la .output/public/
 
 #### 3-1. nginx設定ファイル作成
 ```bash
-# nginx設定ファイル作成
-sudo vim /etc/nginx/sites-available/maji-kichi-meshi-frontend
+# nginx設定ファイル作成（Ubuntu環境のconf.d使用）
+sudo vim /etc/nginx/conf.d/maji-kichi-meshi.conf
 
 # 以下の内容を設定
 ```
 
 ```nginx
+# 実環境例: takemitsu.netドメインを使用した統合設定
 server {
     listen 80;
-    server_name your-domain.com www.your-domain.com;
+    listen [::]:80;
+    server_name takemitsu.net www.takemitsu.net;
     
     # フロントエンド静的ファイル配信
     root /var/www/frontend;
@@ -184,8 +186,7 @@ sudo systemctl status certbot.timer
 
 #### 3-3. nginx設定有効化
 ```bash
-# 設定ファイル有効化
-sudo ln -s /etc/nginx/sites-available/maji-kichi-meshi-frontend /etc/nginx/sites-enabled/
+# conf.d配置済みなので有効化は不要
 
 # nginx設定テスト
 sudo nginx -t
@@ -549,7 +550,8 @@ sudo systemctl status php8.3-fpm
 既存のnginx設定に以下を追加:
 
 ```nginx
-# /etc/nginx/sites-available/maji-kichi-meshi-frontend に追記
+# /etc/nginx/conf.d/maji-kichi-meshi.conf を新規作成
+# または既存のdefault.confを修正
 
 # Laravel API バックエンド設定
 server {
@@ -565,7 +567,7 @@ server {
 
     # PHP-FPM 処理
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;
@@ -604,7 +606,7 @@ server {
         
         location ~ ^/api/(.*)\.php$ {
             alias /var/www/api/public;
-            fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+            fastcgi_pass unix:/run/php/php8.3-fpm.sock;
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME /var/www/api/public/index.php;
             include fastcgi_params;
@@ -613,7 +615,7 @@ server {
     }
     
     location @laravel {
-        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME /var/www/api/public/index.php;
         include fastcgi_params;
