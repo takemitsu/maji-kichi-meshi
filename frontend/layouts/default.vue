@@ -1,16 +1,16 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <!-- ヘッダー -->
-    <TheHeader />
+    <div class="min-h-screen flex flex-col">
+        <!-- ヘッダー -->
+        <TheHeader />
 
-    <!-- メインコンテンツ -->
-    <main class="flex-1">
-      <slot />
-    </main>
+        <!-- メインコンテンツ -->
+        <main class="flex-1">
+            <slot />
+        </main>
 
-    <!-- フッター -->
-    <TheFooter />
-  </div>
+        <!-- フッター -->
+        <TheFooter />
+    </div>
 </template>
 
 <script setup lang="ts">

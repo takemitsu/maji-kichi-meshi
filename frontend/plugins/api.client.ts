@@ -1,9 +1,9 @@
 export default defineNuxtPlugin(() => {
-  const api = useApi()
+    const api = useApi()
 
-  return {
-    provide: {
-      api,
-    },
-  }
+    return {
+        provide: {
+            api,
+        },
+    }
 })
