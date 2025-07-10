@@ -31,6 +31,7 @@ class RateLimitServiceProvider extends ServiceProvider
         RateLimiter::for('review-creation', function (Request $request) {
             $user = $request->user();
             $key = $user ? 'user:' . $user->id : 'ip:' . $request->ip();
+
             return Limit::perHour(5)->by($key);
         });
 
@@ -38,6 +39,7 @@ class RateLimitServiceProvider extends ServiceProvider
         RateLimiter::for('image-upload', function (Request $request) {
             $user = $request->user();
             $key = $user ? 'user:' . $user->id : 'ip:' . $request->ip();
+
             return Limit::perHour(20)->by($key);
         });
 
@@ -45,6 +47,7 @@ class RateLimitServiceProvider extends ServiceProvider
         RateLimiter::for('shop-creation', function (Request $request) {
             $user = $request->user();
             $key = $user ? 'user:' . $user->id : 'ip:' . $request->ip();
+
             return Limit::perHour(10)->by($key);
         });
 
@@ -52,6 +55,7 @@ class RateLimitServiceProvider extends ServiceProvider
         RateLimiter::for('ranking-creation', function (Request $request) {
             $user = $request->user();
             $key = $user ? 'user:' . $user->id : 'ip:' . $request->ip();
+
             return Limit::perHour(10)->by($key);
         });
     }

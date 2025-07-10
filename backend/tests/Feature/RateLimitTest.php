@@ -99,7 +99,7 @@ class RateLimitTest extends TestCase
             'user_id' => $this->user->id,
             'shop_id' => $shop->id,
         ]);
-        
+
         $file = UploadedFile::fake()->image('test21.jpg');
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
@@ -151,7 +151,7 @@ class RateLimitTest extends TestCase
         for ($i = 0; $i < 10; $i++) {
             // 各ランキングに異なる店舗を使用
             $shop = Shop::factory()->create(['status' => 'active']);
-            
+
             $response = $this->withHeaders([
                 'Authorization' => 'Bearer ' . $this->token,
                 'Content-Type' => 'application/json',
