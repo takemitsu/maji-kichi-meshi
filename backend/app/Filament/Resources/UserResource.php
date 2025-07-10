@@ -74,11 +74,13 @@ class UserResource extends Resource
                         'admin' => 'danger',
                         'moderator' => 'warning',
                         'user' => 'success',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'admin' => '管理者',
                         'moderator' => 'モデレーター',
                         'user' => 'ユーザー',
+                        default => '不明',
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
@@ -88,11 +90,13 @@ class UserResource extends Resource
                         'active' => 'success',
                         'banned' => 'danger',
                         'deleted' => 'gray',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'active' => 'アクティブ',
                         'banned' => '停止',
                         'deleted' => '削除',
+                        default => '不明',
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('reviews_count')

@@ -87,6 +87,10 @@ php artisan filament:install
 # 管理者ログイン情報
 # takemitsu@notespace.jp / admin2024
 # admin@majikichi-meshi.com / admin123
+
+# コード品質ツール
+composer pint           # Laravel Pint (コードフォーマット)
+composer stan           # PHPStan (静的解析)
 ```
 
 ### Frontend (Vue/Nuxt)
@@ -284,11 +288,11 @@ maji-kichi-meshi/
 
 ### Phase 7: Enhancement (後続)
 - [ ] Google Places API 連携（設計完了 - 詳細はTODO.md参照）
-- [ ] **アプリライク匿名ユーザー機能**（設計完了 - 詳細はdocs/app-like-anonymous-user-todo.md参照）
-  - 初回アクセス時の自動匿名ユーザー登録
-  - プロフィール後付けシステム
-  - OAuth同期システム（アカウント作成→データ同期へ役割転換）
-  - 現代的なアプリと同等のUX実現
+- [x] ~~**アプリライク匿名ユーザー機能**~~ ❌ **計画停止** (2025-07-10)
+  - ~~初回アクセス時の自動匿名ユーザー登録~~
+  - ~~プロフィール後付けシステム~~
+  - ~~OAuth同期システム（アカウント作成→データ同期へ役割転換）~~
+  - **停止理由**: 重大リスクが価値を上回る（詳細: docs/20250710185000-report-anonymous-user-concerns.md）
 - [ ] 通報システム実装
 - [ ] 統計ダッシュボード
 - [ ] パフォーマンス最適化

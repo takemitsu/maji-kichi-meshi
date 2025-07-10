@@ -113,7 +113,7 @@ class Review extends Model
             '行かない' => '行かない',
         ];
 
-        return $intentions[$this->repeat_intention] ?? $this->repeat_intention;
+        return $intentions[$this->repeat_intention];
     }
 
     /**

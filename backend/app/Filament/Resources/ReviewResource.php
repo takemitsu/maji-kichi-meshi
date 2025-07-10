@@ -97,6 +97,7 @@ class ReviewResource extends Resource
                         'また行く' => 'success',
                         'わからん' => 'warning',
                         '行かない' => 'danger',
+                        default => 'gray',
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('memo')

@@ -76,11 +76,13 @@ class ReviewImageResource extends Resource
                         'published' => 'success',
                         'under_review' => 'warning',
                         'rejected' => 'danger',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'published' => '公開',
                         'under_review' => '検閲中',
                         'rejected' => '拒否',
+                        default => '不明',
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('original_name')

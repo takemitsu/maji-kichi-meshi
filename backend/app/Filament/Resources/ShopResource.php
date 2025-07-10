@@ -92,11 +92,13 @@ class ShopResource extends Resource
                         'active' => 'success',
                         'hidden' => 'warning',
                         'deleted' => 'gray',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'active' => 'アクティブ',
                         'hidden' => '非表示',
                         'deleted' => '削除',
+                        default => '不明',
                     })
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_closed')

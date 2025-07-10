@@ -43,6 +43,7 @@ class AuthController extends Controller
 
             if ($oauthProvider) {
                 // Existing user login
+                /** @var User $user */
                 $user = $oauthProvider->user;
             } else {
                 // Check if user exists by email
@@ -63,7 +64,7 @@ class AuthController extends Controller
                     'user_id' => $user->id,
                     'provider' => $provider,
                     'provider_id' => $socialiteUser->getId(),
-                    'provider_token' => $socialiteUser->token,
+                    'provider_token' => $socialiteUser->token ?? null,
                 ]);
             }
 
@@ -117,7 +118,10 @@ class AuthController extends Controller
     public function logout()
     {
         try {
-            JWTAuth::invalidate(JWTAuth::getToken());
+            $token = JWTAuth::getToken();
+            if ($token) {
+                JWTAuth::invalidate($token);
+            }
 
             return $this->successResponse(null, 'Successfully logged out');
         } catch (JWTException $e) {
@@ -132,7 +136,10 @@ class AuthController extends Controller
     {
         try {
             $token = JWTAuth::getToken();
-            $payload = JWTAuth::getPayload($token);
+            if (!$token) {
+                return $this->unauthorizedResponse('No token provided');
+            }
+            $payload = JWTAuth::getPayload();
 
             return $this->successResponse([
                 'token' => $token->get(),
