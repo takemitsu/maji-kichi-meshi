@@ -7,6 +7,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Laravel 11 auth middleware用のloginルート定義
+// API専用プロジェクトだが、auth middlewareのデフォルト動作でroute('login')が参照されるため定義
+Route::get('/login', function () {
+    return response()->json([
+        'message' => 'This is an API-only application. Please use OAuth authentication via /api/auth/{provider}',
+        'oauth_providers' => ['google', 'github', 'line', 'twitter']
+    ], 401);
+})->name('login');
+
 // Admin Two-Factor Authentication Routes
 Route::middleware(['auth'])->prefix('admin/two-factor')->name('admin.two-factor.')->group(function () {
     Route::get('/setup', [TwoFactorController::class, 'setup'])->name('setup');
