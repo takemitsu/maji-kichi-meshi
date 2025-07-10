@@ -207,4 +207,71 @@ class AuthenticationTest extends TestCase
                 ],
             ]);
     }
+
+    /** @test */
+    public function it_can_update_user_profile()
+    {
+        $user = User::factory()->create(['name' => 'Original Name']);
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
+        ])->putJson('/api/auth/me', [
+            'name' => 'Updated Name',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Profile updated successfully',
+                'data' => [
+                    'name' => 'Updated Name',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'Updated Name',
+        ]);
+    }
+
+    /** @test */
+    public function it_requires_authentication_to_update_profile()
+    {
+        $response = $this->putJson('/api/auth/me', [
+            'name' => 'New Name',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    /** @test */
+    public function it_validates_profile_update_data()
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Test empty name
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
+        ])->putJson('/api/auth/me', [
+            'name' => '',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+
+        // Test too long name
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
+        ])->putJson('/api/auth/me', [
+            'name' => str_repeat('a', 256),
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+    }
 }

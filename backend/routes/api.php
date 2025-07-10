@@ -23,6 +23,7 @@ Route::prefix('auth')->group(function () {
     // Protected routes (must come first to avoid route conflicts)
     Route::middleware('auth:api')->group(function () {
         Route::get('/me', [AuthController::class, 'me'])->name('auth.me');
+        Route::put('/me', [AuthController::class, 'updateProfile'])->name('auth.update-profile');
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::get('/token-info', [AuthController::class, 'tokenInfo'])->name('auth.token-info');
     });

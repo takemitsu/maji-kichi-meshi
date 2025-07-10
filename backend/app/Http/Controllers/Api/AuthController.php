@@ -113,6 +113,31 @@ class AuthController extends Controller
     }
 
     /**
+     * Update authenticated user profile
+     */
+    public function updateProfile()
+    {
+        try {
+            $user = auth('api')->user();
+            if (!$user) {
+                return $this->unauthorizedResponse('User not authenticated');
+            }
+
+            $validatedData = request()->validate([
+                'name' => 'required|string|max:255|min:1',
+            ]);
+
+            $user->update(['name' => $validatedData['name']]);
+
+            return $this->successResponse($user, 'Profile updated successfully');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->validationErrorResponse($e->errors());
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('Failed to update profile');
+        }
+    }
+
+    /**
      * Logout user
      */
     public function logout()
