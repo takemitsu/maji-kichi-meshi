@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\RankingController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\ShopController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::get('/token-info', [AuthController::class, 'tokenInfo'])->name('auth.token-info');
     });
-    
+
     // Public OAuth routes (must come after protected routes)
     Route::get('/{provider}', [AuthController::class, 'oauthRedirect'])->name('auth.redirect');
     Route::get('/{provider}/callback', [AuthController::class, 'oauthCallback'])->name('auth.callback');
@@ -52,7 +52,7 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:20,60');
     Route::delete('/shops/{shop}', [ShopController::class, 'destroy'])
         ->middleware('throttle:5,60');
-    
+
     // Shop image management
     Route::post('/shops/{shop}/images', [ShopController::class, 'uploadImages'])
         ->middleware('throttle:15,60');  // 1時間に15回まで
@@ -60,7 +60,7 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:30,60');
     Route::put('/shops/{shop}/images/reorder', [ShopController::class, 'reorderImages'])
         ->middleware('throttle:10,60');
-    
+
     // Category management (admin only - will add middleware later)
     Route::post('/categories', [CategoryController::class, 'store'])
         ->middleware('throttle:5,60');
@@ -68,7 +68,7 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:10,60');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
         ->middleware('throttle:5,60');
-    
+
     // Review management
     Route::post('/reviews', [ReviewController::class, 'store'])
         ->middleware('throttle:5,60');  // 1時間に5回まで
@@ -78,13 +78,13 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:10,60');
     Route::get('/my-reviews', [ReviewController::class, 'myReviews'])
         ->middleware('throttle:100,60');  // 読み取りは緩め
-    
+
     // Review image management
     Route::post('/reviews/{review}/images', [ReviewController::class, 'uploadImages'])
         ->middleware('throttle:20,60');  // 1時間に20回まで
     Route::delete('/reviews/{review}/images/{image}', [ReviewController::class, 'deleteImage'])
         ->middleware('throttle:30,60');
-    
+
     // Ranking management
     Route::post('/rankings', [RankingController::class, 'store'])
         ->middleware('throttle:10,60');

@@ -58,12 +58,12 @@ class CategoryController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
         $data = $validator->validated();
-        
+
         // Auto-generate slug if not provided
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
@@ -101,7 +101,7 @@ class CategoryController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
@@ -125,12 +125,12 @@ class CategoryController extends Controller
         // Check if category is in use
         if ($category->shops()->exists() || $category->rankings()->exists()) {
             return response()->json([
-                'error' => 'Cannot delete category that is in use'
+                'error' => 'Cannot delete category that is in use',
             ], 422);
         }
 
         $category->delete();
-        
+
         return response()->json(['message' => 'Category deleted successfully']);
     }
 }

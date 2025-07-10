@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->integer('rank_position')->unsigned(); // 1-10 for 総合, 1-5 for others
             $table->timestamps();
-            
+
             $table->unique(['user_id', 'shop_id', 'category_id']);
             $table->unique(['user_id', 'category_id', 'rank_position']);
             $table->index(['user_id', 'category_id']);

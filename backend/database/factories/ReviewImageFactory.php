@@ -17,7 +17,7 @@ class ReviewImageFactory extends Factory
     public function definition(): array
     {
         $filename = $this->faker->uuid() . '.jpg';
-        
+
         return [
             'filename' => $filename,
             'original_name' => $this->faker->word() . '.jpg',

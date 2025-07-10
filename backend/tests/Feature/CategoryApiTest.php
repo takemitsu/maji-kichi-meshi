@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -15,7 +15,7 @@ class CategoryApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Run migrations and seed categories
         $this->artisan('migrate');
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
@@ -27,16 +27,16 @@ class CategoryApiTest extends TestCase
         $response = $this->getJson('/api/categories');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         '*' => [
-                             'id',
-                             'name',
-                             'slug',
-                             'type',
-                         ]
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'slug',
+                        'type',
+                    ],
+                ],
+            ]);
 
         $data = $response->json('data');
         $this->assertGreaterThan(0, count($data));
@@ -49,7 +49,7 @@ class CategoryApiTest extends TestCase
 
         $response->assertStatus(200);
         $data = $response->json('data');
-        
+
         // Ensure all returned categories are basic type
         foreach ($data as $category) {
             $this->assertEquals('basic', $category['type']);
@@ -64,14 +64,14 @@ class CategoryApiTest extends TestCase
         $response = $this->getJson("/api/categories/{$category->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'id' => $category->id,
-                         'name' => $category->name,
-                         'slug' => 'ramen',
-                         'type' => $category->type,
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'slug' => 'ramen',
+                    'type' => $category->type,
+                ],
+            ]);
     }
 
     /** @test */
@@ -99,13 +99,13 @@ class CategoryApiTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-                 ->assertJson([
-                     'data' => [
-                         'name' => 'Test Category',
-                         'slug' => 'test-category',
-                         'type' => 'basic',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'name' => 'Test Category',
+                    'slug' => 'test-category',
+                    'type' => 'basic',
+                ],
+            ]);
 
         $this->assertDatabaseHas('categories', [
             'name' => 'Test Category',
@@ -127,7 +127,7 @@ class CategoryApiTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        
+
         // Check actual validation errors
         $errors = $response->json('messages');
         $this->assertArrayHasKey('name', $errors);
@@ -148,12 +148,12 @@ class CategoryApiTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-                 ->assertJson([
-                     'data' => [
-                         'name' => 'Auto Generated Slug',
-                         'slug' => 'auto-generated-slug',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'name' => 'Auto Generated Slug',
+                    'slug' => 'auto-generated-slug',
+                ],
+            ]);
     }
 
     /** @test */
@@ -164,7 +164,7 @@ class CategoryApiTest extends TestCase
         $category = Category::factory()->create([
             'name' => 'Old Name',
             'slug' => 'old-name',
-            'type' => 'basic'
+            'type' => 'basic',
         ]);
 
         $response = $this->withHeaders([
@@ -174,12 +174,12 @@ class CategoryApiTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'name' => 'Updated Name',
-                         'slug' => 'updated-name',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'name' => 'Updated Name',
+                    'slug' => 'updated-name',
+                ],
+            ]);
 
         $this->assertDatabaseHas('categories', [
             'id' => $category->id,
@@ -211,7 +211,7 @@ class CategoryApiTest extends TestCase
         $token = JWTAuth::fromUser($user);
         $category = Category::factory()->create([
             'name' => 'Unused Category',
-            'type' => 'basic'
+            'type' => 'basic',
         ]);
 
         $response = $this->withHeaders([
@@ -219,7 +219,7 @@ class CategoryApiTest extends TestCase
         ])->deleteJson("/api/categories/{$category->id}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Category deleted successfully']);
+            ->assertJson(['message' => 'Category deleted successfully']);
 
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
     }

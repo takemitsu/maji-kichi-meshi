@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamp('moderated_at')->nullable();
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
+
             $table->index(['shop_id', 'status']);
             $table->index(['status', 'created_at']);
         });

@@ -2,10 +2,8 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
 use App\Models\OAuthProvider;
-use App\Models\Review;
-use App\Models\Ranking;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -66,7 +64,7 @@ class UserModelTest extends TestCase
     public function it_hides_sensitive_attributes()
     {
         $user = User::factory()->create([
-            'password' => 'secret123'
+            'password' => 'secret123',
         ]);
 
         $array = $user->toArray();
@@ -79,7 +77,7 @@ class UserModelTest extends TestCase
     public function it_casts_email_verified_at_to_datetime()
     {
         $user = User::factory()->create([
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
 
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $user->email_verified_at);

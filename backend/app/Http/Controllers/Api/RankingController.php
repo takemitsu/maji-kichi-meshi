@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class RankingController extends Controller
 {
-
     public function index(Request $request)
     {
         $query = Ranking::with(['user', 'shop', 'category']);
@@ -96,6 +95,7 @@ class RankingController extends Controller
             return (new RankingResource($ranking))->response()->setStatusCode(201);
         } catch (\Exception $e) {
             DB::rollback();
+
             return response()->json(['error' => 'Failed to create ranking'], 500);
         }
     }
@@ -149,6 +149,7 @@ class RankingController extends Controller
             return new RankingResource($ranking);
         } catch (\Exception $e) {
             DB::rollback();
+
             return response()->json(['error' => 'Failed to update ranking'], 500);
         }
     }
@@ -175,6 +176,7 @@ class RankingController extends Controller
             return response()->json(['message' => 'Ranking deleted successfully']);
         } catch (\Exception $e) {
             DB::rollback();
+
             return response()->json(['error' => 'Failed to delete ranking'], 500);
         }
     }

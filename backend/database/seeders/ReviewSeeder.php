@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Review;
-use App\Models\User;
 use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class ReviewSeeder extends Seeder
@@ -16,22 +16,22 @@ class ReviewSeeder extends Seeder
     {
         // 一般ユーザーを作成（レビュー投稿用）
         $users = User::factory()->count(10)->create();
-        
+
         // 各店舗に対してレビューを作成
         $shops = Shop::all();
-        
+
         foreach ($shops as $shop) {
             // 各店舗に1-5件のレビューを作成
             $reviewCount = rand(1, 5);
-            
+
             for ($i = 0; $i < $reviewCount; $i++) {
                 $user = $users->random();
-                
+
                 // 同じユーザーが同じ店舗に重複レビューしないようにチェック
                 if (Review::where('user_id', $user->id)->where('shop_id', $shop->id)->exists()) {
                     continue;
                 }
-                
+
                 Review::create([
                     'user_id' => $user->id,
                     'shop_id' => $shop->id,
@@ -42,10 +42,10 @@ class ReviewSeeder extends Seeder
                 ]);
             }
         }
-        
+
         $this->command->info('Sample reviews created successfully.');
     }
-    
+
     private function generateRandomComment(): string
     {
         $comments = [
@@ -65,7 +65,7 @@ class ReviewSeeder extends Seeder
             '量が多くて、お腹いっぱいになりました。',
             '季節限定メニューが美味しかったです。',
         ];
-        
+
         return $comments[array_rand($comments)];
     }
 }

@@ -2,29 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\ShopImage;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ShopImageResource\Pages;
-use App\Filament\Resources\ShopImageResource\RelationManagers;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
+use App\Models\ShopImage;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Hidden;
-use Filament\Tables\Actions\Action;
+use Filament\Forms\Form;
 use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 
 class ShopImageResource extends Resource
 {
@@ -45,25 +40,25 @@ class ShopImageResource extends Resource
         return $form
             ->schema([
                 Hidden::make('id'),
-                
+
                 Select::make('shop_id')
                     ->relationship('shop', 'name')
                     ->searchable()
                     ->required()
                     ->disabled(),
-                
+
                 TextInput::make('original_name')
                     ->label('元のファイル名')
                     ->disabled(),
-                
+
                 TextInput::make('mime_type')
                     ->label('MIMEタイプ')
                     ->disabled(),
-                
+
                 TextInput::make('file_size')
                     ->label('ファイルサイズ（バイト）')
                     ->disabled(),
-                
+
                 Select::make('status')
                     ->label('ステータス')
                     ->options([
@@ -72,7 +67,7 @@ class ShopImageResource extends Resource
                         'rejected' => '却下',
                     ])
                     ->required(),
-                
+
                 TextInput::make('sort_order')
                     ->label('並び順')
                     ->numeric()
@@ -87,17 +82,17 @@ class ShopImageResource extends Resource
                 ImageColumn::make('thumbnail_url')
                     ->label('サムネイル')
                     ->circular(),
-                
+
                 TextColumn::make('shop.name')
                     ->label('店舗名')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('original_name')
                     ->label('ファイル名')
                     ->searchable()
                     ->limit(30),
-                
+
                 BadgeColumn::make('status')
                     ->label('ステータス')
                     ->colors([
@@ -113,22 +108,22 @@ class ShopImageResource extends Resource
                             default => $state,
                         };
                     }),
-                
+
                 TextColumn::make('sort_order')
                     ->label('並び順')
                     ->sortable(),
-                
+
                 TextColumn::make('file_size')
                     ->label('サイズ')
                     ->formatStateUsing(function ($state) {
                         return $state ? number_format($state / 1024, 2) . ' KB' : '';
                     }),
-                
+
                 TextColumn::make('created_at')
                     ->label('作成日')
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),
-                
+
                 TextColumn::make('moderated_at')
                     ->label('審査日')
                     ->dateTime('Y-m-d H:i')
@@ -142,7 +137,7 @@ class ShopImageResource extends Resource
                         'under_review' => '審査中',
                         'rejected' => '却下',
                     ]),
-                
+
                 SelectFilter::make('shop_id')
                     ->label('店舗')
                     ->relationship('shop', 'name')
@@ -161,7 +156,7 @@ class ShopImageResource extends Resource
                             ->success()
                             ->send();
                     }),
-                
+
                 Action::make('reject')
                     ->label('却下')
                     ->icon('heroicon-o-x-circle')
@@ -174,7 +169,7 @@ class ShopImageResource extends Resource
                             ->success()
                             ->send();
                     }),
-                
+
                 EditAction::make(),
                 DeleteAction::make(),
             ])

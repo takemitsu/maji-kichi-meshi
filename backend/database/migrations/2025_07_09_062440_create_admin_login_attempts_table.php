@@ -21,12 +21,12 @@ return new class extends Migration
             $table->string('failure_reason')->nullable();
             $table->timestamp('attempted_at')->useCurrent();
             $table->timestamps();
-            
+
             $table->index(['user_id', 'attempted_at']);
             $table->index(['ip_address', 'attempted_at']);
             $table->index(['email', 'attempted_at']);
             $table->index(['successful', 'attempted_at']);
-            
+
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

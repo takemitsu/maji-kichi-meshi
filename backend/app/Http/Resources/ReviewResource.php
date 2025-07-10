@@ -25,11 +25,11 @@ class ReviewResource extends JsonResource
             'images' => ReviewImageResource::collection($this->whenLoaded('images')),
             'user' => [
                 'id' => $this->user_id,
-                'name' => $this->whenLoaded('user', fn() => $this->user->name),
+                'name' => $this->whenLoaded('user', fn () => $this->user->name),
             ],
             'shop' => [
                 'id' => $this->shop_id,
-                'name' => $this->whenLoaded('shop', fn() => $this->shop->name),
+                'name' => $this->whenLoaded('shop', fn () => $this->shop->name),
             ],
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

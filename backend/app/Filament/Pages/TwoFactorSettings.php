@@ -24,7 +24,7 @@ class TwoFactorSettings extends Page
     public function mount(): void
     {
         $user = auth()->user();
-        
+
         if (!$user || !$user->isModerator()) {
             abort(403);
         }
@@ -34,21 +34,20 @@ class TwoFactorSettings extends Page
     {
         try {
             $this->validate([
-                'password' => 'required|string'
+                'password' => 'required|string',
             ]);
 
             $user = auth()->user();
 
             if (!Hash::check($this->password, $user->password)) {
                 throw ValidationException::withMessages([
-                    'password' => 'パスワードが正しくありません。'
+                    'password' => 'パスワードが正しくありません。',
                 ]);
             }
 
             $newCodes = $user->regenerateRecoveryCodes();
 
             $this->redirect(route('admin.two-factor.recovery-codes', ['codes' => $newCodes]));
-            
         } catch (Halt $exception) {
             return;
         }

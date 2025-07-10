@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('memo')->nullable();
             $table->date('visited_at');
             $table->timestamps();
-            
+
             $table->index(['user_id', 'shop_id']);
             $table->index('visited_at');
         });

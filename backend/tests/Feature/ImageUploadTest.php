@@ -43,7 +43,7 @@ class ImageUploadTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        
+
         $review = Review::latest()->first();
         $this->assertCount(2, $review->images);
 
@@ -54,7 +54,7 @@ class ImageUploadTest extends TestCase
             $this->assertNotNull($image->small_path);
             $this->assertNotNull($image->medium_path);
             $this->assertNotNull($image->large_path);
-            
+
             // Check files exist in storage
             Storage::disk('public')->assertExists($image->thumbnail_path);
             Storage::disk('public')->assertExists($image->small_path);
@@ -83,9 +83,9 @@ class ImageUploadTest extends TestCase
             'data' => [
                 'uploaded_count',
                 'images' => [
-                    '*' => ['id', 'urls']
-                ]
-            ]
+                    '*' => ['id', 'urls'],
+                ],
+            ],
         ]);
 
         $this->assertCount(2, $review->fresh()->images);
@@ -112,7 +112,7 @@ class ImageUploadTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJson([
-            'error' => 'Maximum 5 images allowed per review'
+            'error' => 'Maximum 5 images allowed per review',
         ]);
     }
 
@@ -120,12 +120,12 @@ class ImageUploadTest extends TestCase
     {
         $user = User::factory()->create();
         $review = Review::factory()->for($user)->create();
-        
+
         // Create an image with file paths
-        $imageService = new ImageService();
+        $imageService = new ImageService;
         $testFile = UploadedFile::fake()->image('test.jpg', 800, 600);
         $uploadResult = $imageService->uploadAndResize($testFile, 'reviews');
-        
+
         $image = ReviewImage::create([
             'review_id' => $review->id,
             'filename' => $uploadResult['filename'],
@@ -142,7 +142,7 @@ class ImageUploadTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'message' => 'Image deleted successfully'
+            'message' => 'Image deleted successfully',
         ]);
 
         $this->assertDatabaseMissing('review_images', ['id' => $image->id]);
@@ -221,7 +221,7 @@ class ImageUploadTest extends TestCase
 
     public function test_image_service_generates_correct_sizes()
     {
-        $imageService = new ImageService();
+        $imageService = new ImageService;
         $testFile = UploadedFile::fake()->image('test.jpg', 1600, 1200);
 
         $result = $imageService->uploadAndResize($testFile, 'test');
@@ -244,12 +244,12 @@ class ImageUploadTest extends TestCase
     {
         $user = User::factory()->create();
         $review = Review::factory()->for($user)->create();
-        
+
         // Create images with actual files
-        $imageService = new ImageService();
+        $imageService = new ImageService;
         $testFile = UploadedFile::fake()->image('test.jpg', 800, 600);
         $uploadResult = $imageService->uploadAndResize($testFile, 'reviews');
-        
+
         $image = ReviewImage::create([
             'review_id' => $review->id,
             'filename' => $uploadResult['filename'],
@@ -269,7 +269,7 @@ class ImageUploadTest extends TestCase
 
         // Check that images were also deleted
         $this->assertDatabaseMissing('review_images', ['id' => $image->id]);
-        
+
         // Check files were deleted from storage
         Storage::disk('public')->assertMissing($image->thumbnail_path);
         Storage::disk('public')->assertMissing($image->small_path);

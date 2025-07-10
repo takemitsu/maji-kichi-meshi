@@ -3,16 +3,16 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use PragmaRX\Google2FA\Google2FA;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-use BaconQrCode\Writer;
 use Illuminate\Support\Str;
+use PragmaRX\Google2FA\Google2FA;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -154,13 +154,13 @@ class User extends Authenticatable implements JWTSubject
      */
     public function generateTwoFactorSecret(): string
     {
-        $google2fa = new Google2FA();
+        $google2fa = new Google2FA;
         $secret = $google2fa->generateSecretKey();
-        
+
         $this->two_factor_secret = encrypt($secret);
         $this->two_factor_enabled = true;
         $this->save();
-        
+
         return $secret;
     }
 
@@ -177,13 +177,13 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getTwoFactorQrCodeUrl(): string
     {
-        $google2fa = new Google2FA();
+        $google2fa = new Google2FA;
         $secret = $this->getTwoFactorSecret();
-        
+
         if (!$secret) {
             throw new \Exception('Two-factor secret not set');
         }
-        
+
         return $google2fa->getQRCodeUrl(
             config('app.name'),
             $this->email,
@@ -198,10 +198,11 @@ class User extends Authenticatable implements JWTSubject
     {
         $renderer = new ImageRenderer(
             new RendererStyle(200),
-            new SvgImageBackEnd()
+            new SvgImageBackEnd
         );
-        
+
         $writer = new Writer($renderer);
+
         return $writer->writeString($this->getTwoFactorQrCodeUrl());
     }
 
@@ -210,13 +211,13 @@ class User extends Authenticatable implements JWTSubject
      */
     public function verifyTwoFactorCode(string $code): bool
     {
-        $google2fa = new Google2FA();
+        $google2fa = new Google2FA;
         $secret = $this->getTwoFactorSecret();
-        
+
         if (!$secret) {
             return false;
         }
-        
+
         return $google2fa->verifyKey($secret, $code);
     }
 
@@ -258,8 +259,8 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getRecoveryCodes(): array
     {
-        return $this->two_factor_recovery_codes 
-            ? json_decode(decrypt($this->two_factor_recovery_codes), true) 
+        return $this->two_factor_recovery_codes
+            ? json_decode(decrypt($this->two_factor_recovery_codes), true)
             : [];
     }
 
@@ -269,16 +270,16 @@ class User extends Authenticatable implements JWTSubject
     public function useRecoveryCode(string $code): bool
     {
         $recoveryCodes = $this->getRecoveryCodes();
-        
+
         if (!in_array($code, $recoveryCodes)) {
             return false;
         }
-        
+
         // Remove used recovery code
-        $remainingCodes = array_filter($recoveryCodes, fn($c) => $c !== $code);
+        $remainingCodes = array_filter($recoveryCodes, fn ($c) => $c !== $code);
         $this->two_factor_recovery_codes = encrypt(json_encode(array_values($remainingCodes)));
         $this->save();
-        
+
         return true;
     }
 
@@ -290,7 +291,7 @@ class User extends Authenticatable implements JWTSubject
         $newCodes = $this->generateRecoveryCodes();
         $this->two_factor_recovery_codes = encrypt(json_encode($newCodes));
         $this->save();
-        
+
         return $newCodes;
     }
 }

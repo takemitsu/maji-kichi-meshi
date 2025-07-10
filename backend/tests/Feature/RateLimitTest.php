@@ -2,15 +2,14 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Shop;
-use App\Models\Review;
 use App\Models\Category;
-use App\Models\Ranking;
+use App\Models\Review;
+use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class RateLimitTest extends TestCase
 {
@@ -19,18 +18,18 @@ class RateLimitTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
             'role' => 'user',
-            'status' => 'active'
+            'status' => 'active',
         ]);
-        
+
         $this->shop = Shop::factory()->create(['status' => 'active']);
         $this->category = Category::factory()->create();
-        
+
         // JWTトークンを生成
         $this->token = auth('api')->login($this->user);
-        
+
         // 画像アップロード用のストレージをfakeに設定
         Storage::fake('public');
     }
@@ -49,7 +48,7 @@ class RateLimitTest extends TestCase
                 'rating' => 5,
                 'repeat_intention' => 'また行く',
                 'memo' => 'Test review ' . ($i + 1),
-                'visited_at' => now()->format('Y-m-d')
+                'visited_at' => now()->format('Y-m-d'),
             ]);
 
             $response->assertStatus(201);
@@ -65,7 +64,7 @@ class RateLimitTest extends TestCase
             'rating' => 5,
             'repeat_intention' => 'また行く',
             'memo' => 'Test review 6',
-            'visited_at' => now()->format('Y-m-d')
+            'visited_at' => now()->format('Y-m-d'),
         ]);
 
         $response->assertStatus(429); // Too Many Requests
@@ -77,17 +76,17 @@ class RateLimitTest extends TestCase
         // まずレビューを作成
         $review = Review::factory()->create([
             'user_id' => $this->user->id,
-            'shop_id' => $this->shop->id
+            'shop_id' => $this->shop->id,
         ]);
 
         // 20回まで成功
         for ($i = 0; $i < 20; $i++) {
             $file = UploadedFile::fake()->image('test' . ($i + 1) . '.jpg');
-            
+
             $response = $this->withHeaders([
                 'Authorization' => 'Bearer ' . $this->token,
             ])->postJson("/api/reviews/{$review->id}/images", [
-                'images' => [$file]
+                'images' => [$file],
             ]);
 
             $response->assertStatus(201);
@@ -98,7 +97,7 @@ class RateLimitTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $this->token,
         ])->postJson("/api/reviews/{$review->id}/images", [
-            'images' => [$file]
+            'images' => [$file],
         ]);
 
         $response->assertStatus(429); // Too Many Requests
@@ -117,7 +116,7 @@ class RateLimitTest extends TestCase
                 'description' => 'Test description',
                 'address' => 'Test address',
                 'latitude' => 35.7022,
-                'longitude' => 139.7744
+                'longitude' => 139.7744,
             ]);
 
             $response->assertStatus(201);
@@ -132,7 +131,7 @@ class RateLimitTest extends TestCase
             'description' => 'Test description',
             'address' => 'Test address',
             'latitude' => 35.7022,
-            'longitude' => 139.7744
+            'longitude' => 139.7744,
         ]);
 
         $response->assertStatus(429); // Too Many Requests
@@ -152,7 +151,7 @@ class RateLimitTest extends TestCase
                 'rank_position' => $i + 1,
                 'title' => 'Test Ranking ' . ($i + 1),
                 'description' => 'Test description',
-                'is_public' => true
+                'is_public' => true,
             ]);
 
             $response->assertStatus(201);
@@ -168,7 +167,7 @@ class RateLimitTest extends TestCase
             'rank_position' => 11,
             'title' => 'Test Ranking 11',
             'description' => 'Test description',
-            'is_public' => true
+            'is_public' => true,
         ]);
 
         $response->assertStatus(429); // Too Many Requests
@@ -180,7 +179,7 @@ class RateLimitTest extends TestCase
         // 別のユーザーを作成
         $user2 = User::factory()->create([
             'role' => 'user',
-            'status' => 'active'
+            'status' => 'active',
         ]);
         $token2 = auth('api')->login($user2);
 
@@ -195,7 +194,7 @@ class RateLimitTest extends TestCase
                 'rating' => 5,
                 'repeat_intention' => 'また行く',
                 'memo' => 'User1 review ' . ($i + 1),
-                'visited_at' => now()->format('Y-m-d')
+                'visited_at' => now()->format('Y-m-d'),
             ]);
 
             $response->assertStatus(201);
@@ -212,7 +211,7 @@ class RateLimitTest extends TestCase
                 'rating' => 4,
                 'repeat_intention' => 'また行く',
                 'memo' => 'User2 review ' . ($i + 1),
-                'visited_at' => now()->format('Y-m-d')
+                'visited_at' => now()->format('Y-m-d'),
             ]);
 
             $response->assertStatus(201);
@@ -228,7 +227,7 @@ class RateLimitTest extends TestCase
             'rating' => 5,
             'repeat_intention' => 'また行く',
             'memo' => 'User1 review 6',
-            'visited_at' => now()->format('Y-m-d')
+            'visited_at' => now()->format('Y-m-d'),
         ]);
 
         $response->assertStatus(429);
@@ -243,7 +242,7 @@ class RateLimitTest extends TestCase
             'rating' => 4,
             'repeat_intention' => 'また行く',
             'memo' => 'User2 review 6',
-            'visited_at' => now()->format('Y-m-d')
+            'visited_at' => now()->format('Y-m-d'),
         ]);
 
         $response->assertStatus(429);

@@ -2,11 +2,11 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Shop;
 use App\Models\ReviewImage;
+use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AdminUserModelTest extends TestCase
 {
@@ -17,7 +17,7 @@ class AdminUserModelTest extends TestCase
     {
         $user = User::factory()->create([
             'role' => 'admin',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $this->assertEquals('admin', $user->role);
@@ -29,7 +29,7 @@ class AdminUserModelTest extends TestCase
     {
         $user = User::factory()->create([
             'role' => 'moderator',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $this->assertEquals('moderator', $user->role);
@@ -42,7 +42,7 @@ class AdminUserModelTest extends TestCase
     {
         $user = User::factory()->create([
             'role' => 'user',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $this->assertEquals('user', $user->role);
@@ -73,7 +73,7 @@ class AdminUserModelTest extends TestCase
     public function user_can_be_banned()
     {
         $user = User::factory()->create([
-            'status' => 'banned'
+            'status' => 'banned',
         ]);
 
         $this->assertEquals('banned', $user->status);
@@ -84,7 +84,7 @@ class AdminUserModelTest extends TestCase
     public function user_can_be_marked_as_deleted()
     {
         $user = User::factory()->create([
-            'status' => 'deleted'
+            'status' => 'deleted',
         ]);
 
         $this->assertEquals('deleted', $user->status);
@@ -108,7 +108,7 @@ class AdminUserModelTest extends TestCase
     {
         $user = User::factory()->create([
             'role' => 'admin',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $hiddenAttributes = $user->getHidden();
@@ -123,7 +123,7 @@ class AdminUserModelTest extends TestCase
     public function user_can_have_reviews_relationship()
     {
         $user = User::factory()->create();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\HasMany::class,
             $user->reviews()
@@ -134,7 +134,7 @@ class AdminUserModelTest extends TestCase
     public function user_can_have_rankings_relationship()
     {
         $user = User::factory()->create();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\HasMany::class,
             $user->rankings()
@@ -145,7 +145,7 @@ class AdminUserModelTest extends TestCase
     public function user_can_have_oauth_providers_relationship()
     {
         $user = User::factory()->create();
-        
+
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\HasMany::class,
             $user->oauthProviders()
@@ -176,14 +176,14 @@ class AdminUserModelTest extends TestCase
         $shop = Shop::factory()->create([
             'status' => 'hidden',
             'moderated_by' => $moderator->id,
-            'moderated_at' => now()
+            'moderated_at' => now(),
         ]);
 
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $shop->moderator()
         );
-        
+
         $this->assertEquals($moderator->id, $shop->moderator->id);
     }
 
@@ -191,18 +191,18 @@ class AdminUserModelTest extends TestCase
     public function review_image_model_has_correct_moderation_methods()
     {
         $review = \App\Models\Review::factory()->create();
-        
+
         $publishedImage = ReviewImage::factory()->create([
             'review_id' => $review->id,
-            'moderation_status' => 'published'
+            'moderation_status' => 'published',
         ]);
         $underReviewImage = ReviewImage::factory()->create([
             'review_id' => $review->id,
-            'moderation_status' => 'under_review'
+            'moderation_status' => 'under_review',
         ]);
         $rejectedImage = ReviewImage::factory()->create([
             'review_id' => $review->id,
-            'moderation_status' => 'rejected'
+            'moderation_status' => 'rejected',
         ]);
 
         $this->assertTrue($publishedImage->isPublished());
@@ -227,14 +227,14 @@ class AdminUserModelTest extends TestCase
             'review_id' => $review->id,
             'moderation_status' => 'rejected',
             'moderated_by' => $moderator->id,
-            'moderated_at' => now()
+            'moderated_at' => now(),
         ]);
 
         $this->assertInstanceOf(
             \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
             $image->moderator()
         );
-        
+
         $this->assertEquals($moderator->id, $image->moderator->id);
     }
 }

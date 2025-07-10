@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('small_path')->after('thumbnail_path');
             $table->integer('file_size')->unsigned()->after('large_path');
             $table->string('mime_type')->after('file_size');
-            
+
             // 不要になったカラムを削除
             $table->dropColumn('original_path');
         });
@@ -32,14 +32,14 @@ return new class extends Migration
         Schema::table('review_images', function (Blueprint $table) {
             // カラムを復元
             $table->string('original_path')->after('review_id');
-            
+
             // 追加したカラムを削除
             $table->dropColumn([
                 'filename',
-                'original_name', 
+                'original_name',
                 'small_path',
                 'file_size',
-                'mime_type'
+                'mime_type',
             ]);
         });
     }

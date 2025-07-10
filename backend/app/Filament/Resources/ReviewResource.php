@@ -3,30 +3,28 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ReviewResource\Pages;
-use App\Filament\Resources\ReviewResource\RelationManagers;
 use App\Models\Review;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\Filter;
 
 class ReviewResource extends Resource
 {
     protected static ?string $model = Review::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
-    
+
     protected static ?string $navigationGroup = 'コンテンツ管理';
-    
+
     protected static ?string $navigationLabel = 'レビュー管理';
-    
+
     protected static ?string $modelLabel = 'レビュー';
-    
+
     protected static ?string $pluralModelLabel = 'レビュー一覧';
 
     public static function form(Form $form): Form

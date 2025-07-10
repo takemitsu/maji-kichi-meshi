@@ -87,8 +87,8 @@ class Shop extends Model
                 )
             ) AS distance
         ", [$latitude, $longitude, $latitude])
-        ->having('distance', '<', $radiusKm)
-        ->orderBy('distance');
+            ->having('distance', '<', $radiusKm)
+            ->orderBy('distance');
     }
 
     /**

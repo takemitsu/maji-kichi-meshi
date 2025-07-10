@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('provider_id');
             $table->text('provider_token')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['provider', 'provider_id']);
             $table->index(['user_id', 'provider']);
         });

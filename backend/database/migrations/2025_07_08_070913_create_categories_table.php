@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->enum('type', ['basic', 'time', 'ranking'])->default('basic');
             $table->timestamps();
-            
+
             $table->index('type');
         });
     }

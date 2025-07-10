@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Review extends Model
 {
@@ -70,11 +70,11 @@ class Review extends Model
     public function scopeByDateRange($query, $startDate, $endDate = null)
     {
         $query->where('visited_at', '>=', $startDate);
-        
+
         if ($endDate) {
             $query->where('visited_at', '<=', $endDate);
         }
-        
+
         return $query;
     }
 

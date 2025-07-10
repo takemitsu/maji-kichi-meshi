@@ -9,8 +9,8 @@ use App\Models\ReviewImage;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
 {
@@ -81,18 +81,18 @@ class ReviewController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
         // Check if user already reviewed this shop
         $existingReview = Review::where('user_id', Auth::id())
-                               ->where('shop_id', $request->shop_id)
-                               ->first();
+            ->where('shop_id', $request->shop_id)
+            ->first();
 
         if ($existingReview) {
             return response()->json([
-                'error' => 'You have already reviewed this shop. Please update your existing review instead.'
+                'error' => 'You have already reviewed this shop. Please update your existing review instead.',
             ], 422);
         }
 
@@ -112,15 +112,16 @@ class ReviewController extends Controller
             }
 
             $review->load(['user', 'shop', 'images']);
-            
+
             DB::commit();
+
             return (new ReviewResource($review))->response()->setStatusCode(201);
-            
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'error' => 'Failed to create review',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -131,6 +132,7 @@ class ReviewController extends Controller
     public function show(Review $review)
     {
         $review->load(['user', 'shop', 'images']);
+
         return new ReviewResource($review);
     }
 
@@ -154,7 +156,7 @@ class ReviewController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
@@ -185,7 +187,7 @@ class ReviewController extends Controller
     public function myReviews(Request $request)
     {
         $query = Review::with(['shop', 'images'])
-                      ->byUser(Auth::id());
+            ->byUser(Auth::id());
 
         // Filter by shop
         if ($request->has('shop_id')) {
@@ -225,17 +227,17 @@ class ReviewController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
         // Check current image count
         $currentImageCount = $review->images()->count();
         $newImageCount = count($request->file('images'));
-        
+
         if ($currentImageCount + $newImageCount > 5) {
             return response()->json([
-                'error' => 'Maximum 5 images allowed per review'
+                'error' => 'Maximum 5 images allowed per review',
             ], 422);
         }
 
@@ -259,15 +261,15 @@ class ReviewController extends Controller
                             'id' => $image->id,
                             'urls' => $image->urls,
                         ];
-                    })
-                ]
+                    }),
+                ],
             ], 201);
-
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'error' => 'Failed to upload images',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

@@ -7,8 +7,6 @@ use App\Http\Resources\ShopResource;
 use App\Models\Shop;
 use App\Models\ShopImage;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,7 +26,7 @@ class ShopController extends Controller
 
         // Filter by category
         if ($request->has('category')) {
-            $query->whereHas('categories', function($q) use ($request) {
+            $query->whereHas('categories', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
         }
@@ -43,7 +41,7 @@ class ShopController extends Controller
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $radius = $request->get('radius', 5); // Default 5km radius
-            
+
             $query->near($latitude, $longitude, $radius);
         }
 
@@ -75,7 +73,7 @@ class ShopController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
@@ -97,6 +95,7 @@ class ShopController extends Controller
     public function show(Shop $shop)
     {
         $shop->load(['categories', 'publishedImages']);
+
         return new ShopResource($shop);
     }
 
@@ -122,7 +121,7 @@ class ShopController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
@@ -144,7 +143,7 @@ class ShopController extends Controller
     public function destroy(Shop $shop)
     {
         $shop->delete();
-        
+
         return response()->json(['message' => 'Shop deleted successfully']);
     }
 
@@ -161,17 +160,17 @@ class ShopController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
         // Check current image count
         $currentImageCount = $shop->images()->count();
         $newImageCount = count($request->file('images'));
-        
+
         if ($currentImageCount + $newImageCount > 10) {
             return response()->json([
-                'error' => 'Maximum 10 images allowed per shop'
+                'error' => 'Maximum 10 images allowed per shop',
             ], 422);
         }
 
@@ -198,15 +197,15 @@ class ShopController extends Controller
                             'urls' => $image->urls,
                             'sort_order' => $image->sort_order,
                         ];
-                    })
-                ]
+                    }),
+                ],
             ], 201);
-
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'error' => 'Failed to upload images',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -239,7 +238,7 @@ class ShopController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Validation failed',
-                'messages' => $validator->errors()
+                'messages' => $validator->errors(),
             ], 422);
         }
 
@@ -254,12 +253,12 @@ class ShopController extends Controller
             DB::commit();
 
             return response()->json(['message' => 'Images reordered successfully']);
-
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'error' => 'Failed to reorder images',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

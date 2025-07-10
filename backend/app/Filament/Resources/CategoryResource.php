@@ -2,27 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\Category;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Forms\Components\TextInput;
+use App\Models\Category;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
 class CategoryResource extends Resource
@@ -53,14 +48,14 @@ class CategoryResource extends Resource
                             $set('slug', Str::slug($state));
                         }
                     }),
-                
+
                 TextInput::make('slug')
                     ->label('スラッグ')
                     ->required()
                     ->maxLength(255)
                     ->unique(Category::class, 'slug', ignoreRecord: true)
                     ->helperText('URL用の識別子（英数字とハイフン）'),
-                
+
                 Select::make('type')
                     ->label('カテゴリタイプ')
                     ->options([
@@ -70,12 +65,12 @@ class CategoryResource extends Resource
                     ])
                     ->default('basic')
                     ->required(),
-                
+
                 Textarea::make('description')
                     ->label('説明')
                     ->rows(3)
                     ->columnSpanFull(),
-                
+
                 Toggle::make('is_active')
                     ->label('有効')
                     ->default(true),
@@ -90,12 +85,12 @@ class CategoryResource extends Resource
                     ->label('カテゴリ名')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('slug')
                     ->label('スラッグ')
                     ->searchable()
                     ->sortable(),
-                
+
                 BadgeColumn::make('type')
                     ->label('タイプ')
                     ->colors([
@@ -111,17 +106,17 @@ class CategoryResource extends Resource
                             default => $state,
                         };
                     }),
-                
+
                 TextColumn::make('shops_count')
                     ->label('店舗数')
                     ->counts('shops')
                     ->sortable(),
-                
+
                 TextColumn::make('rankings_count')
                     ->label('ランキング数')
                     ->counts('rankings')
                     ->sortable(),
-                
+
                 BadgeColumn::make('is_active')
                     ->label('状態')
                     ->colors([
@@ -131,13 +126,13 @@ class CategoryResource extends Resource
                     ->formatStateUsing(function ($state) {
                         return $state ? '有効' : '無効';
                     }),
-                
+
                 TextColumn::make('created_at')
                     ->label('作成日')
                     ->dateTime('Y-m-d H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 TextColumn::make('updated_at')
                     ->label('更新日')
                     ->dateTime('Y-m-d H:i')
@@ -152,7 +147,7 @@ class CategoryResource extends Resource
                         'time' => '時間帯タグ',
                         'ranking' => 'ランキング用',
                     ]),
-                
+
                 SelectFilter::make('is_active')
                     ->label('状態')
                     ->options([

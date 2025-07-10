@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Shop;
 use App\Models\Category;
 use App\Models\Ranking;
+use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -17,7 +17,7 @@ class RankingApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Run migrations and seed categories
         $this->artisan('migrate');
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
@@ -30,7 +30,7 @@ class RankingApiTest extends TestCase
         $shop1 = Shop::factory()->create();
         $shop2 = Shop::factory()->create();
         $category = Category::first();
-        
+
         $publicRanking = Ranking::factory()->create([
             'user_id' => $user->id,
             'shop_id' => $shop1->id,
@@ -38,7 +38,7 @@ class RankingApiTest extends TestCase
             'is_public' => true,
             'rank_position' => 1,
         ]);
-        
+
         $privateRanking = Ranking::factory()->create([
             'user_id' => $user->id,
             'shop_id' => $shop2->id,
@@ -50,23 +50,23 @@ class RankingApiTest extends TestCase
         $response = $this->getJson('/api/rankings');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         '*' => [
-                             'id',
-                             'rank_position',
-                             'title',
-                             'description',
-                             'is_public',
-                             'user',
-                             'shop',
-                             'category',
-                         ]
-                     ],
-                     'links',
-                     'meta'
-                 ]);
-        
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'rank_position',
+                        'title',
+                        'description',
+                        'is_public',
+                        'user',
+                        'shop',
+                        'category',
+                    ],
+                ],
+                'links',
+                'meta',
+            ]);
+
         $data = $response->json('data');
         $this->assertCount(1, $data);
         $this->assertEquals($publicRanking->id, $data[0]['id']);
@@ -90,13 +90,13 @@ class RankingApiTest extends TestCase
         $response = $this->getJson("/api/rankings/{$ranking->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'id' => $ranking->id,
-                         'rank_position' => 1,
-                         'is_public' => true,
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'id' => $ranking->id,
+                    'rank_position' => 1,
+                    'is_public' => true,
+                ],
+            ]);
     }
 
     /** @test */
@@ -124,14 +124,14 @@ class RankingApiTest extends TestCase
         $shop = Shop::factory()->create();
         $category1 = Category::first();
         $category2 = Category::skip(1)->first();
-        
+
         Ranking::factory()->create([
             'user_id' => $user->id,
             'shop_id' => $shop->id,
             'category_id' => $category1->id,
             'is_public' => true,
         ]);
-        
+
         Ranking::factory()->create([
             'user_id' => $user->id,
             'shop_id' => $shop->id,
@@ -154,14 +154,14 @@ class RankingApiTest extends TestCase
         $user2 = User::factory()->create();
         $shop = Shop::factory()->create();
         $category = Category::first();
-        
+
         Ranking::factory()->create([
             'user_id' => $user1->id,
             'shop_id' => $shop->id,
             'category_id' => $category->id,
             'is_public' => true,
         ]);
-        
+
         Ranking::factory()->create([
             'user_id' => $user2->id,
             'shop_id' => $shop->id,
@@ -212,14 +212,14 @@ class RankingApiTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-                 ->assertJson([
-                     'data' => [
-                         'rank_position' => 1,
-                         'is_public' => true,
-                         'title' => 'My favorite shop',
-                         'description' => 'This is my number one choice',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'rank_position' => 1,
+                    'is_public' => true,
+                    'title' => 'My favorite shop',
+                    'description' => 'This is my number one choice',
+                ],
+            ]);
 
         $this->assertDatabaseHas('rankings', [
             'user_id' => $user->id,
@@ -243,7 +243,7 @@ class RankingApiTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        
+
         $errors = $response->json('errors');
         $this->assertArrayHasKey('shop_id', $errors);
         $this->assertArrayHasKey('category_id', $errors);
@@ -267,7 +267,7 @@ class RankingApiTest extends TestCase
             'category_id' => $category->id,
             'rank_position' => 1,
         ]);
-        
+
         Ranking::factory()->create([
             'user_id' => $user->id,
             'shop_id' => $shop2->id,
@@ -322,13 +322,13 @@ class RankingApiTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'rank_position' => 2,
-                         'is_public' => true,
-                         'title' => 'Updated title',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'rank_position' => 2,
+                    'is_public' => true,
+                    'title' => 'Updated title',
+                ],
+            ]);
 
         $this->assertDatabaseHas('rankings', [
             'id' => $ranking->id,
@@ -358,7 +358,7 @@ class RankingApiTest extends TestCase
         ]);
 
         $response->assertStatus(403)
-                 ->assertJson(['error' => 'Unauthorized']);
+            ->assertJson(['error' => 'Unauthorized']);
     }
 
     /** @test */
@@ -376,7 +376,7 @@ class RankingApiTest extends TestCase
             'category_id' => $category->id,
             'rank_position' => 1,
         ]);
-        
+
         $ranking2 = Ranking::factory()->create([
             'user_id' => $user->id,
             'shop_id' => $shop2->id,
@@ -389,10 +389,10 @@ class RankingApiTest extends TestCase
         ])->deleteJson("/api/rankings/{$ranking1->id}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Ranking deleted successfully']);
+            ->assertJson(['message' => 'Ranking deleted successfully']);
 
         $this->assertDatabaseMissing('rankings', ['id' => $ranking1->id]);
-        
+
         // Check that remaining ranking position was adjusted
         $ranking2->refresh();
         $this->assertEquals(1, $ranking2->rank_position);
@@ -417,7 +417,7 @@ class RankingApiTest extends TestCase
         ])->deleteJson("/api/rankings/{$ranking->id}");
 
         $response->assertStatus(403)
-                 ->assertJson(['error' => 'Unauthorized']);
+            ->assertJson(['error' => 'Unauthorized']);
     }
 
     /** @test */
@@ -428,20 +428,20 @@ class RankingApiTest extends TestCase
         $shop1 = Shop::factory()->create();
         $shop2 = Shop::factory()->create();
         $category = Category::first();
-        
+
         // Create rankings for both users
         Ranking::factory()->create([
             'user_id' => $user1->id,
             'shop_id' => $shop1->id,
             'category_id' => $category->id,
         ]);
-        
+
         Ranking::factory()->create([
             'user_id' => $user2->id,
             'shop_id' => $shop2->id,
             'category_id' => $category->id,
         ]);
-        
+
         $token = JWTAuth::fromUser($user1);
 
         $response = $this->withHeaders([
@@ -461,14 +461,14 @@ class RankingApiTest extends TestCase
         $shop1 = Shop::factory()->create();
         $shop2 = Shop::factory()->create();
         $category = Category::first();
-        
+
         Ranking::factory()->create([
             'user_id' => $user->id,
             'shop_id' => $shop1->id,
             'category_id' => $category->id,
             'is_public' => true,
         ]);
-        
+
         Ranking::factory()->create([
             'user_id' => $user->id,
             'shop_id' => $shop2->id,
@@ -503,11 +503,11 @@ class RankingApiTest extends TestCase
         ])->getJson("/api/rankings/{$ranking->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'id' => $ranking->id,
-                         'is_public' => false,
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'id' => $ranking->id,
+                    'is_public' => false,
+                ],
+            ]);
     }
 }

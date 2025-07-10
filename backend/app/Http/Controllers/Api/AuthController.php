@@ -4,13 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponseTrait;
-use App\Models\User;
 use App\Models\OAuthProvider;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -36,11 +34,11 @@ class AuthController extends Controller
     {
         try {
             $socialiteUser = Socialite::driver($provider)->user();
-            
+
             // Check if OAuth provider already exists
             $oauthProvider = OAuthProvider::where([
                 'provider' => $provider,
-                'provider_id' => $socialiteUser->getId()
+                'provider_id' => $socialiteUser->getId(),
             ])->first();
 
             if ($oauthProvider) {
@@ -49,7 +47,7 @@ class AuthController extends Controller
             } else {
                 // Check if user exists by email
                 $user = User::where('email', $socialiteUser->getEmail())->first();
-                
+
                 if (!$user) {
                     // Create new user
                     $user = User::create([
@@ -80,17 +78,16 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'user_name' => $user->name,
                 'user_email' => $user->email,
-                'success' => 'true'
+                'success' => 'true',
             ]);
 
             return redirect($callbackUrl);
-
         } catch (\Exception $e) {
             // Build error callback URL
             $errorUrl = config('app.frontend_url') . '/auth/callback?' . http_build_query([
                 'error' => 'oauth_failed',
                 'error_description' => 'OAuth authentication failed',
-                'success' => 'false'
+                'success' => 'false',
             ]);
 
             return redirect($errorUrl);
@@ -107,6 +104,7 @@ class AuthController extends Controller
             if (!$user) {
                 return $this->unauthorizedResponse('User not authenticated');
             }
+
             return $this->successResponse($user);
         } catch (\Exception $e) {
             return $this->serverErrorResponse('Failed to retrieve user information');
@@ -120,6 +118,7 @@ class AuthController extends Controller
     {
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
+
             return $this->successResponse(null, 'Successfully logged out');
         } catch (JWTException $e) {
             return $this->serverErrorResponse('Failed to logout');
@@ -134,7 +133,7 @@ class AuthController extends Controller
         try {
             $token = JWTAuth::getToken();
             $payload = JWTAuth::getPayload($token);
-            
+
             return $this->successResponse([
                 'token' => $token->get(),
                 'payload' => $payload->toArray(),
@@ -146,5 +145,4 @@ class AuthController extends Controller
             return $this->unauthorizedResponse('Invalid token');
         }
     }
-
 }

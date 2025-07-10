@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\OAuthProvider;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Mockery;
@@ -17,10 +17,10 @@ class AuthenticationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Run migrations
         $this->artisan('migrate');
-        
+
         // Seed categories
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
     }
@@ -38,24 +38,24 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
         ]);
 
         $token = JWTAuth::fromUser($user);
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json'
+            'Accept' => 'application/json',
         ])->getJson('/api/auth/me');
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'success' => true,
-                     'data' => [
-                         'name' => 'Test User',
-                         'email' => 'test@example.com'
-                     ]
-                 ]);
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'name' => 'Test User',
+                    'email' => 'test@example.com',
+                ],
+            ]);
     }
 
     /** @test */
@@ -66,16 +66,15 @@ class AuthenticationTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json'
+            'Accept' => 'application/json',
         ])->postJson('/api/auth/logout');
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'success' => true,
-                     'message' => 'Successfully logged out'
-                 ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Successfully logged out',
+            ]);
     }
-
 
     /** @test */
     public function it_returns_error_for_invalid_oauth_provider()
@@ -83,9 +82,9 @@ class AuthenticationTest extends TestCase
         $response = $this->getJson('/api/auth/invalid-provider');
 
         $response->assertStatus(400)
-                 ->assertJson([
-                     'message' => 'Invalid OAuth provider'
-                 ]);
+            ->assertJson([
+                'message' => 'Invalid OAuth provider',
+            ]);
     }
 
     /** @test */
@@ -100,7 +99,7 @@ class AuthenticationTest extends TestCase
 
         $socialiteMock = Mockery::mock('Laravel\Socialite\Contracts\Factory');
         $socialiteMock->shouldReceive('driver->user')->andReturn($socialiteUser);
-        
+
         $this->app->instance('Laravel\Socialite\Contracts\Factory', $socialiteMock);
 
         // Set up Google OAuth config for testing
@@ -116,7 +115,7 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertRedirect();
-        
+
         // Check that the redirect URL contains the expected parameters
         $redirectUrl = $response->headers->get('Location');
         $this->assertStringContainsString('http://localhost:3000/auth/callback', $redirectUrl);
@@ -126,13 +125,13 @@ class AuthenticationTest extends TestCase
         // Verify user was created
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
-            'name' => 'Test User'
+            'name' => 'Test User',
         ]);
 
         // Verify OAuth provider was created
         $this->assertDatabaseHas('oauth_providers', [
             'provider' => 'google',
-            'provider_id' => '123456'
+            'provider_id' => '123456',
         ]);
     }
 
@@ -144,7 +143,7 @@ class AuthenticationTest extends TestCase
         $oauthProvider = OAuthProvider::factory()->create([
             'user_id' => $user->id,
             'provider' => 'google',
-            'provider_id' => '123456'
+            'provider_id' => '123456',
         ]);
 
         // Mock Socialite
@@ -156,7 +155,7 @@ class AuthenticationTest extends TestCase
 
         $socialiteMock = Mockery::mock('Laravel\Socialite\Contracts\Factory');
         $socialiteMock->shouldReceive('driver->user')->andReturn($socialiteUser);
-        
+
         $this->app->instance('Laravel\Socialite\Contracts\Factory', $socialiteMock);
 
         Config::set('services.google', [
@@ -171,7 +170,7 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertRedirect();
-        
+
         // Check that the redirect URL contains the expected parameters
         $redirectUrl = $response->headers->get('Location');
         $this->assertStringContainsString('http://localhost:3000/auth/callback', $redirectUrl);
@@ -190,22 +189,22 @@ class AuthenticationTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json'
+            'Accept' => 'application/json',
         ])->getJson('/api/auth/token-info');
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'success' => true
-                 ])
-                 ->assertJsonStructure([
-                     'success',
-                     'data' => [
-                         'token',
-                         'payload',
-                         'expires_at',
-                         'issued_at',
-                         'user_id'
-                     ]
-                 ]);
+            ->assertJson([
+                'success' => true,
+            ])
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'token',
+                    'payload',
+                    'expires_at',
+                    'issued_at',
+                    'user_id',
+                ],
+            ]);
     }
 }

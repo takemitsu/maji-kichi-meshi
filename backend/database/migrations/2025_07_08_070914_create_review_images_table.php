@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('medium_path');
             $table->string('thumbnail_path');
             $table->timestamps();
-            
+
             $table->index('review_id');
         });
     }

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Shop;
 use App\Models\Review;
+use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -16,7 +16,7 @@ class ReviewApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Run migrations and seed categories
         $this->artisan('migrate');
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
@@ -31,29 +31,29 @@ class ReviewApiTest extends TestCase
             'user_id' => $user->id,
             'shop_id' => $shop->id,
             'rating' => 4,
-            'repeat_intention' => 'また行く'
+            'repeat_intention' => 'また行く',
         ]);
 
         $response = $this->getJson('/api/reviews');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         '*' => [
-                             'id',
-                             'rating',
-                             'repeat_intention',
-                             'repeat_intention_text',
-                             'memo',
-                             'visited_at',
-                             'has_images',
-                             'user',
-                             'shop',
-                         ]
-                     ],
-                     'links',
-                     'meta'
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'rating',
+                        'repeat_intention',
+                        'repeat_intention_text',
+                        'memo',
+                        'visited_at',
+                        'has_images',
+                        'user',
+                        'shop',
+                    ],
+                ],
+                'links',
+                'meta',
+            ]);
     }
 
     /** @test */
@@ -65,19 +65,19 @@ class ReviewApiTest extends TestCase
             'user_id' => $user->id,
             'shop_id' => $shop->id,
             'rating' => 5,
-            'memo' => 'Great place!'
+            'memo' => 'Great place!',
         ]);
 
         $response = $this->getJson("/api/reviews/{$review->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'id' => $review->id,
-                         'rating' => 5,
-                         'memo' => 'Great place!',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'id' => $review->id,
+                    'rating' => 5,
+                    'memo' => 'Great place!',
+                ],
+            ]);
     }
 
     /** @test */
@@ -86,7 +86,7 @@ class ReviewApiTest extends TestCase
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
         $shop2 = Shop::factory()->create();
-        
+
         Review::factory()->create(['shop_id' => $shop1->id, 'user_id' => $user->id]);
         Review::factory()->create(['shop_id' => $shop2->id, 'user_id' => $user->id]);
 
@@ -103,7 +103,7 @@ class ReviewApiTest extends TestCase
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
-        
+
         Review::factory()->create(['rating' => 5, 'user_id' => $user->id, 'shop_id' => $shop->id]);
         Review::factory()->create(['rating' => 3, 'user_id' => $user->id, 'shop_id' => $shop->id]);
 
@@ -148,13 +148,13 @@ class ReviewApiTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-                 ->assertJson([
-                     'data' => [
-                         'rating' => 4,
-                         'repeat_intention' => 'また行く',
-                         'memo' => 'Good food!',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'rating' => 4,
+                    'repeat_intention' => 'また行く',
+                    'memo' => 'Good food!',
+                ],
+            ]);
 
         $this->assertDatabaseHas('reviews', [
             'user_id' => $user->id,
@@ -179,7 +179,7 @@ class ReviewApiTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        
+
         $errors = $response->json('messages');
         $this->assertArrayHasKey('shop_id', $errors);
         $this->assertArrayHasKey('rating', $errors);
@@ -211,9 +211,9 @@ class ReviewApiTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-                 ->assertJson([
-                     'error' => 'You have already reviewed this shop. Please update your existing review instead.'
-                 ]);
+            ->assertJson([
+                'error' => 'You have already reviewed this shop. Please update your existing review instead.',
+            ]);
     }
 
     /** @test */
@@ -225,7 +225,7 @@ class ReviewApiTest extends TestCase
             'user_id' => $user->id,
             'shop_id' => $shop->id,
             'rating' => 3,
-            'memo' => 'Original memo'
+            'memo' => 'Original memo',
         ]);
         $token = JWTAuth::fromUser($user);
 
@@ -238,13 +238,13 @@ class ReviewApiTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'rating' => 5,
-                         'memo' => 'Updated memo',
-                         'repeat_intention' => 'また行く',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'rating' => 5,
+                    'memo' => 'Updated memo',
+                    'repeat_intention' => 'また行く',
+                ],
+            ]);
 
         $this->assertDatabaseHas('reviews', [
             'id' => $review->id,
@@ -272,7 +272,7 @@ class ReviewApiTest extends TestCase
         ]);
 
         $response->assertStatus(403)
-                 ->assertJson(['error' => 'Unauthorized']);
+            ->assertJson(['error' => 'Unauthorized']);
     }
 
     /** @test */
@@ -291,7 +291,7 @@ class ReviewApiTest extends TestCase
         ])->deleteJson("/api/reviews/{$review->id}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Review deleted successfully']);
+            ->assertJson(['message' => 'Review deleted successfully']);
 
         $this->assertDatabaseMissing('reviews', ['id' => $review->id]);
     }
@@ -313,7 +313,7 @@ class ReviewApiTest extends TestCase
         ])->deleteJson("/api/reviews/{$review->id}");
 
         $response->assertStatus(403)
-                 ->assertJson(['error' => 'Unauthorized']);
+            ->assertJson(['error' => 'Unauthorized']);
     }
 
     /** @test */
@@ -322,11 +322,11 @@ class ReviewApiTest extends TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
         $shop = Shop::factory()->create();
-        
+
         // Create reviews for both users
         Review::factory()->create(['user_id' => $user1->id, 'shop_id' => $shop->id]);
         Review::factory()->create(['user_id' => $user2->id, 'shop_id' => $shop->id]);
-        
+
         $token = JWTAuth::fromUser($user1);
 
         $response = $this->withHeaders([

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Shop;
 use App\Models\Category;
+use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -16,7 +16,7 @@ class ShopApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Run migrations and seed categories
         $this->artisan('migrate');
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
@@ -32,23 +32,23 @@ class ShopApiTest extends TestCase
         $response = $this->getJson('/api/shops');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'data' => [
-                         '*' => [
-                             'id',
-                             'name',
-                             'description',
-                             'address',
-                             'latitude',
-                             'longitude',
-                             'average_rating',
-                             'review_count',
-                             'categories',
-                         ]
-                     ],
-                     'links',
-                     'meta'
-                 ]);
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'description',
+                        'address',
+                        'latitude',
+                        'longitude',
+                        'average_rating',
+                        'review_count',
+                        'categories',
+                    ],
+                ],
+                'links',
+                'meta',
+            ]);
     }
 
     /** @test */
@@ -59,12 +59,12 @@ class ShopApiTest extends TestCase
         $response = $this->getJson("/api/shops/{$shop->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'id' => $shop->id,
-                         'name' => 'Test Shop',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'id' => $shop->id,
+                    'name' => 'Test Shop',
+                ],
+            ]);
     }
 
     /** @test */
@@ -129,12 +129,12 @@ class ShopApiTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-                 ->assertJson([
-                     'data' => [
-                         'name' => 'New Shop',
-                         'address' => 'Test Address',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'name' => 'New Shop',
+                    'address' => 'Test Address',
+                ],
+            ]);
 
         $this->assertDatabaseHas('shops', [
             'name' => 'New Shop',
@@ -157,7 +157,7 @@ class ShopApiTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        
+
         // Debug: check actual validation errors
         $errors = $response->json('messages');
         $this->assertArrayHasKey('name', $errors);
@@ -181,12 +181,12 @@ class ShopApiTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'data' => [
-                         'name' => 'Updated Name',
-                         'description' => 'Updated Description',
-                     ]
-                 ]);
+            ->assertJson([
+                'data' => [
+                    'name' => 'Updated Name',
+                    'description' => 'Updated Description',
+                ],
+            ]);
 
         $this->assertDatabaseHas('shops', [
             'id' => $shop->id,
@@ -206,7 +206,7 @@ class ShopApiTest extends TestCase
         ])->deleteJson("/api/shops/{$shop->id}");
 
         $response->assertStatus(200)
-                 ->assertJson(['message' => 'Shop deleted successfully']);
+            ->assertJson(['message' => 'Shop deleted successfully']);
 
         $this->assertDatabaseMissing('shops', ['id' => $shop->id]);
     }

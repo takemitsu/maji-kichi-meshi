@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\ImageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
-use App\Services\ImageService;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewImage extends Model
 {
@@ -81,27 +81,23 @@ class ReviewImage extends Model
 
     /**
      * Create ReviewImage from uploaded file
-     *
-     * @param int $reviewId
-     * @param UploadedFile $file
-     * @return self
      */
     public static function createFromUpload(int $reviewId, UploadedFile $file): self
     {
-        $imageService = new ImageService();
-        
+        $imageService = new ImageService;
+
         // 画像ファイルのバリデーション
         if (!$imageService->isSupportedImageType($file->getMimeType())) {
             throw new \InvalidArgumentException('Unsupported image type: ' . $file->getMimeType());
         }
-        
+
         if (!$imageService->isValidSize($file->getSize())) {
             throw new \InvalidArgumentException('Image file size too large');
         }
-        
+
         // 画像をアップロード・リサイズ
         $uploadResult = $imageService->uploadAndResize($file, 'reviews');
-        
+
         // ReviewImageを作成
         return self::create([
             'review_id' => $reviewId,
@@ -128,7 +124,8 @@ class ReviewImage extends Model
             $this->large_path,
         ]);
 
-        $imageService = new ImageService();
+        $imageService = new ImageService;
+
         return $imageService->deleteImages($paths);
     }
 

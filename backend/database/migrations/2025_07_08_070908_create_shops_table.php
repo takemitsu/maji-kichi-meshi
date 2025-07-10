@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('google_place_id')->nullable()->unique();
             $table->boolean('is_closed')->default(false);
             $table->timestamps();
-            
+
             $table->index(['latitude', 'longitude']);
             $table->index('is_closed');
         });
