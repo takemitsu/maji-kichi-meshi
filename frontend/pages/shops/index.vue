@@ -20,7 +20,7 @@
           </div>
           <div v-if="authStore.isLoggedIn" class="mt-4 flex md:ml-4 md:mt-0">
             <button @click="showAddModal = true" class="btn-primary">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -45,8 +45,7 @@
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
-                  class="h-5 w-5 text-gray-400"
-                  fill="none"
+                  class="h-5 w-5 text-gray-400 fill-none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -121,8 +120,7 @@
       <!-- 空の状態 -->
       <div v-if="!loading && shops.length === 0" class="text-center py-12">
         <svg
-          class="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
+          class="mx-auto h-12 w-12 text-gray-400 fill-none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
@@ -143,7 +141,7 @@
         </p>
         <div class="mt-6">
           <button @click="showAddModal = true" class="btn-primary">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"

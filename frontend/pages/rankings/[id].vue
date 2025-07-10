@@ -22,8 +22,7 @@
             </li>
             <li>
               <svg
-                class="flex-shrink-0 h-5 w-5 text-gray-400"
-                fill="currentColor"
+                class="flex-shrink-0 h-5 w-5 text-gray-400 fill-current"
                 viewBox="0 0 20 20"
               >
                 <path
@@ -76,8 +75,7 @@
 
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
-                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                    fill="none"
+                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -93,8 +91,7 @@
 
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
-                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                    fill="none"
+                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -110,8 +107,7 @@
 
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
-                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                    fill="none"
+                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -134,7 +130,7 @@
             <!-- アクション（自分のランキングの場合のみ） -->
             <div v-if="isOwner" class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
               <NuxtLink :to="`/rankings/${ranking.id}/edit`" class="btn-secondary">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -148,7 +144,7 @@
                 @click="deleteRanking"
                 class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
               >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -213,8 +209,7 @@
                     <div class="ml-4 text-right">
                       <div v-if="ranking.shop.average_rating" class="flex items-center justify-end mb-1">
                         <svg
-                          class="w-4 h-4 text-yellow-400 mr-1"
-                          fill="currentColor"
+                          class="w-4 h-4 text-yellow-400 mr-1 fill-current"
                           viewBox="0 0 20 20"
                         >
                           <path
@@ -238,8 +233,7 @@
           <!-- 空の状態 -->
           <div v-else class="px-6 py-12 text-center">
             <svg
-              class="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
+              class="mx-auto h-12 w-12 text-gray-400 fill-none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >

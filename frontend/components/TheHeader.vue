@@ -83,9 +83,8 @@
                 </div>
                 <span class="hidden md:block">{{ authStore.user?.name }}</span>
                 <svg
-                  class="w-4 h-4 transition-transform"
+                  class="w-4 h-4 transition-transform fill-none"
                   :class="{ 'rotate-180': isUserMenuOpen }"
-                  fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -128,7 +127,7 @@
             @click="toggleMobileMenu"
             class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 fill-none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 v-if="!isMobileMenuOpen"
                 stroke-linecap="round"
@@ -276,15 +275,6 @@
 const authStore = useAuthStore()
 const router = useRouter()
 
-// デバッグログ (開発時のみ)
-if (process.dev) {
-  console.log('TheHeader component mounted')
-  console.log('Auth store state:', {
-    isLoggedIn: authStore.isLoggedIn,
-    token: !!authStore.token,
-    user: !!authStore.user,
-  })
-}
 
 // メニュー状態管理
 const isUserMenuOpen = ref(false)

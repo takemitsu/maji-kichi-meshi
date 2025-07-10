@@ -12,7 +12,7 @@
         <!-- エラー状態 -->
         <div v-else-if="error" class="space-y-4">
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="h-6 w-6 text-red-600 fill-none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -39,8 +39,7 @@
         <div v-else class="space-y-4">
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
             <svg
-              class="h-6 w-6 text-green-600"
-              fill="none"
+              class="h-6 w-6 text-green-600 fill-none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >

@@ -16,7 +16,7 @@
           </div>
           <div class="mt-4 flex md:ml-4 md:mt-0">
             <NuxtLink to="/rankings" class="btn-secondary">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -38,8 +38,7 @@
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
-                  class="h-5 w-5 text-gray-400"
-                  fill="none"
+                  class="h-5 w-5 text-gray-400 fill-none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -126,7 +125,7 @@
                   </div>
 
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -138,7 +137,7 @@
                   </div>
 
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -150,7 +149,7 @@
                   </div>
 
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -206,8 +205,7 @@
                         class="flex items-center text-xs text-gray-500"
                       >
                         <svg
-                          class="w-3 h-3 text-yellow-400 mr-1"
-                          fill="currentColor"
+                          class="w-3 h-3 text-yellow-400 mr-1 fill-current"
                           viewBox="0 0 20 20"
                         >
                           <path
@@ -245,8 +243,7 @@
       <!-- 空の状態 -->
       <div v-if="!loading && rankings.length === 0" class="text-center py-12">
         <svg
-          class="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
+          class="mx-auto h-12 w-12 text-gray-400 fill-none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
@@ -273,7 +270,7 @@
         </p>
         <div class="mt-6">
           <NuxtLink to="/rankings/create" class="btn-primary">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"

@@ -17,8 +17,7 @@
             </li>
             <li>
               <svg
-                class="flex-shrink-0 h-5 w-5 text-gray-400"
-                fill="currentColor"
+                class="flex-shrink-0 h-5 w-5 text-gray-400 fill-current"
                 viewBox="0 0 20 20"
               >
                 <path
@@ -46,8 +45,7 @@
               <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
-                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                    fill="none"
+                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -68,8 +66,7 @@
                 </div>
                 <div v-if="shop.phone" class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
-                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                    fill="none"
+                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -87,7 +84,7 @@
             <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
               <template v-if="authStore.isLoggedIn">
                 <button @click="editShop" class="btn-secondary">
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -98,7 +95,7 @@
                   編集
                 </button>
                 <button @click="addReview" class="btn-primary">
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -126,8 +123,7 @@
               <!-- 画像プレースホルダー -->
               <div class="mb-6 h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                 <svg
-                  class="w-16 h-16 text-gray-400"
-                  fill="none"
+                  class="w-16 h-16 text-gray-400 fill-none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -237,10 +233,11 @@
                 <a
                   :href="`https://www.google.com/maps/place/?q=place_id:${shop.google_place_id}`"
                   target="_blank"
+                  rel="noopener noreferrer"
                   class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
                 >
                   Google Mapsで開く
-                  <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="ml-1 w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -299,8 +296,7 @@
 
           <div v-else class="px-6 py-8 text-center">
             <svg
-              class="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
+              class="mx-auto h-12 w-12 text-gray-400 fill-none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >

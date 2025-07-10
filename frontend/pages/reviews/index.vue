@@ -20,7 +20,7 @@
           </div>
           <div v-if="authStore.isLoggedIn" class="mt-4 flex md:ml-4 md:mt-0">
             <NuxtLink to="/reviews/create" class="btn-primary">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -47,8 +47,7 @@
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
-                  class="h-5 w-5 text-gray-400"
-                  fill="none"
+                  class="h-5 w-5 text-gray-400 fill-none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -131,8 +130,7 @@
                   <template v-else>
                     <div class="w-full h-full flex items-center justify-center">
                       <svg
-                        class="w-8 h-8 text-gray-400"
-                        fill="none"
+                        class="w-8 h-8 text-gray-400 fill-none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
@@ -208,9 +206,8 @@
                     <svg
                       v-for="star in 5"
                       :key="star"
-                      class="w-5 h-5"
-                      :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
-                      fill="currentColor"
+                      class="w-5 h-5 fill-current"
+                      :class="star <= editingReview.rating ? 'text-yellow-400' : 'text-gray-300'"
                       viewBox="0 0 20 20"
                     >
                       <path
@@ -298,8 +295,7 @@
       <!-- 空の状態 -->
       <div v-if="!loading && reviews.length === 0" class="text-center py-12">
         <svg
-          class="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
+          class="mx-auto h-12 w-12 text-gray-400 fill-none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
@@ -322,7 +318,7 @@
         </p>
         <div v-if="authStore.isLoggedIn" class="mt-6">
           <NuxtLink to="/reviews/create" class="btn-primary">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"

@@ -57,13 +57,12 @@
                   class="focus:outline-none"
                 >
                   <svg
-                    class="w-8 h-8 transition-colors"
+                    class="w-8 h-8 transition-colors fill-current"
                     :class="
                       star <= form.rating
                         ? 'text-yellow-400 hover:text-yellow-500'
                         : 'text-gray-300 hover:text-gray-400'
                     "
-                    fill="currentColor"
                     viewBox="0 0 20 20"
                   >
                     <path
@@ -150,7 +149,7 @@
                   @click="deleteExistingImage(image.id)"
                   class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"

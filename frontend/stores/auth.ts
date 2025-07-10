@@ -87,21 +87,11 @@ export const useAuthStore = defineStore('auth', {
     },
 
     initAuth() {
-      if (process.dev) {
-        console.log('Auth store initAuth called')
-      }
       if (process.client) {
         const token = localStorage.getItem('auth_token')
         const userData = localStorage.getItem('user')
         const expiresAt = localStorage.getItem('token_expires_at')
 
-        if (process.dev) {
-          console.log('LocalStorage values:', {
-            token: !!token,
-            userData: !!userData,
-            expiresAt: !!expiresAt,
-          })
-        }
 
         if (token && userData && expiresAt) {
           try {
@@ -125,10 +115,6 @@ export const useAuthStore = defineStore('auth', {
           } catch (error) {
             console.error('Failed to parse auth data:', error)
             this.clearAuth()
-          }
-        } else {
-          if (process.dev) {
-            console.log('No auth data found in localStorage, staying unauthenticated')
           }
         }
       }

@@ -113,8 +113,7 @@
               />
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg
-                  class="h-5 w-5 text-gray-400"
-                  fill="none"
+                  class="h-5 w-5 text-gray-400 fill-none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -183,7 +182,7 @@
                 <div class="flex items-center space-x-3">
                   <!-- ドラッグハンドル -->
                   <div class="cursor-move text-gray-400 group-hover:text-gray-600">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
                       <path
                         d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
                       ></path>
@@ -210,7 +209,7 @@
                   type="button"
                   class="text-red-600 hover:text-red-800"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -226,8 +225,7 @@
           <!-- 空の状態 -->
           <div v-else class="text-center py-6 text-gray-500">
             <svg
-              class="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
+              class="mx-auto h-12 w-12 text-gray-400 fill-none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >

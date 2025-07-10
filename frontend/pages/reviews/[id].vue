@@ -19,8 +19,7 @@
             </li>
             <li>
               <svg
-                class="flex-shrink-0 h-5 w-5 text-gray-400"
-                fill="currentColor"
+                class="flex-shrink-0 h-5 w-5 text-gray-400 fill-current"
                 viewBox="0 0 20 20"
               >
                 <path
@@ -51,8 +50,7 @@
               <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
-                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                    fill="none"
+                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -73,8 +71,7 @@
                 </div>
                 <div class="mt-2 flex items-center text-sm text-gray-500">
                   <svg
-                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
-                    fill="none"
+                    class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -94,7 +91,7 @@
               class="mt-4 flex space-x-3 md:ml-4 md:mt-0"
             >
               <NuxtLink :to="`/reviews/${review.id}/edit`" class="btn-secondary">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -108,7 +105,7 @@
                 @click="deleteReview"
                 class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
               >
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -137,9 +134,8 @@
                     <svg
                       v-for="star in 5"
                       :key="star"
-                      class="w-6 h-6"
+                      class="w-6 h-6 fill-current"
                       :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
-                      fill="currentColor"
                       viewBox="0 0 20 20"
                     >
                       <path

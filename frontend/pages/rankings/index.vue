@@ -16,7 +16,7 @@
           </div>
           <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
             <NuxtLink to="/rankings/public" class="btn-secondary">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -33,7 +33,7 @@
               公開ランキング
             </NuxtLink>
             <NuxtLink to="/rankings/create" class="btn-primary">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -55,8 +55,7 @@
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
-                  class="h-5 w-5 text-gray-400"
-                  fill="none"
+                  class="h-5 w-5 text-gray-400 fill-none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -144,7 +143,7 @@
 
                 <div class="flex items-center space-x-4 mt-3">
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -155,7 +154,7 @@
                     {{ ranking.category?.name || '総合' }}
                   </div>
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -166,7 +165,7 @@
                     {{ ranking.shop ? 1 : 0 }}店舗
                   </div>
                   <div class="flex items-center text-sm text-gray-500">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -268,8 +267,7 @@
       <!-- 空の状態 -->
       <div v-if="!loading && rankings.length === 0" class="text-center py-12">
         <svg
-          class="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
+          class="mx-auto h-12 w-12 text-gray-400 fill-none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
@@ -290,7 +288,7 @@
         </p>
         <div class="mt-6">
           <NuxtLink to="/rankings/create" class="btn-primary">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"

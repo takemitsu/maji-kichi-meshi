@@ -41,7 +41,7 @@
               type="button"
               class="text-gray-400 hover:text-gray-600"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -68,8 +68,7 @@
                 />
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                   <svg
-                    class="h-5 w-5 text-gray-400"
-                    fill="none"
+                    class="h-5 w-5 text-gray-400 fill-none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -162,13 +161,12 @@
                   :aria-pressed="form.rating === star"
                 >
                   <svg
-                    class="w-8 h-8 transition-colors"
+                    class="w-8 h-8 transition-colors fill-current"
                     :class="
                       star <= form.rating
                         ? 'text-yellow-400 hover:text-yellow-500'
                         : 'text-gray-300 hover:text-gray-400'
                     "
-                    fill="currentColor"
                     viewBox="0 0 20 20"
                   >
                     <path
