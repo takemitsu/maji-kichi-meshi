@@ -177,11 +177,6 @@ defineEmits<Emits>()
 
 const authStore = useAuthStore()
 
-// const emit = defineEmits<{
-//   edit: [shop: any]
-//   delete: [shop: any]
-//   addReview: [shop: any]
-// }>()
 
 // アクションメニュー制御
 const isActionMenuOpen = ref(false)

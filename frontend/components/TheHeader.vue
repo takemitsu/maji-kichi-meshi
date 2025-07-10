@@ -78,7 +78,7 @@
               >
                 <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span class="text-white text-sm font-medium">
-                    {{ authStore.user?.name?.charAt(0).toUpperCase() }}
+                    {{ authStore.user?.name?.charAt(0)?.toUpperCase() || 'U' }}
                   </span>
                 </div>
                 <span class="hidden md:block">{{ authStore.user?.name }}</span>
@@ -227,7 +227,7 @@
                     class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3"
                   >
                     <span class="text-white text-sm font-medium">
-                      {{ authStore.user?.name?.charAt(0).toUpperCase() }}
+                      {{ authStore.user?.name?.charAt(0)?.toUpperCase() || 'U' }}
                     </span>
                   </div>
                   <div class="flex-1 min-w-0">

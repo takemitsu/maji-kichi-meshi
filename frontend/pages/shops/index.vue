@@ -176,7 +176,6 @@ const searchLoading = ref(false)
 const error = ref('')
 const searchQuery = ref('')
 const selectedCategory = ref('')
-// ShopCardコンポーネントを使用するため、activeActionMenuは不要
 const showAddModal = ref(false)
 
 // ページネーション
