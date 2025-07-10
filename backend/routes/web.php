@@ -12,7 +12,7 @@ Route::get('/', function () {
         'api_documentation' => [
             'base_url' => request()->getSchemeAndHttpHost() . '/api',
             'authentication' => 'OAuth 2.0 via /api/auth/{provider}',
-            'supported_providers' => ['google', 'github', 'line', 'twitter'],
+            'supported_providers' => ['google'],
             'endpoints' => [
                 'shops' => '/api/shops',
                 'categories' => '/api/categories', 
@@ -28,8 +28,8 @@ Route::get('/', function () {
 // API専用プロジェクトだが、auth middlewareのデフォルト動作でroute('login')が参照されるため定義
 Route::get('/login', function () {
     return response()->json([
-        'message' => 'This is an API-only application. Please use OAuth authentication via /api/auth/{provider}',
-        'oauth_providers' => ['google', 'github', 'line', 'twitter']
+        'message' => 'This is an API-only application. Please use OAuth authentication via /api/auth/google',
+        'oauth_providers' => ['google']
     ], 401);
 })->name('login');
 
