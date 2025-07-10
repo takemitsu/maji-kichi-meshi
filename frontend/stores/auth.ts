@@ -110,7 +110,7 @@ export const useAuthStore = defineStore('auth', {
 
             // トークンが期限切れかチェック
             if (Date.now() >= expirationTime) {
-              console.log('Token has expired, clearing auth')
+              console.info('Token has expired, clearing auth')
               this.clearAuth()
               return
             }
@@ -145,7 +145,7 @@ export const useAuthStore = defineStore('auth', {
 
         if (timeUntilExpiry > 0) {
           this.autoLogoutTimer = setTimeout(() => {
-            console.log('Token expired, auto-logout')
+            console.info('Token expired, auto-logout')
             this.logout()
           }, timeUntilExpiry)
         }
@@ -161,7 +161,7 @@ export const useAuthStore = defineStore('auth', {
 
     checkTokenExpiration() {
       if (this.isTokenExpired) {
-        console.log('Token expired during check, logging out')
+        console.info('Token expired during check, logging out')
         this.logout()
         return false
       }

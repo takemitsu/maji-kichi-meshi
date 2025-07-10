@@ -381,7 +381,6 @@ const loadRecentReviews = async () => {
 // アクション
 const editShop = () => {
   // 編集モーダルまたは編集ページへ遷移（今後実装）
-  console.log('Edit shop:', shop.value)
 }
 
 const addReview = () => {

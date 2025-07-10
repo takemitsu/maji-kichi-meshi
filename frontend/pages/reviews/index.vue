@@ -468,7 +468,6 @@ const getRepeatIntentionText = (intention: string) => {
 const openImageModal = (image: ReviewImage) => {
   selectedImage.value = image
   // 将来的にはモーダルコンポーネントを表示
-  console.log('Image modal opened:', image)
 }
 
 // レビュー詳細ページに遷移
@@ -480,11 +479,10 @@ const navigateToReview = (review: Review) => {
 const handleShopImageError = (event: Event) => {
   const img = event.target as HTMLImageElement
   img.style.display = 'none'
-  console.log('Shop image failed to load')
 }
 
-const handleReviewImageError = (image: ReviewImage) => {
-  console.log('Review image failed to load:', image)
+const handleReviewImageError = (_image: ReviewImage) => {
+  // 画像読み込みエラーの処理（将来的に代替画像表示など）
 }
 
 // 初期化

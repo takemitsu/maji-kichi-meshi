@@ -248,8 +248,6 @@ const loadShops = async () => {
     console.error('Failed to load shops:', err)
     if (err && typeof err === 'object' && 'status' in err) {
       const errorObj = err as { status: number; data?: unknown }
-      console.error('Error status:', errorObj.status)
-      console.error('Error data:', errorObj.data)
       error.value = `店舗データの取得に失敗しました (${errorObj.status})`
     } else {
       error.value = '店舗データの取得に失敗しました'
@@ -270,9 +268,8 @@ const loadCategories = async () => {
 }
 
 // 店舗操作
-const editShop = (shop: Shop) => {
+const editShop = (_shop: Shop) => {
   // 編集モーダルを開く（今後実装）
-  console.log('Edit shop:', shop)
 }
 
 const deleteShop = async (shop: Shop) => {

@@ -163,10 +163,18 @@ interface Props {
   showQuickActions?: boolean
 }
 
+interface Emits {
+  edit: [shop: Shop]
+  delete: [shop: Shop]
+  addReview: [shop: Shop]
+}
+
 const props = withDefaults(defineProps<Props>(), {
   showActions: true,
   showQuickActions: false,
 })
+
+defineEmits<Emits>()
 
 const authStore = useAuthStore()
 
