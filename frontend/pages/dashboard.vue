@@ -176,7 +176,7 @@ const stats = ref({
 })
 
 // データ取得
-const { $api } = useNuxtApp()
+// const { $api } = useNuxtApp() // 将来のAPI実装時に使用
 
 onMounted(async () => {
   try {

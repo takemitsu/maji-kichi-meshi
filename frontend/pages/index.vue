@@ -99,14 +99,14 @@ if (authStore.isLoggedIn) {
   await navigateTo('/dashboard')
 }
 
-// ボタンのクリックハンドラー
-const handleFeatureClick = (route: string) => {
-  if (authStore.isLoggedIn) {
-    navigateTo(route)
-  } else {
-    navigateTo('/login')
-  }
-}
+// ボタンのクリックハンドラー（将来のボタン実装時に使用）
+// const handleFeatureClick = (route: string) => {
+//   if (authStore.isLoggedIn) {
+//     navigateTo(route)
+//   } else {
+//     navigateTo('/login')
+//   }
+// }
 
 // メタデータ設定
 useHead({

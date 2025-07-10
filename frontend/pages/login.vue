@@ -113,7 +113,7 @@ definePageMeta({
   layout: 'auth',
 })
 
-const authStore = useAuthStore()
+// const authStore = useAuthStore() // 将来のauth機能実装時に使用
 
 // エラーハンドリング
 const route = useRoute()

@@ -316,9 +316,9 @@ const openImageModal = (image: any) => {
   selectedImage.value = image
 }
 
-const closeImageModal = () => {
-  selectedImage.value = null
-}
+// const closeImageModal = () => {
+//   selectedImage.value = null
+// }
 
 // 画像エラーハンドリング
 const handleImageError = (image: any) => {
