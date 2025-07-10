@@ -45,7 +45,7 @@
                 <h3 class="text-lg font-medium text-gray-900 mb-2">3.1 利用資格</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
                   <li>本規約に同意した方</li>
-                  <li>Google、GitHub、LINE、Twitter等のOAuth認証が可能な方</li>
+                  <li>GoogleのOAuth認証が可能な方</li>
                   <li>法的に有効な契約を締結する能力を有する方</li>
                 </ul>
               </div>

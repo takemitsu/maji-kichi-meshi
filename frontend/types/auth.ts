@@ -42,4 +42,4 @@ export interface LoginError {
   error_description?: string
 }
 
-export type AuthProvider = 'google' | 'github' | 'line' | 'twitter'
+export type AuthProvider = 'google'

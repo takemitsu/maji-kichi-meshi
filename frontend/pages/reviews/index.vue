@@ -207,7 +207,7 @@
                       v-for="star in 5"
                       :key="star"
                       class="w-5 h-5 fill-current"
-                      :class="star <= editingReview.rating ? 'text-yellow-400' : 'text-gray-300'"
+                      :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
                       viewBox="0 0 20 20"
                     >
                       <path

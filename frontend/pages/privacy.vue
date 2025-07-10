@@ -22,7 +22,7 @@
               <div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">2.1 OAuth認証情報</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
-                  <li>Google、GitHub、LINE、Twitter等のOAuth認証で取得する公開情報</li>
+                  <li>GoogleのOAuth認証で取得する公開情報</li>
                   <li>ユーザーID、表示名、メールアドレス、プロフィール画像URL等</li>
                 </ul>
               </div>
