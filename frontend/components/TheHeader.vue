@@ -65,11 +65,11 @@
                             <button
                                 @click="toggleUserMenu"
                                 class="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-900 focus:outline-none">
-                                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                                    <span class="text-white text-sm font-medium">
-                                        {{ authStore.user?.name?.charAt(0)?.toUpperCase() || 'U' }}
-                                    </span>
-                                </div>
+                                <UserAvatar
+                                    :user-name="authStore.user?.name || 'ユーザー'"
+                                    :profile-image-url="userProfileImageUrl"
+                                    size="sm"
+                                />
                                 <span class="hidden md:block">{{ authStore.user?.name }}</span>
                                 <svg
                                     class="w-4 h-4 transition-transform fill-none"
@@ -201,11 +201,12 @@
                             <!-- モバイル用ユーザーメニュー -->
                             <div class="border-t border-gray-200 pt-4 mt-4">
                                 <div class="flex items-center px-3 py-2">
-                                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                                        <span class="text-white text-sm font-medium">
-                                            {{ authStore.user?.name?.charAt(0)?.toUpperCase() || 'U' }}
-                                        </span>
-                                    </div>
+                                    <UserAvatar
+                                        :user-name="authStore.user?.name || 'ユーザー'"
+                                        :profile-image-url="userProfileImageUrl"
+                                        size="sm"
+                                        class="mr-3"
+                                    />
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-gray-900 truncate">
                                             {{ authStore.user?.name }}
@@ -248,11 +249,29 @@
 <script setup lang="ts">
 const authStore = useAuthStore()
 const router = useRouter()
+const { $api } = useNuxtApp()
 
 // メニュー状態管理
 const isUserMenuOpen = ref(false)
 const isMobileMenuOpen = ref(false)
 const userMenuRef = ref<HTMLElement>()
+
+// プロフィール画像URL
+const userProfileImageUrl = ref<string | null>(null)
+
+// プロフィール画像URLを取得
+const fetchUserProfileImageUrl = async () => {
+    if (!authStore.isLoggedIn) return
+    
+    try {
+        const profile = await $api.profile.get()
+        if (profile.data.profile_image?.urls?.small) {
+            userProfileImageUrl.value = profile.data.profile_image.urls.small
+        }
+    } catch (error) {
+        console.error('プロフィール画像取得エラー:', error)
+    }
+}
 
 // ユーザーメニュー制御
 const toggleUserMenu = () => {
@@ -288,11 +307,24 @@ const handleClickOutside = (event: Event) => {
 // イベントリスナー設定
 onMounted(() => {
     document.addEventListener('click', handleClickOutside)
+    fetchUserProfileImageUrl()
 })
 
 onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside)
 })
+
+// 認証状態変更時にプロフィール画像を更新
+watch(
+    () => authStore.isLoggedIn,
+    (isLoggedIn) => {
+        if (isLoggedIn) {
+            fetchUserProfileImageUrl()
+        } else {
+            userProfileImageUrl.value = null
+        }
+    },
+)
 
 // ルート変更時にモバイルメニューを閉じる
 watch(

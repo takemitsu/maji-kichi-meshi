@@ -8,6 +8,10 @@ export interface User {
     email_verified_at?: string
     created_at?: string
     updated_at?: string
+    profile_image?: {
+        urls: Record<string, string>
+        uploaded_at: string
+    }
 }
 
 export interface AuthState {

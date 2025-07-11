@@ -22,7 +22,12 @@
             <!-- プロフィール画像セクション -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-lg font-semibold mb-4">プロフィール画像</h2>
-                <p class="text-gray-600 text-sm">近日実装予定</p>
+                <ProfileImageUpload
+                    :user-name="authStore.user?.name || ''"
+                    :current-image-url="currentProfileImageUrl"
+                    @uploaded="handleImageUploaded"
+                    @deleted="handleImageDeleted"
+                />
             </div>
         </div>
     </div>
@@ -35,12 +40,26 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const displayName = ref(authStore.user?.name || '')
+const { $api } = useNuxtApp()
 
+const displayName = ref(authStore.user?.name || '')
+const currentProfileImageUrl = ref<string | null>(null)
+
+// プロフィール画像URLを取得
+const fetchProfileImageUrl = async () => {
+    try {
+        const profile = await $api.profile.get()
+        if (profile.data.profile_image?.urls?.medium) {
+            currentProfileImageUrl.value = profile.data.profile_image.urls.medium
+        }
+    } catch (error) {
+        console.error('プロフィール画像取得エラー:', error)
+    }
+}
+
+// 表示名更新
 const updateDisplayName = async () => {
     try {
-        // プロフィール更新APIを呼び出し
-        const { $api } = useNuxtApp()
         const response = await $api.profile.update({ name: displayName.value })
 
         // 認証ストアのユーザー情報を更新
@@ -54,6 +73,21 @@ const updateDisplayName = async () => {
         displayName.value = authStore.user?.name || ''
     }
 }
+
+// プロフィール画像アップロード時の処理
+const handleImageUploaded = (imageUrls: Record<string, string>) => {
+    currentProfileImageUrl.value = imageUrls.medium || imageUrls.large || null
+}
+
+// プロフィール画像削除時の処理
+const handleImageDeleted = () => {
+    currentProfileImageUrl.value = null
+}
+
+// 初期データ取得
+onMounted(() => {
+    fetchProfileImageUrl()
+})
 
 // メタデータ設定
 useHead({
