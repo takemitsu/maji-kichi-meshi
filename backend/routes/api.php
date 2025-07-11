@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ImageController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShopController;
@@ -101,4 +102,16 @@ Route::middleware('auth:api')->group(function () {
     // Statistics
     Route::get('/stats/dashboard', [StatsController::class, 'dashboard'])
         ->middleware('throttle:100,60,user');  // 読み取りは緩め
+
+    // Profile management
+    Route::get('/profile', [ProfileController::class, 'show'])
+        ->middleware('throttle:100,60,user');
+    Route::put('/profile', [ProfileController::class, 'update'])
+        ->middleware('throttle:20,60,user');
+    Route::post('/profile/image', [ProfileController::class, 'uploadProfileImage'])
+        ->middleware('throttle:10,60,user');
+    Route::delete('/profile/image', [ProfileController::class, 'deleteProfileImage'])
+        ->middleware('throttle:10,60,user');
+    Route::get('/profile/image-url', [ProfileController::class, 'getProfileImageUrl'])
+        ->middleware('throttle:100,60,user');
 });

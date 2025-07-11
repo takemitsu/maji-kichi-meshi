@@ -10,6 +10,7 @@ use BaconQrCode\Writer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -34,6 +35,15 @@ class User extends Authenticatable implements JWTSubject
         'two_factor_recovery_codes',
         'two_factor_confirmed_at',
         'two_factor_enabled',
+        'profile_image_filename',
+        'profile_image_original_name',
+        'profile_image_thumbnail_path',
+        'profile_image_small_path',
+        'profile_image_medium_path',
+        'profile_image_large_path',
+        'profile_image_file_size',
+        'profile_image_mime_type',
+        'profile_image_uploaded_at',
     ];
 
     /**
@@ -62,6 +72,7 @@ class User extends Authenticatable implements JWTSubject
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'two_factor_enabled' => 'boolean',
+            'profile_image_uploaded_at' => 'datetime',
         ];
     }
 
@@ -293,5 +304,84 @@ class User extends Authenticatable implements JWTSubject
         $this->save();
 
         return $newCodes;
+    }
+
+    // =============================================================================
+    // Profile Image Methods
+    // =============================================================================
+
+    /**
+     * Check if user has a profile image
+     */
+    public function hasProfileImage(): bool
+    {
+        return !is_null($this->profile_image_filename);
+    }
+
+    /**
+     * Get profile image URLs
+     */
+    public function getProfileImageUrls(): array
+    {
+        if (!$this->hasProfileImage()) {
+            return [];
+        }
+
+        return [
+            'thumbnail' => $this->profile_image_thumbnail_path ? url(Storage::url($this->profile_image_thumbnail_path)) : null,
+            'small' => $this->profile_image_small_path ? url(Storage::url($this->profile_image_small_path)) : null,
+            'medium' => $this->profile_image_medium_path ? url(Storage::url($this->profile_image_medium_path)) : null,
+            'large' => $this->profile_image_large_path ? url(Storage::url($this->profile_image_large_path)) : null,
+        ];
+    }
+
+    /**
+     * Get profile image URL for specific size
+     */
+    public function getProfileImageUrl(string $size = 'medium'): ?string
+    {
+        if (!$this->hasProfileImage()) {
+            return null;
+        }
+
+        $urls = $this->getProfileImageUrls();
+
+        return $urls[$size] ?? null;
+    }
+
+    /**
+     * Delete profile image files
+     */
+    public function deleteProfileImage(): void
+    {
+        if (!$this->hasProfileImage()) {
+            return;
+        }
+
+        // Delete physical files
+        $paths = [
+            $this->profile_image_thumbnail_path,
+            $this->profile_image_small_path,
+            $this->profile_image_medium_path,
+            $this->profile_image_large_path,
+        ];
+
+        foreach ($paths as $path) {
+            if ($path && Storage::exists($path)) {
+                Storage::delete($path);
+            }
+        }
+
+        // Clear database fields
+        $this->profile_image_filename = null;
+        $this->profile_image_original_name = null;
+        $this->profile_image_thumbnail_path = null;
+        $this->profile_image_small_path = null;
+        $this->profile_image_medium_path = null;
+        $this->profile_image_large_path = null;
+        $this->profile_image_file_size = null;
+        $this->profile_image_mime_type = null;
+        $this->profile_image_uploaded_at = null;
+        $this->save();
     }
 }
