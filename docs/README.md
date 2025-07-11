@@ -18,10 +18,13 @@
 ### 詳細メモ
 - **[concept-memo.md](./concept-memo.md)** - 「マジキチ」コンセプトの詳細解説
 
-### レビュー・レポート系
-- **[バックエンドレビューレポート](20250709005500-backend-review-report.md)** - バックエンド実装の包括的評価
-- **[フロントエンドコードレビュー](20250709005500-frontend-code-review.md)** - フロントエンド実装の品質評価
-- **[統合テストレポート](20250709005500-integration-test-report.md)** - フロントエンド・バックエンド統合テスト結果
+### デプロイメント・設定ガイド
+- **[deployment-frontend-guide.md](./deployment-frontend-guide.md)** - フロントエンド静的配信設定
+- **[oauth-setup-guide.md](./oauth-setup-guide.md)** - OAuth認証設定ガイド
+- **[development-progress.md](./development-progress.md)** - 開発進捗・完了機能一覧
+
+### 完了済みレビュー・レポート
+時刻付きファイル（20250709〜20250711）による詳細な実装記録・レビュー結果は本番運用には不要のため整理済み
 
 ### ファイル命名規則
 

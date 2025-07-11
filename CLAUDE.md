@@ -286,15 +286,18 @@ maji-kichi-meshi/
 - [x] Laravel 11 hashedキャスト対応
 - [x] 管理システム完全実装
 
-### Phase 7: Enhancement (後続)
-- [ ] Google Places API 連携（設計完了 - 詳細はTODO.md参照）
+### Phase 7: UI/UX Enhancement & Statistics ✅ 完了
+- [x] ダッシュボード統計API実装 (StatsController + StatsApiTest)
+- [x] フロントエンド UI改善（ランキング優先・2カラム統計・設定ページ）
+- [x] 認証後画面の体験向上（ナビゲーション順序・アクション優先度）
+- [x] アカウント設定ページ実装
+- [x] 実API統合（ダミーデータ削除・エラーハンドリング強化）
+
+### Phase 8: Future Enhancement (計画)
+- [ ] Google Places API 連携
 - [x] ~~**アプリライク匿名ユーザー機能**~~ ❌ **計画停止** (2025-07-10)
-  - ~~初回アクセス時の自動匿名ユーザー登録~~
-  - ~~プロフィール後付けシステム~~
-  - ~~OAuth同期システム（アカウント作成→データ同期へ役割転換）~~
   - **停止理由**: 重大リスクが価値を上回る（詳細: docs/20250710185000-report-anonymous-user-concerns.md）
 - [ ] 通報システム実装
-- [ ] 統計ダッシュボード
 - [ ] パフォーマンス最適化
 - [ ] デプロイメント自動化
 
