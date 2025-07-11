@@ -15,6 +15,12 @@ class RankingController extends Controller
     {
         $query = Ranking::with(['user', 'category', 'items.shop.publishedImages', 'items.shop.categories']);
 
+        // Search by title
+        if ($request->has('search')) {
+            $search = addcslashes($request->search, '%_\\');
+            $query->where('title', 'like', '%' . $search . '%');
+        }
+
         if ($request->has('category_id')) {
             $query->byCategory($request->category_id);
         }
@@ -29,7 +35,9 @@ class RankingController extends Controller
             $query->public();
         }
 
-        $rankings = $query->get();
+        // Pagination
+        $perPage = min($request->get('per_page', 15), 50); // Max 50 items per page
+        $rankings = $query->paginate($perPage);
 
         return RankingResource::collection($rankings);
     }
@@ -170,11 +178,19 @@ class RankingController extends Controller
         $query = Ranking::with(['user', 'category', 'items.shop.publishedImages', 'items.shop.categories'])
             ->where('user_id', Auth::id());
 
+        // Search by title
+        if ($request->has('search')) {
+            $search = addcslashes($request->search, '%_\\');
+            $query->where('title', 'like', '%' . $search . '%');
+        }
+
         if ($request->has('category_id')) {
             $query->byCategory($request->category_id);
         }
 
-        $rankings = $query->get();
+        // Pagination
+        $perPage = min($request->get('per_page', 15), 50); // Max 50 items per page
+        $rankings = $query->paginate($perPage);
 
         return RankingResource::collection($rankings);
     }
@@ -184,6 +200,12 @@ class RankingController extends Controller
         $query = Ranking::with(['user', 'category', 'items.shop.publishedImages', 'items.shop.categories'])
             ->public();
 
+        // Search by title
+        if ($request->has('search')) {
+            $search = addcslashes($request->search, '%_\\');
+            $query->where('title', 'like', '%' . $search . '%');
+        }
+
         if ($request->has('category_id')) {
             $query->byCategory($request->category_id);
         }
@@ -192,7 +214,9 @@ class RankingController extends Controller
             $query->byUser($request->user_id);
         }
 
-        $rankings = $query->get();
+        // Pagination
+        $perPage = min($request->get('per_page', 15), 50); // Max 50 items per page
+        $rankings = $query->paginate($perPage);
 
         return RankingResource::collection($rankings);
     }

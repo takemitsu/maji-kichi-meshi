@@ -86,7 +86,7 @@ class RankingSeeder extends Seeder
             'category_id' => $category->id,
             'title' => $title,
             'description' => $this->generateRankingDescription($title),
-            'is_public' => rand(0, 1) === 1,
+            'is_public' => rand(0, 2) >= 1, // 約70%の確率で公開
         ]);
 
         // ランキングアイテムを作成
