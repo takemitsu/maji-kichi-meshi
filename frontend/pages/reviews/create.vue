@@ -230,12 +230,7 @@
                     <button
                         type="submit"
                         :disabled="!canSubmit || submitting"
-                        class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                        @click="
-                            () => {
-                                console.log('Button clicked - canSubmit:', canSubmit, 'submitting:', submitting)
-                            }
-                        ">
+                        class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
                         <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
                         {{ submitting ? '作成中...' : 'レビューを作成' }}
                     </button>

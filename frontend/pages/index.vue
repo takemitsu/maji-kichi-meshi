@@ -17,22 +17,22 @@
                     <div class="p-8">
                         <div class="flex items-center mb-6">
                             <div
-                                class="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-orange-200 transition-colors">
-                                <svg class="w-5 h-5 text-orange-600 fill-none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-purple-200 transition-colors">
+                                <svg class="w-5 h-5 text-purple-600 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                         stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-semibold text-gray-900">店舗検索</h3>
+                            <h3 class="text-xl font-semibold text-gray-900">ランキング</h3>
                         </div>
                         <div class="text-center">
                             <NuxtLink
-                                to="/shops"
+                                to="/rankings/public"
                                 class="btn-primary inline-block text-center transform group-hover:scale-105 transition-transform">
-                                店舗を探す
+                                ランキングを見る
                             </NuxtLink>
                             <p class="text-xs text-gray-500 mt-4">※ ログイン不要</p>
                         </div>
@@ -69,22 +69,22 @@
                     <div class="p-8">
                         <div class="flex items-center mb-6">
                             <div
-                                class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-purple-200 transition-colors">
-                                <svg class="w-5 h-5 text-purple-600 fill-none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-orange-200 transition-colors">
+                                <svg class="w-5 h-5 text-orange-600 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                         stroke-width="2"
-                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-semibold text-gray-900">ランキング</h3>
+                            <h3 class="text-xl font-semibold text-gray-900">店舗検索</h3>
                         </div>
                         <div class="text-center">
                             <NuxtLink
-                                to="/rankings/public"
+                                to="/shops"
                                 class="btn-primary inline-block text-center transform group-hover:scale-105 transition-transform">
-                                ランキングを見る
+                                店舗を探す
                             </NuxtLink>
                             <p class="text-xs text-gray-500 mt-4">※ ログイン不要</p>
                         </div>

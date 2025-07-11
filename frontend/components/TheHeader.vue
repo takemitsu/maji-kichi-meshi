@@ -12,12 +12,12 @@
                 <!-- メインナビゲーション -->
                 <div class="hidden md:flex items-center space-x-8">
                     <NuxtLink
-                        to="/shops"
+                        to="/rankings/public"
                         class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                         :class="{
-                            'text-blue-600 bg-blue-50': $route.path.startsWith('/shops'),
+                            'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
                         }">
-                        店舗
+                        ランキング
                     </NuxtLink>
                     <NuxtLink
                         to="/reviews"
@@ -28,12 +28,12 @@
                         レビュー
                     </NuxtLink>
                     <NuxtLink
-                        to="/rankings/public"
+                        to="/shops"
                         class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                         :class="{
-                            'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
+                            'text-blue-600 bg-blue-50': $route.path.startsWith('/shops'),
                         }">
-                        ランキング
+                        店舗
                     </NuxtLink>
                 </div>
 
@@ -95,7 +95,11 @@
                                 <div
                                     v-if="isUserMenuOpen"
                                     class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                                    <!-- プロフィール・設定は今後実装予定 -->
+                                    <NuxtLink
+                                        to="/settings"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                        設定
+                                    </NuxtLink>
                                     <button
                                         @click="logout"
                                         class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
@@ -139,13 +143,13 @@
                 <div v-if="isMobileMenuOpen" class="md:hidden py-4 border-t border-gray-200">
                     <div class="space-y-1">
                         <NuxtLink
-                            to="/shops"
+                            to="/rankings/public"
                             class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                             :class="{
-                                'text-blue-600 bg-blue-50': $route.path.startsWith('/shops'),
+                                'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
                             }"
                             @click="closeMobileMenu">
-                            店舗
+                            ランキング
                         </NuxtLink>
                         <NuxtLink
                             to="/reviews"
@@ -157,13 +161,13 @@
                             レビュー
                         </NuxtLink>
                         <NuxtLink
-                            to="/rankings/public"
+                            to="/shops"
                             class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                             :class="{
-                                'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
+                                'text-blue-600 bg-blue-50': $route.path.startsWith('/shops'),
                             }"
                             @click="closeMobileMenu">
-                            ランキング
+                            店舗
                         </NuxtLink>
                         <template v-if="authStore.isLoggedIn">
                             <NuxtLink

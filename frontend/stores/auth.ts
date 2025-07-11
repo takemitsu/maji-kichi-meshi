@@ -153,6 +153,16 @@ export const useAuthStore = defineStore('auth', {
             return true
         },
 
+        updateUser(userData: Partial<User>) {
+            if (this.user) {
+                this.user = { ...this.user, ...userData }
+                // LocalStorageも更新
+                if (process.client) {
+                    localStorage.setItem('auth_user', JSON.stringify(this.user))
+                }
+            }
+        },
+
         async logout() {
             try {
                 // バックエンドにログアウト要求（任意）

@@ -1,5 +1,15 @@
 import type { User } from '~/types/auth'
-import type { ApiResponse, PaginatedResponse, Shop, Category, Review, Ranking, ReviewImage, ShopImage, ErrorResponse } from '~/types/api'
+import type {
+    ApiResponse,
+    PaginatedResponse,
+    Shop,
+    Category,
+    Review,
+    Ranking,
+    ReviewImage,
+    ShopImage,
+    ErrorResponse,
+} from '~/types/api'
 
 export const useApi = () => {
     const config = useRuntimeConfig()
@@ -219,6 +229,20 @@ export const useApi = () => {
                 }),
 
             delete: (id: number) => apiFetch<{ message: string }>(`/rankings/${id}`, { method: 'DELETE' }),
+        },
+
+        // 統計情報
+        stats: {
+            dashboard: () => apiFetch<ApiResponse<{ reviews_count: number; rankings_count: number }>>('/stats/dashboard'),
+        },
+
+        // プロフィール更新
+        profile: {
+            update: (data: { name: string }) =>
+                apiFetch<ApiResponse<User>>('/auth/me', {
+                    method: 'PUT',
+                    body: JSON.stringify(data),
+                }),
         },
     }
 
