@@ -25,8 +25,13 @@ class RankingResource extends JsonResource
             'description' => $this->description,
             'is_public' => $this->is_public,
             'user' => new UserResource($this->whenLoaded('user')),
-            'shop' => new ShopResource($this->whenLoaded('shop')),
             'category' => new CategoryResource($this->whenLoaded('category')),
+            'shops' => $this->getCachedRankingShops()->map(function ($ranking) {
+                $shopData = (new ShopResource($ranking->shop))->toArray(request());
+                $shopData['rank_position'] = $ranking->rank_position;
+
+                return $shopData;
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

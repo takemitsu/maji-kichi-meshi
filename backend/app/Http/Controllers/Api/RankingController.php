@@ -13,7 +13,7 @@ class RankingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Ranking::with(['user', 'shop', 'category']);
+        $query = Ranking::with(['user', 'category']);
 
         if ($request->has('category_id')) {
             $query->byCategory($request->category_id);
@@ -29,14 +29,12 @@ class RankingController extends Controller
             $query->public();
         }
 
-        $rankings = $query->ordered()->paginate(20);
-
-        return RankingResource::collection($rankings);
+        return RankingResource::collection($this->getGroupedRankings($query));
     }
 
     public function show(Ranking $ranking)
     {
-        $ranking->load(['user', 'shop', 'category']);
+        $ranking->load(['user', 'category']);
 
         // Check if the ranking is public or the user is authenticated and owns it
         if (!$ranking->is_public) {
@@ -51,15 +49,7 @@ class RankingController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'title' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'category_id' => 'nullable|exists:categories,id',
-                'is_public' => 'boolean',
-                'shops' => 'required|array|min:1',
-                'shops.*.shop_id' => 'required|exists:shops,id',
-                'shops.*.position' => 'required|integer|min:1',
-            ]);
+            $this->validateShopsRequest($request);
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::warning('Ranking creation validation failed', [
                 'errors' => $e->errors(),
@@ -74,7 +64,6 @@ class RankingController extends Controller
         try {
             $userId = Auth::id();
             $categoryId = $request->category_id;
-            $createdRankings = [];
 
             // Clear existing rankings for this user and category (if category is specified)
             if ($categoryId) {
@@ -83,28 +72,14 @@ class RankingController extends Controller
                     ->delete();
             }
 
-            // Create new rankings
-            foreach ($request->shops as $shopData) {
-                $ranking = Ranking::create([
-                    'user_id' => $userId,
-                    'shop_id' => $shopData['shop_id'],
-                    'category_id' => $categoryId,
-                    'rank_position' => $shopData['position'],
-                    'is_public' => $request->boolean('is_public', false),
-                    'title' => $request->title,
-                    'description' => $request->description,
-                ]);
-
-                $createdRankings[] = $ranking;
-            }
+            $createdRankings = $this->createRankings($request, $userId, $categoryId);
 
             DB::commit();
 
-            // Return the first ranking with loaded relationships
-            $firstRanking = $createdRankings[0];
-            $firstRanking->load(['user', 'shop', 'category']);
-
-            return (new RankingResource($firstRanking))->response()->setStatusCode(201);
+            return response()->json([
+                'data' => RankingResource::collection($createdRankings),
+                'message' => 'Ranking created successfully',
+            ], 201);
         } catch (\Exception $e) {
             DB::rollback();
 
@@ -114,63 +89,15 @@ class RankingController extends Controller
 
     public function update(Request $request, Ranking $ranking)
     {
-        if (Auth::id() !== $ranking->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->validateOwnership($ranking);
+        $this->validateShopsRequest($request);
 
-        $request->validate([
-            'rank_position' => 'integer|min:1',
-            'is_public' => 'boolean',
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        DB::beginTransaction();
-
-        try {
-            $oldPosition = $ranking->rank_position;
-            $newPosition = $request->rank_position ?? $oldPosition;
-
-            if ($newPosition !== $oldPosition) {
-                if ($newPosition < $oldPosition) {
-                    Ranking::where('user_id', $ranking->user_id)
-                        ->where('category_id', $ranking->category_id)
-                        ->where('rank_position', '>=', $newPosition)
-                        ->where('rank_position', '<', $oldPosition)
-                        ->increment('rank_position');
-                } else {
-                    Ranking::where('user_id', $ranking->user_id)
-                        ->where('category_id', $ranking->category_id)
-                        ->where('rank_position', '>', $oldPosition)
-                        ->where('rank_position', '<=', $newPosition)
-                        ->decrement('rank_position');
-                }
-            }
-
-            $ranking->update([
-                'rank_position' => $newPosition,
-                'is_public' => $request->boolean('is_public', $ranking->is_public),
-                'title' => $request->title ?? $ranking->title,
-                'description' => $request->description ?? $ranking->description,
-            ]);
-
-            DB::commit();
-
-            $ranking->load(['user', 'shop', 'category']);
-
-            return new RankingResource($ranking);
-        } catch (\Exception $e) {
-            DB::rollback();
-
-            return response()->json(['error' => 'Failed to update ranking'], 500);
-        }
+        return $this->updateRankings($request, $ranking);
     }
 
     public function destroy(Ranking $ranking)
     {
-        if (Auth::id() !== $ranking->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->validateOwnership($ranking);
 
         DB::beginTransaction();
 
@@ -188,6 +115,11 @@ class RankingController extends Controller
             return response()->json(['message' => 'Ranking deleted successfully']);
         } catch (\Exception $e) {
             DB::rollback();
+            \Log::error('Ranking deletion failed', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'ranking_id' => $ranking->id,
+            ]);
 
             return response()->json(['error' => 'Failed to delete ranking'], 500);
         }
@@ -195,21 +127,19 @@ class RankingController extends Controller
 
     public function myRankings(Request $request)
     {
-        $query = Ranking::with(['user', 'shop', 'category'])
+        $query = Ranking::with(['user', 'category'])
             ->where('user_id', Auth::id());
 
         if ($request->has('category_id')) {
             $query->byCategory($request->category_id);
         }
 
-        $rankings = $query->ordered()->paginate(20);
-
-        return RankingResource::collection($rankings);
+        return RankingResource::collection($this->getGroupedRankings($query));
     }
 
     public function publicRankings(Request $request)
     {
-        $query = Ranking::with(['user', 'shop', 'category'])
+        $query = Ranking::with(['user', 'category'])
             ->public();
 
         if ($request->has('category_id')) {
@@ -220,8 +150,115 @@ class RankingController extends Controller
             $query->byUser($request->user_id);
         }
 
-        $rankings = $query->ordered()->paginate(20);
+        return RankingResource::collection($this->getGroupedRankings($query));
+    }
 
-        return RankingResource::collection($rankings);
+    /**
+     * グループ化されたランキングを取得
+     */
+    private function getGroupedRankings($query)
+    {
+        // N+1問題を回避するため、一度のクエリで必要なデータを取得
+        $groupedIds = $query->selectRaw('MIN(id) as id, user_id, title, category_id')
+            ->groupBy('user_id', 'title', 'category_id')
+            ->pluck('id');
+
+        return Ranking::with(['user', 'category'])
+            ->whereIn('id', $groupedIds)
+            ->get();
+    }
+
+    /**
+     * ランキングのバリデーション
+     */
+    private function validateShopsRequest(Request $request)
+    {
+        return $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'category_id' => 'nullable|exists:categories,id',
+            'is_public' => 'boolean',
+            'shops' => 'required|array|min:1|max:10',
+            'shops.*.shop_id' => 'required|exists:shops,id',
+            'shops.*.position' => 'required|integer|min:1',
+        ]);
+    }
+
+    /**
+     * ランキングの作成
+     */
+    private function createRankings(Request $request, $userId, $categoryId)
+    {
+        $createdRankings = [];
+
+        foreach ($request->shops as $shopData) {
+            $ranking = Ranking::create([
+                'user_id' => $userId,
+                'shop_id' => $shopData['shop_id'],
+                'category_id' => $categoryId,
+                'rank_position' => $shopData['position'],
+                'is_public' => $request->boolean('is_public', false),
+                'title' => $request->title,
+                'description' => $request->description,
+            ]);
+
+            $ranking->load(['user', 'category']);
+            $createdRankings[] = $ranking;
+        }
+
+        return $createdRankings;
+    }
+
+    /**
+     * 所有者チェック
+     */
+    private function validateOwnership(Ranking $ranking)
+    {
+        if (Auth::id() !== $ranking->user_id) {
+            throw new \Illuminate\Http\Exceptions\HttpResponseException(
+                response()->json(['error' => 'Unauthorized'], 403)
+            );
+        }
+    }
+
+    /**
+     * ランキングの更新
+     */
+    private function updateRankings(Request $request, Ranking $ranking)
+    {
+        $this->validateShopsRequest($request);
+
+        DB::beginTransaction();
+
+        try {
+            $userId = Auth::id();
+            $categoryId = $request->category_id ?? $ranking->category_id;
+            $oldTitle = $ranking->title;
+            $oldCategoryId = $ranking->category_id;
+
+            // Delete existing rankings with the same title and category
+            Ranking::where('user_id', $userId)
+                ->where('title', $oldTitle)
+                ->where('category_id', $oldCategoryId)
+                ->delete();
+
+            $updatedRankings = $this->createRankings($request, $userId, $categoryId);
+
+            DB::commit();
+
+            return response()->json([
+                'data' => RankingResource::collection($updatedRankings),
+                'message' => 'Ranking updated successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error('Multiple rankings update failed', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'ranking_id' => $ranking->id,
+            ]);
+
+            return response()->json(['error' => 'Failed to update ranking'], 500);
+        }
     }
 }
