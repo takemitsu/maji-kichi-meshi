@@ -6,6 +6,8 @@ import type {
     Category,
     Review,
     Ranking,
+    RankingCreateRequest,
+    RankingUpdateRequest,
     ReviewImage,
     ShopImage,
     ErrorResponse,
@@ -216,13 +218,13 @@ export const useApi = () => {
 
             get: (id: number) => apiFetch<ApiResponse<Ranking>>(`/rankings/${id}`),
 
-            create: (data: Partial<Ranking>) =>
+            create: (data: RankingCreateRequest) =>
                 apiFetch<ApiResponse<Ranking>>('/rankings', {
                     method: 'POST',
                     body: JSON.stringify(data),
                 }),
 
-            update: (id: number, data: Partial<Ranking>) =>
+            update: (id: number, data: RankingUpdateRequest) =>
                 apiFetch<ApiResponse<Ranking>>(`/rankings/${id}`, {
                     method: 'PUT',
                     body: JSON.stringify(data),

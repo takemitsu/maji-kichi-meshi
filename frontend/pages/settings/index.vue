@@ -91,7 +91,7 @@ const handleImageDeleted = () => {
 
     // 認証ストアのユーザー情報を更新
     authStore.updateUser({
-        profile_image: null,
+        profile_image: undefined,
     })
 }
 

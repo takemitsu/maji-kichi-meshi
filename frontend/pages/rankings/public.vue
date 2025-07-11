@@ -144,14 +144,22 @@
                         </div>
 
                         <!-- 上位店舗プレビュー -->
-                        <div v-if="ranking.shop" class="border-t border-gray-200 pt-4">
-                            <h4 class="text-sm font-medium text-gray-700 mb-3">店舗</h4>
+                        <div v-if="ranking.shops && ranking.shops.length > 0" class="border-t border-gray-200 pt-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">上位店舗</h4>
                             <div class="space-y-2">
-                                <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                <div
+                                    v-for="shop in ranking.shops.slice(0, 3)"
+                                    :key="shop.id"
+                                    class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                                     <!-- 順位 -->
                                     <div
-                                        class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-yellow-100 text-yellow-800">
-                                        1
+                                        class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                        :class="{
+                                            'bg-yellow-100 text-yellow-800': shop.rank_position === 1,
+                                            'bg-gray-100 text-gray-800': shop.rank_position === 2,
+                                            'bg-orange-100 text-orange-800': shop.rank_position === 3,
+                                        }">
+                                        {{ shop.rank_position }}
                                     </div>
 
                                     <!-- 店舗情報 -->
@@ -159,22 +167,20 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <p class="text-sm font-medium text-gray-900">
-                                                    {{ ranking.shop.name }}
+                                                    {{ shop.name }}
                                                 </p>
                                                 <p class="text-xs text-gray-500">
-                                                    {{ ranking.shop.address }}
+                                                    {{ shop.address }}
                                                 </p>
                                             </div>
 
                                             <!-- 評価情報（もしあれば） -->
-                                            <div
-                                                v-if="ranking.shop.average_rating"
-                                                class="flex items-center text-xs text-gray-500">
+                                            <div v-if="shop.average_rating" class="flex items-center text-xs text-gray-500">
                                                 <svg class="w-3 h-3 text-yellow-400 mr-1 fill-current" viewBox="0 0 20 20">
                                                     <path
                                                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                                 </svg>
-                                                {{ ranking.shop.average_rating.toFixed(1) }}
+                                                {{ shop.average_rating.toFixed(1) }}
                                             </div>
                                         </div>
                                     </div>
@@ -250,7 +256,7 @@ const selectedCategory = ref('')
 
 // ページネーション
 const currentPage = ref(1)
-const perPage = ref(20)
+const perPage = ref(10)
 const totalItems = ref(0)
 const totalPages = ref(0)
 

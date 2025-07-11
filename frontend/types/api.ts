@@ -122,8 +122,7 @@ export interface ShopImage {
 
 export interface Ranking {
     id: number
-    rank_position: number
-    title?: string
+    title: string
     description?: string
     is_public: boolean
     user: {
@@ -134,12 +133,28 @@ export interface Ranking {
         created_at: string
         updated_at: string
     }
-    shop: Shop
-    category: Category
+    category?: Category
+    shops?: (Shop & { rank_position: number })[]
     created_at: string
     updated_at: string
     // 集計プロパティ
     shops_count?: number
+}
+
+export interface RankingCreateRequest {
+    title: string
+    description?: string
+    category_id: string
+    is_public: boolean
+    shops: { shop_id: number; position: number }[]
+}
+
+export interface RankingUpdateRequest {
+    title: string
+    description?: string
+    category_id: string
+    is_public: boolean
+    shops: { shop_id: number; position: number }[]
 }
 
 export interface ErrorResponse {

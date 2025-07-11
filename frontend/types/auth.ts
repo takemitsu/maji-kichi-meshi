@@ -10,7 +10,7 @@ export interface User {
     updated_at?: string
     profile_image?: {
         urls: Record<string, string>
-        uploaded_at: string
+        uploaded_at?: string
     }
 }
 

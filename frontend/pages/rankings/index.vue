@@ -138,7 +138,7 @@
                                                 stroke-width="2"
                                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
                                         </svg>
-                                        {{ ranking.shop ? 1 : 0 }}店舗
+                                        {{ ranking.shops?.length || 0 }}店舗
                                     </div>
                                     <div class="flex items-center text-sm text-gray-500">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,30 +168,38 @@
                         </div>
 
                         <!-- 上位店舗プレビュー -->
-                        <div v-if="ranking.shop" class="border-t border-gray-200 pt-4">
-                            <h4 class="text-sm font-medium text-gray-700 mb-3">店舗</h4>
+                        <div v-if="ranking.shops && ranking.shops.length > 0" class="border-t border-gray-200 pt-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">上位店舗</h4>
                             <div class="grid grid-cols-1 gap-3">
-                                <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                <div
+                                    v-for="shop in ranking.shops.slice(0, 3)"
+                                    :key="shop.id"
+                                    class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                                     <!-- 順位 -->
                                     <div
-                                        class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-yellow-100 text-yellow-800">
-                                        1
+                                        class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                        :class="{
+                                            'bg-yellow-100 text-yellow-800': shop.rank_position === 1,
+                                            'bg-gray-100 text-gray-800': shop.rank_position === 2,
+                                            'bg-orange-100 text-orange-800': shop.rank_position === 3,
+                                        }">
+                                        {{ shop.rank_position }}
                                     </div>
 
                                     <!-- 店舗情報 -->
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-gray-900 truncate">
-                                            {{ ranking.shop.name }}
+                                            {{ shop.name }}
                                         </p>
                                         <p class="text-xs text-gray-500 truncate">
-                                            {{ ranking.shop.address }}
+                                            {{ shop.address }}
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="pt-3">
                                 <NuxtLink :to="`/rankings/${ranking.id}`" class="text-sm text-blue-600 hover:text-blue-800">
-                                    詳細を見る
+                                    詳細を見る ({{ ranking.shops.length }}店舗)
                                 </NuxtLink>
                             </div>
                         </div>

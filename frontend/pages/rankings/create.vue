@@ -231,7 +231,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Category, Shop } from '~/types/api'
+import type { Category, Shop, RankingCreateRequest } from '~/types/api'
 
 // 認証ミドルウェア適用
 definePageMeta({
@@ -361,7 +361,7 @@ const submitRanking = async () => {
             position: index + 1,
         }))
 
-        const rankingData = {
+        const rankingData: RankingCreateRequest = {
             title: form.value.title.trim(),
             description: form.value.description?.trim() || undefined,
             category_id: form.value.category_id,
@@ -372,7 +372,9 @@ const submitRanking = async () => {
         const response = await $api.rankings.create(rankingData)
 
         // 作成成功後、詳細ページに遷移
-        await router.push(`/rankings/${response.data.id}`)
+        // 新しいAPI仕様では単一のランキングオブジェクトを返す
+        const rankingId = response.data.id
+        await router.push(`/rankings/${rankingId}`)
     } catch (err: unknown) {
         console.error('Failed to create ranking:', err)
 
