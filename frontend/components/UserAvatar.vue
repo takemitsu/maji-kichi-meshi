@@ -7,23 +7,17 @@
             :alt="`${userName}のプロフィール画像`"
             :class="avatarClasses"
             class="object-cover"
-            @error="handleImageError"
-        />
-        
+            @error="handleImageError" />
+
         <!-- プロフィール画像がない場合（デフォルトアバター） -->
-        <div
-            v-else
-            :class="avatarClasses"
-            class="bg-gray-300 flex items-center justify-center text-gray-600 font-medium"
-        >
+        <div v-else :class="avatarClasses" class="bg-gray-300 flex items-center justify-center text-gray-600 font-medium">
             {{ initials }}
         </div>
-        
+
         <!-- オンライン状態インジケーター（オプション） -->
         <span
             v-if="showOnline"
-            class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white"
-        ></span>
+            class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-white"></span>
     </div>
 </template>
 
@@ -62,15 +56,12 @@ const roundedClasses = {
     none: 'rounded-none',
 }
 
-const avatarClasses = computed(() => [
-    sizeClasses[props.size],
-    roundedClasses[props.rounded],
-])
+const avatarClasses = computed(() => [sizeClasses[props.size], roundedClasses[props.rounded]])
 
 // ユーザー名のイニシャル
 const initials = computed(() => {
     if (!props.userName) return '?'
-    
+
     const names = props.userName.split(' ')
     if (names.length >= 2) {
         return names[0][0] + names[1][0]

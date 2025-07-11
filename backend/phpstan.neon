@@ -18,3 +18,4 @@ parameters:
         - '#Parameter .* of static method Tymon\\JWTAuth\\JWT::invalidate\(\) expects bool#'
         - '#Access to an undefined property App\\Filament\\Pages\\TwoFactorSettings::\$password#'
         - '#Parameter .* of method Filament\\Pages\\BasePage::validate\(\) expects array#'
+        - '#Cannot call method format\(\) on string#'

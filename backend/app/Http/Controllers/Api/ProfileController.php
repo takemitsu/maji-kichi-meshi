@@ -30,7 +30,7 @@ class ProfileController extends Controller
                 'email' => $user->email,
                 'profile_image' => $user->hasProfileImage() ? [
                     'urls' => $user->getProfileImageUrls(),
-                    'uploaded_at' => $user->profile_image_uploaded_at?->toISOString(),
+                    'uploaded_at' => $user->profile_image_uploaded_at?->format('c'),
                 ] : null,
                 'created_at' => $user->created_at->toISOString(),
                 'updated_at' => $user->updated_at->toISOString(),
@@ -66,7 +66,7 @@ class ProfileController extends Controller
                 'email' => $user->email,
                 'profile_image' => $user->hasProfileImage() ? [
                     'urls' => $user->getProfileImageUrls(),
-                    'uploaded_at' => $user->profile_image_uploaded_at?->toISOString(),
+                    'uploaded_at' => $user->profile_image_uploaded_at?->format('c'),
                 ] : null,
                 'updated_at' => $user->updated_at->toISOString(),
             ],
@@ -110,7 +110,7 @@ class ProfileController extends Controller
             'data' => [
                 'profile_image' => [
                     'urls' => $user->getProfileImageUrls(),
-                    'uploaded_at' => $user->profile_image_uploaded_at?->toISOString(),
+                    'uploaded_at' => $user->profile_image_uploaded_at?->format('c'),
                 ],
             ],
         ], 201);

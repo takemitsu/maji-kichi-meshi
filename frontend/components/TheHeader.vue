@@ -68,8 +68,7 @@
                                 <UserAvatar
                                     :user-name="authStore.user?.name || 'ユーザー'"
                                     :profile-image-url="userProfileImageUrl"
-                                    size="sm"
-                                />
+                                    size="sm" />
                                 <span class="hidden md:block">{{ authStore.user?.name }}</span>
                                 <svg
                                     class="w-4 h-4 transition-transform fill-none"
@@ -205,8 +204,7 @@
                                         :user-name="authStore.user?.name || 'ユーザー'"
                                         :profile-image-url="userProfileImageUrl"
                                         size="sm"
-                                        class="mr-3"
-                                    />
+                                        class="mr-3" />
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-gray-900 truncate">
                                             {{ authStore.user?.name }}
@@ -256,17 +254,25 @@ const isUserMenuOpen = ref(false)
 const isMobileMenuOpen = ref(false)
 const userMenuRef = ref<HTMLElement>()
 
-// プロフィール画像URL
-const userProfileImageUrl = ref<string | null>(null)
+// プロフィール画像URL（AuthStoreから取得）
+const userProfileImageUrl = computed(() => {
+    if (!authStore.isLoggedIn || !authStore.user) return null
+    return authStore.user.profile_image?.urls?.small || null
+})
 
-// プロフィール画像URLを取得
+// プロフィール画像URLを取得（初回のみ）
 const fetchUserProfileImageUrl = async () => {
     if (!authStore.isLoggedIn) return
-    
+
     try {
         const profile = await $api.profile.get()
-        if (profile.data.profile_image?.urls?.small) {
-            userProfileImageUrl.value = profile.data.profile_image.urls.small
+        if (profile.data.profile_image?.urls) {
+            // AuthStoreのユーザー情報を更新
+            authStore.updateUser({
+                profile_image: {
+                    urls: profile.data.profile_image.urls,
+                },
+            })
         }
     } catch (error) {
         console.error('プロフィール画像取得エラー:', error)
@@ -320,8 +326,6 @@ watch(
     (isLoggedIn) => {
         if (isLoggedIn) {
             fetchUserProfileImageUrl()
-        } else {
-            userProfileImageUrl.value = null
         }
     },
 )

@@ -240,29 +240,32 @@ export const useApi = () => {
         profile: {
             // プロフィール情報取得
             get: () => apiFetch<ApiResponse<User>>('/profile'),
-            
+
             // プロフィール情報更新
             update: (data: { name?: string; email?: string }) =>
                 apiFetch<ApiResponse<User>>('/profile', {
                     method: 'PUT',
                     body: JSON.stringify(data),
                 }),
-            
+
             // プロフィール画像アップロード
             uploadImage: (file: File) => {
                 const formData = new FormData()
                 formData.append('profile_image', file)
-                return apiFetch<ApiResponse<{ profile_image: { urls: Record<string, string>; uploaded_at: string } }>>('/profile/image', {
-                    method: 'POST',
-                    body: formData,
-                })
+                return apiFetch<ApiResponse<{ profile_image: { urls: Record<string, string>; uploaded_at: string } }>>(
+                    '/profile/image',
+                    {
+                        method: 'POST',
+                        body: formData,
+                    },
+                )
             },
-            
+
             // プロフィール画像削除
             deleteImage: () => apiFetch<{ message: string }>('/profile/image', { method: 'DELETE' }),
-            
+
             // プロフィール画像URL取得
-            getImageUrl: (size: string = 'medium') => 
+            getImageUrl: (size: string = 'medium') =>
                 apiFetch<ApiResponse<{ url: string; size: string }>>(`/profile/image-url?size=${size}`),
         },
     }

@@ -26,8 +26,7 @@
                     :user-name="authStore.user?.name || ''"
                     :current-image-url="currentProfileImageUrl"
                     @uploaded="handleImageUploaded"
-                    @deleted="handleImageDeleted"
-                />
+                    @deleted="handleImageDeleted" />
             </div>
         </div>
     </div>
@@ -77,11 +76,23 @@ const updateDisplayName = async () => {
 // プロフィール画像アップロード時の処理
 const handleImageUploaded = (imageUrls: Record<string, string>) => {
     currentProfileImageUrl.value = imageUrls.medium || imageUrls.large || null
+
+    // 認証ストアのユーザー情報を更新
+    authStore.updateUser({
+        profile_image: {
+            urls: imageUrls,
+        },
+    })
 }
 
 // プロフィール画像削除時の処理
 const handleImageDeleted = () => {
     currentProfileImageUrl.value = null
+
+    // 認証ストアのユーザー情報を更新
+    authStore.updateUser({
+        profile_image: null,
+    })
 }
 
 // 初期データ取得

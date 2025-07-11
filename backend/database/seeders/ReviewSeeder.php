@@ -36,7 +36,7 @@ class ReviewSeeder extends Seeder
                     'user_id' => $user->id,
                     'shop_id' => $shop->id,
                     'rating' => rand(1, 5),
-                    'repeat_intention' => ['また行く', 'わからん', '行かない'][rand(0, 2)],
+                    'repeat_intention' => ['yes', 'maybe', 'no'][rand(0, 2)],
                     'memo' => $this->generateRandomComment(),
                     'visited_at' => now()->subDays(rand(1, 30)),
                 ]);
