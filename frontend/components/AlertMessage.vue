@@ -19,7 +19,9 @@
                         {{ title }}
                     </h3>
                     <div :class="messageClasses" class="text-sm">
-                        <slot>{{ message }}</slot>
+                        <slot>
+                            <div v-if="message" class="whitespace-pre-line">{{ message }}</div>
+                        </slot>
                     </div>
 
                     <!-- リトライボタン -->

@@ -51,7 +51,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">カテゴリ</label>
                             <select v-model="form.category_id" class="input-field">
-                                <option value="">総合（全カテゴリ）</option>
+                                <option value="" disabled>カテゴリを選択してください</option>
                                 <option v-for="category in categories" :key="category.id" :value="category.id">
                                     {{ category.name }}
                                 </option>
@@ -206,13 +206,24 @@
                 <!-- 送信ボタン -->
                 <div class="flex items-center justify-between pt-6">
                     <NuxtLink to="/rankings" class="btn-secondary">キャンセル</NuxtLink>
-                    <button
-                        type="submit"
-                        :disabled="!canSubmit || submitting"
-                        class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
-                        <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
-                        {{ submitting ? '作成中...' : 'ランキングを作成' }}
-                    </button>
+                    <div class="flex flex-col items-end">
+                        <button
+                            type="submit"
+                            :disabled="!canSubmit || submitting"
+                            class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                            <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
+                            {{ submitting ? '作成中...' : 'ランキングを作成' }}
+                        </button>
+                        <p v-if="!canSubmit && !submitting" class="text-xs text-gray-500 mt-1">
+                            {{
+                                !form.title.trim()
+                                    ? 'ランキング名を入力してください'
+                                    : selectedShops.length === 0
+                                      ? '店舗を1つ以上選択してください'
+                                      : 'カテゴリを選択してください'
+                            }}
+                        </p>
+                    </div>
                 </div>
             </form>
         </div>
@@ -251,7 +262,7 @@ const form = ref({
 
 // バリデーション
 const canSubmit = computed(() => {
-    return form.value.title.trim().length > 0
+    return form.value.title.trim().length > 0 && selectedShops.value.length > 0 && form.value.category_id !== ''
 })
 
 // 店舗検索
@@ -311,12 +322,38 @@ const drop = (dropIndex: number) => {
     draggedIndex.value = null
 }
 
+// エラー時に画面上部にスクロール
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    })
+}
+
 // ランキング送信
 const submitRanking = async () => {
-    if (!canSubmit.value) return
+    // バリデーション
+    if (!form.value.title.trim()) {
+        error.value = 'ランキング名を入力してください'
+        scrollToTop()
+        return
+    }
+
+    if (selectedShops.value.length === 0) {
+        error.value = '店舗を1つ以上選択してください'
+        scrollToTop()
+        return
+    }
+
+    if (form.value.category_id === '') {
+        error.value = 'カテゴリを選択してください'
+        scrollToTop()
+        return
+    }
 
     try {
         submitting.value = true
+        error.value = ''
 
         // 店舗データを順位付きで準備
         const shopsData = selectedShops.value.map((shop, index) => ({
@@ -327,7 +364,7 @@ const submitRanking = async () => {
         const rankingData = {
             title: form.value.title.trim(),
             description: form.value.description?.trim() || undefined,
-            category_id: form.value.category_id || undefined,
+            category_id: form.value.category_id,
             is_public: form.value.is_public,
             shops: shopsData,
         }
@@ -338,16 +375,35 @@ const submitRanking = async () => {
         await router.push(`/rankings/${response.data.id}`)
     } catch (err: unknown) {
         console.error('Failed to create ranking:', err)
-        if (err && typeof err === 'object' && 'status' in err) {
-            const errorObj = err as { status: number }
-            if (errorObj.status === 422) {
-                error.value = 'フォームの入力内容を確認してください'
+
+        // 具体的なエラーメッセージを表示
+        if (err && typeof err === 'object' && 'status' in err && 'data' in err) {
+            const errorObj = err as { status: number; data?: { message?: string; messages?: Record<string, string[]> } }
+
+            if (errorObj.status === 422 && errorObj.data?.messages) {
+                // バリデーションエラーの詳細を表示
+                const messages = errorObj.data.messages
+                const errorMessages: string[] = []
+
+                if (messages.title) errorMessages.push(`ランキング名: ${messages.title[0]}`)
+                if (messages.description) errorMessages.push(`説明: ${messages.description[0]}`)
+                if (messages.category_id) errorMessages.push(`カテゴリ: ${messages.category_id[0]}`)
+                if (messages.shops) errorMessages.push(`店舗選択: ${messages.shops[0]}`)
+                if (messages['shops.*.shop_id']) errorMessages.push(`店舗ID: ${messages['shops.*.shop_id'][0]}`)
+
+                error.value =
+                    errorMessages.length > 0 ? errorMessages.join('\n') : 'ランキング名を入力し、店舗を1つ以上選択してください'
+            } else if (errorObj.data?.message) {
+                error.value = errorObj.data.message
             } else {
                 error.value = 'ランキングの作成に失敗しました'
             }
         } else {
             error.value = 'ランキングの作成に失敗しました'
         }
+
+        // エラー時に画面上部にスクロール
+        scrollToTop()
     } finally {
         submitting.value = false
     }
