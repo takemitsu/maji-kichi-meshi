@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ranking extends Model
 {
@@ -12,12 +13,10 @@ class Ranking extends Model
 
     protected $fillable = [
         'user_id',
-        'shop_id',
         'category_id',
-        'rank_position',
-        'is_public',
         'title',
         'description',
+        'is_public',
     ];
 
     protected $casts = [
@@ -29,9 +28,16 @@ class Ranking extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function shop(): BelongsTo
+    public function items(): HasMany
     {
-        return $this->belongsTo(Shop::class);
+        return $this->hasMany(RankingItem::class)->orderBy('rank_position');
+    }
+
+    public function shops()
+    {
+        return $this->belongsToMany(Shop::class, 'ranking_items')
+            ->withPivot(['rank_position'])
+            ->orderBy('rank_position');
     }
 
     public function category(): BelongsTo
@@ -39,31 +45,18 @@ class Ranking extends Model
         return $this->belongsTo(Category::class);
     }
 
-    // 同じランキング（user_id, title, category_id）の全店舗
-    public function rankingShops()
+    // 店舗リストを取得（改善されたN+1対策）
+    public function getShopsWithDetails()
     {
-        if (!$this->title || !$this->user_id || !$this->category_id) {
-            return collect();
-        }
+        return $this->items()
+            ->with(['shop.publishedImages', 'shop.categories'])
+            ->get()
+            ->map(function ($item) {
+                $shopData = $item->shop;
+                $shopData->rank_position = $item->rank_position;
 
-        return self::with('shop.publishedImages', 'shop.categories')
-            ->where('user_id', $this->user_id)
-            ->where('title', $this->title)
-            ->where('category_id', $this->category_id)
-            ->orderBy('rank_position')
-            ->get();
-    }
-
-    // キャッシュされたrankingShops（N+1問題回避用）
-    protected $cachedRankingShops = null;
-
-    public function getCachedRankingShops()
-    {
-        if ($this->cachedRankingShops === null) {
-            $this->cachedRankingShops = $this->rankingShops();
-        }
-
-        return $this->cachedRankingShops;
+                return $shopData;
+            });
     }
 
     public function scopePublic($query)

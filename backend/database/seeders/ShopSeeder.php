@@ -73,6 +73,24 @@ class ShopSeeder extends Seeder
             $shop->categories()->attach($categories);
         }
 
+        // 追加で21件以上になるようにファクトリで店舗を作成
+        $additionalShopsNeeded = max(0, 22 - count($shops));
+
+        if ($additionalShopsNeeded > 0) {
+            $allCategories = Category::all();
+
+            Shop::factory()
+                ->count($additionalShopsNeeded)
+                ->create()
+                ->each(function ($shop) use ($allCategories) {
+                    // ランダムに1-3個のカテゴリを関連付け
+                    $randomCategories = $allCategories->random(rand(1, 3));
+                    $shop->categories()->attach($randomCategories);
+                });
+
+            $this->command->info("Created {$additionalShopsNeeded} additional shops via factory.");
+        }
+
         $this->command->info('Sample shops created successfully.');
     }
 }

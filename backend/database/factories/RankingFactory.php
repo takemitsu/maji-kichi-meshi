@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Category;
-use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,11 +20,9 @@ class RankingFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'shop_id' => Shop::factory(),
             'category_id' => Category::factory(),
-            'rank_position' => $this->faker->numberBetween(1, 10),
             'is_public' => $this->faker->boolean(70), // 70% chance to be public
-            'title' => $this->faker->optional(0.6)->sentence(3),
+            'title' => $this->faker->sentence(3),
             'description' => $this->faker->optional(0.4)->paragraph(),
         ];
     }
@@ -51,17 +48,16 @@ class RankingFactory extends Factory
     }
 
     /**
-     * Indicate that the ranking is a top position.
+     * Indicate that the ranking has a specific title pattern.
      */
-    public function topPosition(): static
+    public function topRanking(): static
     {
         return $this->state(fn (array $attributes) => [
-            'rank_position' => $this->faker->numberBetween(1, 3),
             'title' => $this->faker->randomElement([
-                'マイベスト1位',
-                'No.1のお店',
-                'トップランク',
-                '最高の一軒',
+                'マイベストランキング',
+                'お気に入りの店ランキング',
+                'おすすめ店舗ランキング',
+                'リピート確定ランキング',
             ]),
         ]);
     }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Ranking;
+use App\Models\RankingItem;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,27 +27,52 @@ class RankingSeeder extends Seeder
         $shops = Shop::all();
         $categories = Category::where('type', 'ranking')->get();
 
-        // 各ユーザーに対してランキングを作成
-        foreach ($users->take(3) as $user) {
-            // 総合ランキングを作成（デフォルトカテゴリを使用）
-            $defaultCategory = $categories->first() ?: Category::first();
-            if ($defaultCategory) {
-                $this->createRankingForUser($user, $defaultCategory, $shops, '総合ランキング');
-            }
+        $totalRankings = 0;
 
-            // カテゴリ別ランキングを作成
-            foreach ($categories as $category) {
+        // 各ユーザーに対してランキングを作成
+        foreach ($users->take(8) as $userIndex => $user) {
+            // 各ユーザーごとに異なるカテゴリでランキングを作成
+            $userCategories = $categories->shuffle()->take(3);
+
+            foreach ($userCategories as $categoryIndex => $category) {
                 $categoryShops = $shops->filter(function ($shop) use ($category) {
                     return $shop->categories->contains($category);
                 });
 
                 if ($categoryShops->isNotEmpty()) {
-                    $this->createRankingForUser($user, $category, $categoryShops, $category->name . 'ランキング');
+                    $uniqueTitle = $category->name . 'ランキング_' . $user->id . '_' . $categoryIndex;
+                    $this->createRankingForUser($user, $category, $categoryShops, $uniqueTitle);
+                    $totalRankings++;
                 }
             }
         }
 
-        $this->command->info('Sample rankings created successfully.');
+        // 21件以上になるよう追加ランキングを作成
+        $additionalRankingsNeeded = max(0, 22 - $totalRankings);
+
+        for ($i = 0; $i < $additionalRankingsNeeded; $i++) {
+            $user = $users->random();
+            $category = $categories->random();
+            $rankingTitles = [
+                'おすすめランキング',
+                'お気に入りランキング',
+                'リピートランキング',
+                'コスパランキング',
+                '味ランキング',
+                '雰囲気ランキング',
+                'デートランキング',
+                'ファミリーランキング',
+            ];
+            $rankingTitle = $rankingTitles[array_rand($rankingTitles)];
+
+            // 重複チェック（同じユーザー・タイトル・カテゴリの組み合わせを避ける）
+            $finalTitle = $rankingTitle . ' #' . ($i + 1) . '_' . $user->id;
+
+            $this->createRankingForUser($user, $category, $shops, $finalTitle);
+            $totalRankings++;
+        }
+
+        $this->command->info("Sample rankings created successfully. Total: {$totalRankings} rankings.");
     }
 
     private function createRankingForUser($user, $category, $shops, $title): void
@@ -54,46 +80,35 @@ class RankingSeeder extends Seeder
         // ランダムに3-5店舗を選択
         $selectedShops = $shops->random(min(rand(3, 5), $shops->count()));
 
+        // ランキングレコードを作成
+        $ranking = Ranking::create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => $title,
+            'description' => $this->generateRankingDescription($title),
+            'is_public' => rand(0, 1) === 1,
+        ]);
+
+        // ランキングアイテムを作成
         foreach ($selectedShops as $index => $shop) {
-            Ranking::create([
-                'user_id' => $user->id,
+            RankingItem::create([
+                'ranking_id' => $ranking->id,
                 'shop_id' => $shop->id,
-                'category_id' => $category->id,
                 'rank_position' => $index + 1,
-                'title' => $title,
-                'description' => $this->generateRankingDescription($shop->name, $index + 1),
-                'is_public' => rand(0, 1) === 1,
             ]);
         }
     }
 
-    private function generateRankingDescription($shopName, $position): string
+    private function generateRankingDescription($title): string
     {
         $descriptions = [
-            1 => [
-                '絶対的な1位！{shop}は本当に素晴らしいです。',
-                'やっぱり{shop}が一番。何度でも行きたい。',
-                '{shop}に勝る店はありません。完璧です。',
-            ],
-            2 => [
-                '{shop}も本当に良いお店。1位と僅差です。',
-                '2位の{shop}も素晴らしいクオリティです。',
-                '{shop}は安定的に美味しい。信頼できます。',
-            ],
-            3 => [
-                '{shop}は3位だけど、十分におすすめできます。',
-                '3位の{shop}も良い選択肢だと思います。',
-                '{shop}は特色があって面白いお店です。',
-            ],
+            '個人的な好みを反映した' . $title . 'です。',
+            '実際に食べ歩いて作成した' . $title . 'です。',
+            '主観的ですが参考になればと思います。',
+            'コスパや味を総合的に判断しました。',
+            'また食べに行きたい順で並べました。',
         ];
 
-        $templates = $descriptions[$position] ?? [
-            '{shop}は{position}位ですが、それでも良いお店です。',
-            '{position}位の{shop}も魅力的です。',
-        ];
-
-        $template = $templates[array_rand($templates)];
-
-        return str_replace(['{shop}', '{position}'], [$shopName, $position], $template);
+        return $descriptions[array_rand($descriptions)];
     }
 }
