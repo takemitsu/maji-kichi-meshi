@@ -191,7 +191,7 @@ class RankingApiTest extends TestCase
                 [
                     'shop_id' => $shop->id,
                     'position' => 1,
-                ]
+                ],
             ],
         ]);
 
@@ -217,7 +217,7 @@ class RankingApiTest extends TestCase
                 [
                     'shop_id' => $shop->id,
                     'position' => 1,
-                ]
+                ],
             ],
         ]);
 
@@ -253,7 +253,7 @@ class RankingApiTest extends TestCase
                 [
                     'shop_id' => 999, // Invalid: non-existent shop
                     'position' => 0, // Invalid: position must be >= 1
-                ]
+                ],
             ],
         ]);
 
@@ -300,7 +300,7 @@ class RankingApiTest extends TestCase
                 [
                     'shop_id' => $shop3->id,
                     'position' => 1,
-                ]
+                ],
             ],
         ]);
 

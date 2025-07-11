@@ -157,13 +157,6 @@ class ShopController extends Controller
             throw $e;
         }
 
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => 'Validation failed',
-                'messages' => $validator->errors(),
-            ], 422);
-        }
-
         $shop->update($validator->validated());
 
         // Update categories if provided

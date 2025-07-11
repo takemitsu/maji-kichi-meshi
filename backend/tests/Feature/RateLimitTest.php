@@ -164,7 +164,7 @@ class RateLimitTest extends TestCase
                     [
                         'shop_id' => $shop->id,
                         'position' => 1,
-                    ]
+                    ],
                 ],
             ]);
 
@@ -185,7 +185,7 @@ class RateLimitTest extends TestCase
                 [
                     'shop_id' => $shop->id,
                     'position' => 1,
-                ]
+                ],
             ],
         ]);
 

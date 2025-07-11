@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShopController;
+use App\Http\Controllers\Api\StatsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -95,5 +96,9 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/rankings/{ranking}', [RankingController::class, 'destroy'])
         ->middleware('throttle:10,60,user');
     Route::get('/my-rankings', [RankingController::class, 'myRankings'])
+        ->middleware('throttle:100,60,user');  // 読み取りは緩め
+
+    // Statistics
+    Route::get('/stats/dashboard', [StatsController::class, 'dashboard'])
         ->middleware('throttle:100,60,user');  // 読み取りは緩め
 });
