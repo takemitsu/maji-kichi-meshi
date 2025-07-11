@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ranking_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ranking_id')->constrained()->onDelete('cascade');
-            $table->foreignId('shop_id')->constrained()->onDelete('cascade');
+            $table->foreignId('shop_id')->constrained()->onDelete('restrict');
             $table->integer('rank_position');
             $table->timestamps();
 

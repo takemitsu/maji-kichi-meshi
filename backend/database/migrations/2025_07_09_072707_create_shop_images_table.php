@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shop_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('shop_id')->constrained()->onDelete('cascade');
+            $table->foreignId('shop_id')->constrained()->onDelete('restrict');
             $table->string('uuid')->unique();
             $table->string('filename');
             $table->string('original_name');
