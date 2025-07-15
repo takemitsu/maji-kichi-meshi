@@ -13,6 +13,19 @@
 - [x] **ReviewSeeder** - レビューの初期データ ✅
 - [x] **RankingSeeder** - ランキングの初期データ ✅
 
+## 🚨 優先度: 緊急（セキュリティ）
+
+### 2. 画像検閲機能の脆弱性
+- [ ] **ReviewImage表示制御の修正**が緊急で必要 ⚠️ **セキュリティ問題**
+  - **問題**: リジェクトされた画像が一般ユーザーに表示される
+  - **原因**: ReviewControllerで`images`の代わりに`publishedImages`を使用していない
+  - **影響**: 管理者がリジェクトした不適切画像が表示される
+  - **修正箇所**: 
+    - `app/Http/Controllers/Api/ReviewController.php`: `with(['images'])` → `with(['publishedImages'])`
+    - `app/Models/Review.php`: `publishedImages()`リレーション追加
+    - `app/Http/Resources/ReviewResource.php`: `images` → `publishedImages`対応
+  - **参考**: ShopImageは既に正しく実装済み（`publishedImages`使用）
+
 ## 📋 優先度: 中（機能拡張）
 
 ### 3. 外部API連携の漏れ
@@ -183,6 +196,22 @@
 - Filament: CategoryResourceの管理画面に追加
 
 **現在の状態**: 2025-07-15にFilamentから削除済み（データベース構造に合わせて調整）
+
+## ⚠️ 重要な修正事項（2025-07-15 調査結果）
+
+### 画像検閲機能の実装状況
+**管理画面（Laravel Filament）**: ✅ **完全実装済み**
+- ステータス別フィルタリング（published/under_review/rejected）
+- 一括承認・拒否機能
+- 検索・絞り込み機能
+- 視覚的ステータス表示（色分けバッジ）
+- 検閲履歴管理
+
+**一般ユーザー向け表示制御**:
+- **店舗画像**: ✅ **正常動作**（`publishedImages`リレーション使用）
+- **レビュー画像**: ❌ **脆弱性あり**（rejected画像が表示される）
+
+**フロントエンド**: 問題なし（APIが正しいデータを返せば自動的に解決）
 
 ## 🚀 即座に実装可能な状態
 
