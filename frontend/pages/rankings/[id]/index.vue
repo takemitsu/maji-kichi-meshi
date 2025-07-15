@@ -102,7 +102,12 @@
                                             stroke-width="2"
                                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    更新: {{ formatDate(ranking.updated_at) }}
+                                    <span v-if="ranking.created_at === ranking.updated_at">
+                                        作成: {{ formatDate(ranking.created_at) }}
+                                    </span>
+                                    <span v-else>
+                                        作成: {{ formatDate(ranking.created_at) }} | 更新: {{ formatDate(ranking.updated_at) }}
+                                    </span>
                                 </div>
                             </div>
 
@@ -224,34 +229,6 @@
                     </div>
                 </div>
 
-                <!-- メタデータ -->
-                <div class="mt-8 bg-gray-50 rounded-lg p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">詳細情報</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                        <div>
-                            <label class="block font-medium text-gray-700">ランキングID</label>
-                            <p class="text-gray-900">{{ ranking.id }}</p>
-                        </div>
-                        <div>
-                            <label class="block font-medium text-gray-700">作成日</label>
-                            <p class="text-gray-900">
-                                {{ formatDateTime(ranking.created_at) }}
-                            </p>
-                        </div>
-                        <div v-if="ranking.updated_at !== ranking.created_at">
-                            <label class="block font-medium text-gray-700">最終更新</label>
-                            <p class="text-gray-900">
-                                {{ formatDateTime(ranking.updated_at) }}
-                            </p>
-                        </div>
-                        <div>
-                            <label class="block font-medium text-gray-700">公開状態</label>
-                            <p class="text-gray-900">
-                                {{ ranking.is_public ? '公開' : '非公開' }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- 関連アクション -->
                 <div class="mt-8 bg-white rounded-lg shadow p-6">
@@ -350,9 +327,6 @@ const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP')
 }
 
-const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString('ja-JP')
-}
 
 // 初期化
 onMounted(async () => {
