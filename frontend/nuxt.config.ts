@@ -3,6 +3,11 @@ export default defineNuxtConfig({
     compatibilityDate: '2025-05-15',
     devtools: { enabled: true },
 
+    // 開発サーバー設定
+    devServer: {
+        port: 3000
+    },
+
     // SPA設定
     ssr: false,
 

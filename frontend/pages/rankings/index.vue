@@ -138,7 +138,7 @@
                                                 stroke-width="2"
                                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
                                         </svg>
-                                        {{ ranking.shops?.length || 0 }}店舗
+                                        {{ ranking.shops_count || 0 }}店舗
                                     </div>
                                     <div class="flex items-center text-sm text-gray-500">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
