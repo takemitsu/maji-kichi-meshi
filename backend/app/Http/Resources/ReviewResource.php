@@ -26,7 +26,7 @@ class ReviewResource extends JsonResource
             'memo' => $this->memo,
             'visited_at' => $this->visited_at->format('Y-m-d'),
             'has_images' => $this->hasImages(),
-            'images' => ReviewImageResource::collection($this->whenLoaded('images')),
+            'images' => ReviewImageResource::collection($this->whenLoaded('publishedImages')),
             'user' => [
                 'id' => $this->user_id,
                 'name' => $this->whenLoaded('user', fn () => $this->user->name),

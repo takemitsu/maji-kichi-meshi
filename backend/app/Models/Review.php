@@ -49,6 +49,14 @@ class Review extends Model
     }
 
     /**
+     * Published review images relationship (only approved images)
+     */
+    public function publishedImages()
+    {
+        return $this->hasMany(ReviewImage::class)->published();
+    }
+
+    /**
      * Scope for filtering by rating
      */
     public function scopeByRating($query, $rating)

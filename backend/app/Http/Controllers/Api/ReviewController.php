@@ -19,7 +19,7 @@ class ReviewController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Review::with(['user', 'shop', 'images']);
+        $query = Review::with(['user', 'shop', 'publishedImages']);
 
         // Filter by user
         if ($request->has('user_id')) {
@@ -131,7 +131,7 @@ class ReviewController extends Controller
                 }
             }
 
-            $review->load(['user', 'shop', 'images']);
+            $review->load(['user', 'shop', 'publishedImages']);
 
             DB::commit();
 
@@ -151,7 +151,7 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        $review->load(['user', 'shop', 'images']);
+        $review->load(['user', 'shop', 'publishedImages']);
 
         return new ReviewResource($review);
     }
@@ -181,7 +181,7 @@ class ReviewController extends Controller
         }
 
         $review->update($validator->validated());
-        $review->load(['user', 'shop', 'images']);
+        $review->load(['user', 'shop', 'publishedImages']);
 
         return new ReviewResource($review);
     }
@@ -206,7 +206,7 @@ class ReviewController extends Controller
      */
     public function myReviews(Request $request)
     {
-        $query = Review::with(['shop', 'images'])
+        $query = Review::with(['shop', 'publishedImages'])
             ->byUser(Auth::id());
 
         // Filter by shop
