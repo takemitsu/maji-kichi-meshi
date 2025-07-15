@@ -40,7 +40,7 @@
                                 v-model="searchQuery"
                                 @input="handleSearch"
                                 type="text"
-                                placeholder="ランキング名やユーザー名で検索..."
+                                placeholder="ランキング名で検索..."
                                 class="w-full py-2 pr-3 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         </div>
                     </div>
