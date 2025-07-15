@@ -188,6 +188,9 @@ class RankingController extends Controller
             $query->byCategory($request->category_id);
         }
 
+        // Order by updated_at desc (most recently updated first)
+        $query->orderBy('updated_at', 'desc');
+
         // Pagination
         $perPage = min($request->get('per_page', 15), 50); // Max 50 items per page
         $rankings = $query->paginate($perPage);
@@ -213,6 +216,9 @@ class RankingController extends Controller
         if ($request->has('user_id')) {
             $query->byUser($request->user_id);
         }
+
+        // Order by updated_at desc (most recently updated first)
+        $query->orderBy('updated_at', 'desc');
 
         // Pagination
         $perPage = min($request->get('per_page', 15), 50); // Max 50 items per page
