@@ -5,9 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CategoryResource\Pages;
 use App\Models\Category;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -66,14 +64,6 @@ class CategoryResource extends Resource
                     ->default('basic')
                     ->required(),
 
-                Textarea::make('description')
-                    ->label('説明')
-                    ->rows(3)
-                    ->columnSpanFull(),
-
-                Toggle::make('is_active')
-                    ->label('有効')
-                    ->default(true),
             ]);
     }
 
@@ -117,16 +107,6 @@ class CategoryResource extends Resource
                     ->counts('rankings')
                     ->sortable(),
 
-                BadgeColumn::make('is_active')
-                    ->label('状態')
-                    ->colors([
-                        'success' => true,
-                        'danger' => false,
-                    ])
-                    ->formatStateUsing(function ($state) {
-                        return $state ? '有効' : '無効';
-                    }),
-
                 TextColumn::make('created_at')
                     ->label('作成日')
                     ->dateTime('Y-m-d H:i')
@@ -148,12 +128,6 @@ class CategoryResource extends Resource
                         'ranking' => 'ランキング用',
                     ]),
 
-                SelectFilter::make('is_active')
-                    ->label('状態')
-                    ->options([
-                        true => '有効',
-                        false => '無効',
-                    ]),
             ])
             ->actions([
                 EditAction::make(),
