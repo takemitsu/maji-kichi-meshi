@@ -95,14 +95,17 @@ composer stan           # PHPStan (静的解析)
 
 ### Frontend (Vue/Nuxt)
 ```bash
-# 開発サーバー起動
+# 依存関係インストール
+npm install
+
+# 開発サーバー起動 (localhost:3000)
 npm run dev
 
 # ビルド
 npm run build
 
-# プロダクションサーバー起動
-npm run start
+# プロダクション確認
+npm run preview
 
 # 型チェック
 npm run type-check

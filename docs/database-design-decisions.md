@@ -74,13 +74,29 @@ ORDER BY r.rank_position;
 
 #### 修正内容
 - **reviewsテーブル**: ユニーク制約追加 `(user_id, shop_id)`
-- **画像審査**: `review_images.status`による承認フロー実装
+- **画像審査**: `review_images.moderation_status`による承認フロー実装
 - **論理削除**: 適切な削除処理の実装
 
 #### 影響
 - データ整合性の向上
 - 重複レビュー防止
 - 管理機能の強化
+
+### 新テーブル追加 (2025-07-09〜11)
+
+#### 画像管理システム拡張
+- **shop_images**: 店舗画像管理（4サイズ自動リサイズ）
+- **プロフィール画像**: usersテーブル内に9フィールド追加
+- **検閲機能**: moderation_status, moderated_by, moderated_at
+
+#### 管理者機能強化
+- **admin_login_attempts**: ログイン試行記録
+- **users**: role, status, 2FA関連フィールド追加
+- **shops**: status, moderated_by, moderated_at追加
+
+#### ランキング機能正規化
+- **ranking_items**: ランキングアイテム管理（新規テーブル）
+- **rankings**: title, description, is_public追加
 
 ## 設計原則
 
