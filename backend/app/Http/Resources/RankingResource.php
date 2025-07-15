@@ -36,6 +36,9 @@ class RankingResource extends JsonResource
                     });
                 }
             ),
+            'shops_count' => $this->whenLoaded('items', function () {
+                return $this->items->count();
+            }) ?? 0,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
