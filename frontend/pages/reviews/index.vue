@@ -101,22 +101,14 @@
 
                                 <div class="flex-1 min-w-0">
                                     <h3 class="text-lg font-semibold text-gray-900">
-                                        <NuxtLink
-                                            :to="`/shops/${review.shop?.id}`"
-                                            class="hover:text-blue-600 transition-colors"
-                                            @click.stop>
-                                            {{ review.shop?.name }}
-                                        </NuxtLink>
+                                        {{ review.shop?.name }}
                                     </h3>
                                     <p class="text-sm text-gray-700 mt-1">
                                         {{ review.shop?.address }}
                                     </p>
-                                    <div class="flex items-center space-x-4 mt-2">
-                                        <span class="text-sm text-gray-700">訪問日: {{ formatDate(review.visited_at) }}</span>
-                                        <span class="text-sm text-gray-700">投稿日: {{ formatDate(review.created_at) }}</span>
-                                        <span v-if="review.user" class="text-sm text-gray-700">
-                                            投稿者: {{ review.user.name }}
-                                        </span>
+                                    <div class="mt-2 flex items-center space-x-2 text-sm text-gray-700">
+                                        <span>{{ formatDate(review.visited_at) }}</span>
+                                        <span v-if="review.user" class="text-gray-500">{{ review.user.name }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -124,59 +116,51 @@
                             <!-- アクションメニュー -->
                         </div>
 
-                        <!-- 評価部分 -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <!-- 評価部分（コンパクト） -->
+                        <div class="flex items-center space-x-4 mb-3">
                             <!-- 星評価 -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">星評価</label>
-                                <div class="flex items-center space-x-1">
-                                    <div class="flex">
-                                        <svg
-                                            v-for="star in 5"
-                                            :key="star"
-                                            class="w-5 h-5 fill-current"
-                                            :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
-                                            viewBox="0 0 20 20">
-                                            <path
-                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm text-gray-600 ml-2">({{ review.rating }}/5)</span>
+                            <div class="flex items-center space-x-1">
+                                <div class="flex">
+                                    <svg
+                                        v-for="star in 5"
+                                        :key="star"
+                                        class="w-4 h-4 fill-current"
+                                        :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
+                                        viewBox="0 0 20 20">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                    </svg>
                                 </div>
+                                <span class="text-sm text-gray-600 ml-1">({{ review.rating }})</span>
                             </div>
 
                             <!-- リピート意向 -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">リピート意向</label>
-                                <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                                    :class="{
-                                        'bg-green-100 text-green-800': review.repeat_intention === 'yes',
-                                        'bg-yellow-100 text-yellow-800': review.repeat_intention === 'maybe',
-                                        'bg-red-100 text-red-800': review.repeat_intention === 'no',
-                                        'bg-gray-100 text-gray-800': !['yes', 'maybe', 'no'].includes(review.repeat_intention),
-                                    }">
-                                    {{ getRepeatIntentionText(review.repeat_intention) }}
-                                </span>
-                            </div>
+                            <span
+                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                :class="{
+                                    'bg-green-100 text-green-800': review.repeat_intention === 'yes',
+                                    'bg-yellow-100 text-yellow-800': review.repeat_intention === 'maybe',
+                                    'bg-red-100 text-red-800': review.repeat_intention === 'no',
+                                    'bg-gray-100 text-gray-800': !['yes', 'maybe', 'no'].includes(review.repeat_intention),
+                                }">
+                                {{ getRepeatIntentionText(review.repeat_intention) }}
+                            </span>
                         </div>
 
-                        <!-- コメント -->
-                        <div v-if="review.memo" class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">コメント</label>
-                            <p class="text-gray-900 text-sm leading-relaxed">
+                        <!-- コメント（省略表示） -->
+                        <div v-if="review.memo" class="mb-3">
+                            <p class="text-gray-900 text-sm leading-relaxed line-clamp-2">
                                 {{ review.memo }}
                             </p>
                         </div>
 
-                        <!-- 画像 -->
-                        <div v-if="review.images && review.images.length > 0" class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">写真</label>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        <!-- 画像（コンパクト） -->
+                        <div v-if="review.images && review.images.length > 0" class="mb-3">
+                            <div class="flex items-center space-x-2">
                                 <div
-                                    v-for="image in review.images.slice(0, 4)"
+                                    v-for="image in review.images.slice(0, 3)"
                                     :key="image.id"
-                                    class="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                                    class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
                                     @click.stop="openImageModal(image)">
                                     <img
                                         :src="image.urls.thumbnail"
@@ -184,22 +168,15 @@
                                         class="w-full h-full object-cover"
                                         @error="handleReviewImageError(image)" />
                                 </div>
-                            </div>
-                            <div v-if="review.images.length > 4" class="mt-2 text-sm text-gray-700">
-                                他{{ review.images.length - 4 }}枚の画像があります
+                                <div v-if="review.images.length > 3" class="text-xs text-gray-700">
+                                    +{{ review.images.length - 3 }}枚
+                                </div>
                             </div>
                         </div>
 
                         <!-- フッター -->
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                            <div class="flex items-center space-x-4 text-sm text-gray-700">
-                                <span v-if="review.updated_at !== review.created_at">
-                                    更新: {{ formatDate(review.updated_at) }}
-                                </span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-700">クリックで詳細を見る →</span>
-                            </div>
+                        <div v-if="review.updated_at !== review.created_at" class="pt-4 border-t border-gray-200">
+                            <div class="text-sm text-gray-700">更新: {{ formatDate(review.updated_at) }}</div>
                         </div>
                     </div>
                 </div>

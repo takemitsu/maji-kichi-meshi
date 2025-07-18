@@ -36,10 +36,10 @@
                                     {{ review.shop?.name }}
                                 </NuxtLink>
                             </h1>
-                            <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
-                                <div class="mt-2 flex items-center text-sm text-gray-700">
+                            <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
+                                <div class="flex items-center text-sm text-gray-700">
                                     <svg
-                                        class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
+                                        class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400 fill-none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path
@@ -55,9 +55,9 @@
                                     </svg>
                                     {{ review.shop?.address }}
                                 </div>
-                                <div class="mt-2 flex items-center text-sm text-gray-700">
+                                <div class="flex items-center text-sm text-gray-700">
                                     <svg
-                                        class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
+                                        class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400 fill-none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path
@@ -103,48 +103,39 @@
                 <div class="bg-white rounded-lg shadow">
                     <!-- 評価セクション -->
                     <div class="px-4 md:px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">評価</h3>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        <div class="flex items-center space-x-6">
                             <!-- 星評価 -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">星評価</label>
-                                <div class="flex items-center space-x-2">
-                                    <div class="flex">
-                                        <svg
-                                            v-for="star in 5"
-                                            :key="star"
-                                            class="w-6 h-6 fill-current"
-                                            :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
-                                            viewBox="0 0 20 20">
-                                            <path
-                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                                        </svg>
-                                    </div>
-                                    <span class="text-lg font-medium text-gray-900">{{ review.rating }}/5</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex">
+                                    <svg
+                                        v-for="star in 5"
+                                        :key="star"
+                                        class="w-5 h-5 fill-current"
+                                        :class="star <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
+                                        viewBox="0 0 20 20">
+                                        <path
+                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                    </svg>
                                 </div>
+                                <span class="text-base font-medium text-gray-900">{{ review.rating }}/5</span>
                             </div>
 
                             <!-- リピート意向 -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">リピート意向</label>
-                                <span
-                                    class="inline-flex items-center px-4 py-2 rounded-full text-base font-medium"
-                                    :class="{
-                                        'bg-green-100 text-green-800': review.repeat_intention === 'yes',
-                                        'bg-yellow-100 text-yellow-800': review.repeat_intention === 'maybe',
-                                        'bg-red-100 text-red-800': review.repeat_intention === 'no',
-                                        'bg-gray-100 text-gray-800': !['yes', 'maybe', 'no'].includes(review.repeat_intention),
-                                    }">
-                                    {{ getRepeatIntentionText(review.repeat_intention) }}
-                                </span>
-                            </div>
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                                :class="{
+                                    'bg-green-100 text-green-800': review.repeat_intention === 'yes',
+                                    'bg-yellow-100 text-yellow-800': review.repeat_intention === 'maybe',
+                                    'bg-red-100 text-red-800': review.repeat_intention === 'no',
+                                    'bg-gray-100 text-gray-800': !['yes', 'maybe', 'no'].includes(review.repeat_intention),
+                                }">
+                                {{ getRepeatIntentionText(review.repeat_intention) }}
+                            </span>
                         </div>
                     </div>
 
                     <!-- コメントセクション -->
                     <div v-if="review.memo" class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">コメント</h3>
                         <div class="prose prose-sm text-gray-900">
                             <p class="whitespace-pre-wrap">{{ review.memo }}</p>
                         </div>
@@ -152,7 +143,6 @@
 
                     <!-- 画像セクション -->
                     <div v-if="review.images && review.images.length > 0" class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">写真</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div
                                 v-for="image in review.images"
@@ -169,23 +159,14 @@
                     </div>
 
                     <!-- メタデータセクション -->
-                    <div class="px-4 md:px-6 py-4">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">詳細情報</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                            <div>
-                                <label class="block font-medium text-gray-700">投稿日</label>
-                                <p class="text-gray-900">
-                                    {{ formatDateTime(review.created_at) }}
-                                </p>
-                            </div>
+                    <div class="px-4 md:px-6 py-4 text-sm text-gray-600">
+                        <div class="flex flex-col space-y-2">
+                            <div>投稿日: {{ formatDateTime(review.created_at) }}</div>
                             <div v-if="review.updated_at !== review.created_at">
-                                <label class="block font-medium text-gray-700">最終更新</label>
-                                <p class="text-gray-900">
-                                    {{ formatDateTime(review.updated_at) }}
-                                </p>
+                                最終更新: {{ formatDateTime(review.updated_at) }}
                             </div>
                             <div>
-                                <label class="block font-medium text-gray-700">店舗</label>
+                                店舗:
                                 <NuxtLink :to="`/shops/${review.shop?.id}`" class="text-blue-600 hover:text-blue-800">
                                     {{ review.shop?.name }}
                                 </NuxtLink>
@@ -197,19 +178,27 @@
                 <!-- 関連アクション -->
                 <div class="mt-8 bg-gray-50 rounded-lg p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">関連アクション</h3>
-                    <div class="flex flex-wrap gap-4">
-                        <NuxtLink :to="`/shops/${review.shop?.id}`" class="btn-secondary">店舗詳細を見る</NuxtLink>
-                        <NuxtLink :to="`/reviews?shop_id=${review.shop?.id}`" class="btn-secondary">
-                            この店舗の他のレビューを見る
-                        </NuxtLink>
-                        <template v-if="authStore.isLoggedIn">
-                            <NuxtLink :to="`/reviews/create?shop_id=${review.shop?.id}`" class="btn-primary">
-                                この店舗の新しいレビューを作成
+                    <div class="flex flex-col space-y-3">
+                        <div class="flex flex-col space-y-2 text-sm">
+                            <NuxtLink :to="`/shops/${review.shop?.id}`" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                店舗詳細を見る →
                             </NuxtLink>
-                        </template>
-                        <template v-else>
-                            <NuxtLink to="/login" class="btn-primary">ログインしてレビューを作成</NuxtLink>
-                        </template>
+                            <NuxtLink
+                                :to="`/reviews?shop_id=${review.shop?.id}`"
+                                class="text-blue-600 hover:text-blue-800 hover:underline">
+                                この店舗の他のレビューを見る →
+                            </NuxtLink>
+                        </div>
+                        <div class="pt-2">
+                            <template v-if="authStore.isLoggedIn">
+                                <NuxtLink :to="`/reviews/create?shop_id=${review.shop?.id}`" class="btn-primary">
+                                    この店舗の新しいレビューを作成
+                                </NuxtLink>
+                            </template>
+                            <template v-else>
+                                <NuxtLink to="/login" class="btn-primary">ログインしてレビューを作成</NuxtLink>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
