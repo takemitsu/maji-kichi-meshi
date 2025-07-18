@@ -8,7 +8,7 @@
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                             マイランキング
                         </h1>
-                        <p class="mt-1 text-sm text-gray-500">あなたの個人的な店舗ランキングを作成・管理できます</p>
+                        <p class="mt-1 text-sm text-gray-700">あなたの個人的な店舗ランキングを作成・管理できます</p>
                     </div>
                     <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
                         <NuxtLink to="/rankings/public" class="btn-secondary flex items-center">
@@ -99,7 +99,7 @@
                                 </p>
 
                                 <div class="flex items-center space-x-4 mt-3">
-                                    <div class="flex items-center text-sm text-gray-500">
+                                    <div class="flex items-center text-sm text-gray-700">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 stroke-linecap="round"
@@ -109,7 +109,7 @@
                                         </svg>
                                         {{ ranking.category?.name || '総合' }}
                                     </div>
-                                    <div class="flex items-center text-sm text-gray-500">
+                                    <div class="flex items-center text-sm text-gray-700">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 stroke-linecap="round"
@@ -119,7 +119,7 @@
                                         </svg>
                                         {{ ranking.shops_count || 0 }}店舗
                                     </div>
-                                    <div class="flex items-center text-sm text-gray-500">
+                                    <div class="flex items-center text-sm text-gray-700">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 stroke-linecap="round"
@@ -130,13 +130,6 @@
                                         更新: {{ formatDate(ranking.updated_at) }}
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- アクションメニュー -->
-                            <div class="flex items-center">
-                                <NuxtLink :to="`/rankings/${ranking.id}`" class="text-sm text-blue-600 hover:text-blue-800">
-                                    詳細を見る
-                                </NuxtLink>
                             </div>
                         </div>
 
@@ -163,22 +156,17 @@
                                         <p class="text-sm font-medium text-gray-900 truncate">
                                             {{ shop.name }}
                                         </p>
-                                        <p class="text-xs text-gray-500 truncate">
+                                        <p class="text-xs text-gray-700 truncate">
                                             {{ shop.address }}
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="pt-3">
-                                <NuxtLink :to="`/rankings/${ranking.id}`" class="text-sm text-blue-600 hover:text-blue-800">
-                                    詳細を見る ({{ ranking.shops.length }}店舗)
-                                </NuxtLink>
-                            </div>
                         </div>
 
                         <!-- 空の状態 -->
                         <div v-else class="border-t border-gray-200 pt-4 text-center">
-                            <p class="text-sm text-gray-500">まだ店舗が登録されていません</p>
+                            <p class="text-sm text-gray-700">まだ店舗が登録されていません</p>
                             <NuxtLink :to="`/rankings/${ranking.id}/edit`" class="text-sm text-blue-600 hover:text-blue-800">
                                 店舗を追加する
                             </NuxtLink>
@@ -207,7 +195,7 @@
                         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-gray-900">ランキングがありません</h3>
-                <p class="mt-1 text-sm text-gray-500">
+                <p class="mt-1 text-sm text-gray-700">
                     {{
                         selectedCategory || selectedVisibility
                             ? 'フィルター条件に一致するランキングが見つかりませんでした。'

@@ -178,24 +178,13 @@
 
                                 <div class="mt-2 space-y-1">
                                     <NuxtLink
-                                        to="/rankings"
-                                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                                        :class="{
-                                            'text-blue-600 bg-blue-50':
-                                                $route.path.startsWith('/rankings') &&
-                                                !$route.path.startsWith('/rankings/public'),
-                                        }"
-                                        @click="closeMobileMenu">
-                                        マイランキング
-                                    </NuxtLink>
-                                    <NuxtLink
                                         to="/dashboard"
                                         class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                                         :class="{
                                             'text-blue-600 bg-blue-50': $route.path === '/dashboard',
                                         }"
                                         @click="closeMobileMenu">
-                                        ダッシュボード
+                                        マイページ
                                     </NuxtLink>
                                     <NuxtLink
                                         to="/settings"

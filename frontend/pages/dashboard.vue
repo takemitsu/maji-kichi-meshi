@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
         <div class="px-4 py-6 sm:px-0">
             <div class="mb-8">
-                <h1 class="text-2xl font-bold text-gray-900">ダッシュボード</h1>
+                <h1 class="text-2xl font-bold text-gray-900">マイページ</h1>
                 <p class="mt-2 text-sm text-gray-600">おかえりなさい、{{ authStore.user?.name }}さん</p>
             </div>
 
@@ -23,7 +23,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">レビュー数</dt>
+                                <dt class="text-sm font-medium text-gray-700 truncate">レビュー数</dt>
                                 <dd class="text-lg font-medium text-gray-900">
                                     {{ stats.reviewsCount }}
                                 </dd>
@@ -47,7 +47,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-500 truncate">ランキング</dt>
+                                <dt class="text-sm font-medium text-gray-700 truncate">ランキング</dt>
                                 <dd class="text-lg font-medium text-gray-900">
                                     {{ stats.rankingsCount }}
                                 </dd>

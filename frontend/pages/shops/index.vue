@@ -8,7 +8,7 @@
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                             店舗一覧
                         </h1>
-                        <p class="mt-1 text-sm text-gray-500">
+                        <p class="mt-1 text-sm text-gray-700">
                             {{
                                 authStore.isLoggedIn
                                     ? '登録済みの店舗を検索・追加・編集できます'
@@ -55,7 +55,7 @@
                                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                             </div>
                         </div>
-                        <div v-if="searchQuery || selectedCategory" class="mt-2 text-sm text-gray-500">
+                        <div v-if="searchQuery || selectedCategory" class="mt-2 text-sm text-gray-700">
                             検索結果: {{ totalItems }}件中 {{ (currentPage - 1) * perPage + 1 }}〜{{
                                 Math.min(currentPage * perPage, totalItems)
                             }}件を表示
@@ -112,7 +112,7 @@
                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-gray-900">店舗がありません</h3>
-                <p class="mt-1 text-sm text-gray-500">
+                <p class="mt-1 text-sm text-gray-700">
                     {{
                         searchQuery || selectedCategory
                             ? '検索条件に一致する店舗が見つかりませんでした。'

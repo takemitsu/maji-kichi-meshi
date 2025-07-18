@@ -15,7 +15,7 @@
                         <li>
                             <NuxtLink
                                 :to="ranking.is_public ? '/rankings/public' : '/rankings'"
-                                class="text-gray-500 hover:text-gray-700">
+                                class="text-gray-700 hover:text-gray-700">
                                 {{ ranking.is_public ? '公開ランキング' : 'マイランキング' }}
                             </NuxtLink>
                         </li>
@@ -55,7 +55,7 @@
                             </div>
 
                             <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
-                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                <div class="mt-2 flex items-center text-sm text-gray-700">
                                     <div class="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center mr-2">
                                         <span class="text-xs font-medium text-gray-700">
                                             {{ ranking.user?.name?.charAt(0).toUpperCase() }}
@@ -64,7 +64,7 @@
                                     {{ ranking.user?.name }}
                                 </div>
 
-                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                <div class="mt-2 flex items-center text-sm text-gray-700">
                                     <svg
                                         class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                                         stroke="currentColor"
@@ -78,7 +78,7 @@
                                     {{ ranking.category?.name || '総合' }}
                                 </div>
 
-                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                <div class="mt-2 flex items-center text-sm text-gray-700">
                                     <svg
                                         class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                                         stroke="currentColor"
@@ -92,7 +92,7 @@
                                     {{ ranking.shops?.length || 0 }}店舗
                                 </div>
 
-                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                <div class="mt-2 flex items-center text-sm text-gray-700">
                                     <svg
                                         class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                                         stroke="currentColor"
@@ -201,7 +201,7 @@
                                                     {{ shop.average_rating.toFixed(1) }}
                                                 </span>
                                             </div>
-                                            <div class="text-xs text-gray-500">{{ shop.review_count || 0 }}件のレビュー</div>
+                                            <div class="text-xs text-gray-700">{{ shop.review_count || 0 }}件のレビュー</div>
                                         </div>
                                     </div>
                                 </div>
@@ -219,7 +219,7 @@
                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
                         </svg>
                         <h3 class="mt-2 text-sm font-medium text-gray-900">店舗が登録されていません</h3>
-                        <p class="mt-1 text-sm text-gray-500">まだランキングに店舗が追加されていません。</p>
+                        <p class="mt-1 text-sm text-gray-700">まだランキングに店舗が追加されていません。</p>
                         <div v-if="isOwner" class="mt-6">
                             <NuxtLink :to="`/rankings/${ranking.id}/edit`" class="btn-primary">店舗を追加する</NuxtLink>
                         </div>

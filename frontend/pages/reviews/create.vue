@@ -6,7 +6,7 @@
                 <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                     レビューを作成
                 </h1>
-                <p class="mt-1 text-sm text-gray-500">訪問した店舗の評価とメモを記録しましょう</p>
+                <p class="mt-1 text-sm text-gray-700">訪問した店舗の評価とメモを記録しましょう</p>
             </div>
 
             <!-- エラーメッセージ -->
@@ -65,7 +65,7 @@
                                     </svg>
                                 </div>
                             </div>
-                            <p class="mt-1 text-sm text-gray-500">2文字以上入力すると検索が開始されます</p>
+                            <p class="mt-1 text-sm text-gray-700">2文字以上入力すると検索が開始されます</p>
                         </div>
 
                         <!-- 検索結果 -->
@@ -90,12 +90,14 @@
 
                         <!-- 検索案内・結果なし -->
                         <div v-if="shopSearchQuery" class="text-center py-4">
-                            <div v-if="shopSearchQuery.length < 2" class="text-gray-500">
+                            <div v-if="shopSearchQuery.length < 2" class="text-gray-700">
                                 <p class="text-sm">あと{{ 2 - shopSearchQuery.length }}文字入力してください</p>
                             </div>
-                            <div v-else-if="searchResults.length === 0 && !searchLoading" class="text-gray-500">
+                            <div v-else-if="searchResults.length === 0 && !searchLoading" class="text-gray-700">
                                 <p class="text-sm mb-2">「{{ shopSearchQuery }}」の検索結果が見つかりませんでした</p>
-                                <NuxtLink to="/shops" class="text-sm text-blue-600 hover:text-blue-800">
+                                <NuxtLink
+                                    to="/shops"
+                                    class="btn-secondary min-h-[44px] px-4 py-2 text-sm inline-flex items-center">
                                     新しい店舗を登録する
                                 </NuxtLink>
                             </div>
@@ -214,7 +216,7 @@
                             rows="6"
                             class="input-field"
                             placeholder="味の感想、雰囲気、サービスなど、自由に記録してください..."></textarea>
-                        <p class="mt-2 text-sm text-gray-500">{{ form.memo.length }}/1000 文字</p>
+                        <p class="mt-2 text-sm text-gray-700">{{ form.memo.length }}/1000 文字</p>
                     </div>
                 </div>
 

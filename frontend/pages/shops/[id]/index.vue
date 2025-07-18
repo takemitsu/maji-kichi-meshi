@@ -13,7 +13,7 @@
                 <nav class="flex mb-6" aria-label="Breadcrumb">
                     <ol class="flex items-center space-x-4">
                         <li>
-                            <NuxtLink to="/shops" class="text-gray-500 hover:text-gray-700">店舗一覧</NuxtLink>
+                            <NuxtLink to="/shops" class="text-gray-700 hover:text-gray-700">店舗一覧</NuxtLink>
                         </li>
                         <li>
                             <svg class="flex-shrink-0 h-5 w-5 text-gray-400 fill-current" viewBox="0 0 20 20">
@@ -37,7 +37,7 @@
                                 {{ shop.name }}
                             </h1>
                             <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
-                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                <div class="mt-2 flex items-center text-sm text-gray-700">
                                     <svg
                                         class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                                         stroke="currentColor"
@@ -55,7 +55,7 @@
                                     </svg>
                                     {{ shop.address }}
                                 </div>
-                                <div v-if="shop.phone" class="mt-2 flex items-center text-sm text-gray-500">
+                                <div v-if="shop.phone" class="mt-2 flex items-center text-sm text-gray-700">
                                     <svg
                                         class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
                                         stroke="currentColor"
@@ -149,7 +149,7 @@
                                             stroke-width="2"
                                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
-                                    <p class="mt-2 text-sm text-gray-500">画像なし</p>
+                                    <p class="mt-2 text-sm text-gray-700">画像なし</p>
                                 </div>
                             </div>
 
@@ -286,7 +286,7 @@
                                             <span class="text-sm text-yellow-400">★</span>
                                             <span class="text-sm text-gray-600">{{ review.rating }}</span>
                                         </div>
-                                        <span class="text-sm text-gray-500">{{ formatDate(review.created_at) }}</span>
+                                        <span class="text-sm text-gray-700">{{ formatDate(review.created_at) }}</span>
                                     </div>
                                     <p v-if="review.memo" class="mt-1 text-sm text-gray-700">
                                         {{ review.memo }}
@@ -305,7 +305,7 @@
                                 d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                         </svg>
                         <h3 class="mt-2 text-sm font-medium text-gray-900">レビューがありません</h3>
-                        <p class="mt-1 text-sm text-gray-500">この店舗の最初のレビューを書いてみましょう。</p>
+                        <p class="mt-1 text-sm text-gray-700">この店舗の最初のレビューを書いてみましょう。</p>
                         <div class="mt-6">
                             <template v-if="authStore.isLoggedIn">
                                 <button @click="addReview" class="btn-primary">レビューを追加</button>

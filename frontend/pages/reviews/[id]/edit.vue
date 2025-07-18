@@ -9,7 +9,7 @@
                 <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                     レビューを編集
                 </h1>
-                <p v-if="review" class="mt-1 text-sm text-gray-500">{{ review.shop?.name }} のレビューを編集しています</p>
+                <p v-if="review" class="mt-1 text-sm text-gray-700">{{ review.shop?.name }} のレビューを編集しています</p>
             </div>
 
             <!-- エラーメッセージ -->
@@ -107,7 +107,7 @@
                             rows="6"
                             class="input-field"
                             placeholder="味の感想、雰囲気、サービスなど、自由に記録してください..."></textarea>
-                        <p class="mt-2 text-sm text-gray-500">{{ (form.memo || '').length }}/1000 文字</p>
+                        <p class="mt-2 text-sm text-gray-700">{{ (form.memo || '').length }}/1000 文字</p>
                     </div>
                 </div>
 
@@ -146,7 +146,7 @@
                         <ImageUpload v-model="newImages" :max-files="5 - existingImages.length" />
                     </div>
 
-                    <div v-else class="text-sm text-gray-500">
+                    <div v-else class="text-sm text-gray-700">
                         最大5枚の画像が登録されています。新しい画像を追加するには、既存の画像を削除してください。
                     </div>
                 </div>

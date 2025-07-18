@@ -13,7 +13,7 @@
                 <nav class="flex mb-6" aria-label="Breadcrumb">
                     <ol class="flex items-center space-x-4">
                         <li>
-                            <NuxtLink to="/shops" class="text-gray-500 hover:text-gray-700">店舗一覧</NuxtLink>
+                            <NuxtLink to="/shops" class="text-gray-700 hover:text-gray-700">店舗一覧</NuxtLink>
                         </li>
                         <li>
                             <svg class="flex-shrink-0 h-5 w-5 text-gray-400 fill-current" viewBox="0 0 20 20">
@@ -24,7 +24,7 @@
                             </svg>
                         </li>
                         <li>
-                            <NuxtLink v-if="form.name" :to="`/shops/${shopId}`" class="text-gray-500 hover:text-gray-700">
+                            <NuxtLink v-if="form.name" :to="`/shops/${shopId}`" class="text-gray-700 hover:text-gray-700">
                                 {{ form.name }}
                             </NuxtLink>
                         </li>
@@ -45,7 +45,7 @@
                     <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                         店舗情報を編集
                     </h1>
-                    <p class="mt-1 text-sm text-gray-500">店舗の基本情報を更新します</p>
+                    <p class="mt-1 text-sm text-gray-700">店舗の基本情報を更新します</p>
                 </div>
 
                 <!-- フォーム -->
@@ -100,7 +100,7 @@
                                     class="input-field"
                                     placeholder="店舗の特徴や情報を入力してください..."
                                     maxlength="1000"></textarea>
-                                <p class="mt-1 text-sm text-gray-500">{{ (form.description || '').length }}/1000 文字</p>
+                                <p class="mt-1 text-sm text-gray-700">{{ (form.description || '').length }}/1000 文字</p>
                             </div>
 
                             <!-- カテゴリ -->

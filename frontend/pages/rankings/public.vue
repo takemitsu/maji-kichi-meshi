@@ -8,7 +8,7 @@
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                             みんなのランキング
                         </h1>
-                        <p class="mt-1 text-sm text-gray-500">みんなが公開している吉祥寺の店舗ランキングを見ることができます</p>
+                        <p class="mt-1 text-sm text-gray-700">みんなが公開している吉祥寺の店舗ランキングを見ることができます</p>
                     </div>
                     <div class="mt-4 flex md:ml-4 md:mt-0">
                         <NuxtLink to="/rankings" class="btn-secondary flex items-center">
@@ -64,7 +64,7 @@
 
                                 <div class="flex items-center space-x-4 mt-3">
                                     <!-- 作成者 -->
-                                    <div class="flex items-center text-sm text-gray-500">
+                                    <div class="flex items-center text-sm text-gray-700">
                                         <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center mr-2">
                                             <span class="text-xs font-medium text-gray-700">
                                                 {{ ranking.user?.name?.charAt(0).toUpperCase() }}
@@ -73,7 +73,7 @@
                                         {{ ranking.user?.name }}
                                     </div>
 
-                                    <div class="flex items-center text-sm text-gray-500">
+                                    <div class="flex items-center text-sm text-gray-700">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 stroke-linecap="round"
@@ -84,7 +84,7 @@
                                         {{ ranking.category?.name || '総合' }}
                                     </div>
 
-                                    <div class="flex items-center text-sm text-gray-500">
+                                    <div class="flex items-center text-sm text-gray-700">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 stroke-linecap="round"
@@ -95,7 +95,7 @@
                                         {{ ranking.shops_count || 0 }}店舗
                                     </div>
 
-                                    <div class="flex items-center text-sm text-gray-500">
+                                    <div class="flex items-center text-sm text-gray-700">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 stroke-linecap="round"
@@ -139,13 +139,13 @@
                                                 <p class="text-sm font-medium text-gray-900">
                                                     {{ shop.name }}
                                                 </p>
-                                                <p class="text-xs text-gray-500">
+                                                <p class="text-xs text-gray-700">
                                                     {{ shop.address }}
                                                 </p>
                                             </div>
 
                                             <!-- 評価情報（もしあれば） -->
-                                            <div v-if="shop.average_rating" class="flex items-center text-xs text-gray-500">
+                                            <div v-if="shop.average_rating" class="flex items-center text-xs text-gray-700">
                                                 <svg class="w-3 h-3 text-yellow-400 mr-1 fill-current" viewBox="0 0 20 20">
                                                     <path
                                                         d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
@@ -160,7 +160,7 @@
 
                         <!-- 空の状態 -->
                         <div v-else class="border-t border-gray-200 pt-4 text-center">
-                            <p class="text-sm text-gray-500">店舗が登録されていません</p>
+                            <p class="text-sm text-gray-700">店舗が登録されていません</p>
                         </div>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-gray-900">公開ランキングがありません</h3>
-                <p class="mt-1 text-sm text-gray-500">
+                <p class="mt-1 text-sm text-gray-700">
                     {{
                         selectedCategory
                             ? '選択したカテゴリのランキングが見つかりませんでした。'

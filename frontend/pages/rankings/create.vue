@@ -6,7 +6,7 @@
                 <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                     ランキングを作成
                 </h1>
-                <p class="mt-1 text-sm text-gray-500">吉祥寺の店舗ランキングを作成して、お気に入りを整理しましょう</p>
+                <p class="mt-1 text-sm text-gray-700">吉祥寺の店舗ランキングを作成して、お気に入りを整理しましょう</p>
             </div>
 
             <!-- エラーメッセージ -->
@@ -32,7 +32,7 @@
                                 placeholder="私の吉祥寺ラーメンランキング"
                                 maxlength="100"
                                 required />
-                            <p class="mt-1 text-sm text-gray-500">{{ form.title.length }}/100 文字</p>
+                            <p class="mt-1 text-sm text-gray-700">{{ form.title.length }}/100 文字</p>
                         </div>
 
                         <!-- 説明 -->
@@ -44,7 +44,7 @@
                                 class="input-field"
                                 placeholder="このランキングの特徴や選定基準を説明してください..."
                                 maxlength="500"></textarea>
-                            <p class="mt-1 text-sm text-gray-500">{{ (form.description || '').length }}/500 文字</p>
+                            <p class="mt-1 text-sm text-gray-700">{{ (form.description || '').length }}/500 文字</p>
                         </div>
 
                         <!-- カテゴリ -->
@@ -79,7 +79,7 @@
                                     <span class="ml-2 text-sm text-gray-900">公開（みんなが見られる）</span>
                                 </label>
                             </div>
-                            <p class="mt-1 text-sm text-gray-500">後から変更することもできます</p>
+                            <p class="mt-1 text-sm text-gray-700">後から変更することもできます</p>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">
                         店舗選択
-                        <span class="text-sm font-normal text-gray-500">（{{ selectedShops.length }}店舗選択済み）</span>
+                        <span class="text-sm font-normal text-gray-700">（{{ selectedShops.length }}店舗選択済み）</span>
                     </h3>
 
                     <!-- 店舗検索 -->
@@ -136,9 +136,11 @@
                     <!-- 店舗が見つからない場合 -->
                     <div
                         v-if="shopSearchQuery && searchResults.length === 0 && !searchLoading"
-                        class="mb-6 text-center py-4 text-gray-500">
+                        class="mb-6 text-center py-4 text-gray-700">
                         <p class="text-sm">店舗が見つかりませんでした</p>
-                        <NuxtLink to="/shops" class="text-sm text-blue-600 hover:text-blue-800">新しい店舗を登録する</NuxtLink>
+                        <NuxtLink to="/shops" class="btn-secondary min-h-[44px] px-4 py-2 text-sm inline-flex items-center">
+                            新しい店舗を登録する
+                        </NuxtLink>
                     </div>
 
                     <!-- 選択済み店舗一覧 -->
@@ -190,7 +192,7 @@
                     </div>
 
                     <!-- 空の状態 -->
-                    <div v-else class="text-center py-6 text-gray-500">
+                    <div v-else class="text-center py-6 text-gray-700">
                         <svg class="mx-auto h-12 w-12 text-gray-400 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                                 stroke-linecap="round"
@@ -214,7 +216,7 @@
                             <LoadingSpinner v-if="submitting" size="sm" color="white" class="mr-2" />
                             {{ submitting ? '作成中...' : 'ランキングを作成' }}
                         </button>
-                        <p v-if="!canSubmit && !submitting" class="text-xs text-gray-500 mt-1">
+                        <p v-if="!canSubmit && !submitting" class="text-xs text-gray-700 mt-1">
                             {{
                                 !form.title.trim()
                                     ? 'ランキング名を入力してください'

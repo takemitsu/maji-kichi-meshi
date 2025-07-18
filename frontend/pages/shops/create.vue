@@ -8,7 +8,7 @@
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                             新しい店舗を登録
                         </h1>
-                        <p class="mt-1 text-sm text-gray-500">吉祥寺の新しいお気に入り店舗を追加しましょう</p>
+                        <p class="mt-1 text-sm text-gray-700">吉祥寺の新しいお気に入り店舗を追加しましょう</p>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                                 class="input-field"
                                 placeholder="店舗の特徴や情報を入力してください..."
                                 maxlength="1000"></textarea>
-                            <p class="mt-1 text-sm text-gray-500">{{ (form.description || '').length }}/1000 文字</p>
+                            <p class="mt-1 text-sm text-gray-700">{{ (form.description || '').length }}/1000 文字</p>
                         </div>
 
                         <!-- カテゴリ -->

@@ -8,7 +8,7 @@
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                             レビュー一覧
                         </h1>
-                        <p class="mt-1 text-sm text-gray-500">
+                        <p class="mt-1 text-sm text-gray-700">
                             {{
                                 authStore.isLoggedIn
                                     ? 'あなたの訪問記録とレビューを管理できます'
@@ -25,7 +25,7 @@
                         </NuxtLink>
                     </div>
                     <div v-else class="mt-4 flex md:ml-4 md:mt-0">
-                        <span class="text-sm text-gray-500 px-3 py-2">レビューを作成するにはログインが必要です</span>
+                        <span class="text-sm text-gray-700 px-3 py-2">レビューを作成するにはログインが必要です</span>
                     </div>
                 </div>
             </div>
@@ -108,13 +108,13 @@
                                             {{ review.shop?.name }}
                                         </NuxtLink>
                                     </h3>
-                                    <p class="text-sm text-gray-500 mt-1">
+                                    <p class="text-sm text-gray-700 mt-1">
                                         {{ review.shop?.address }}
                                     </p>
                                     <div class="flex items-center space-x-4 mt-2">
-                                        <span class="text-sm text-gray-500">訪問日: {{ formatDate(review.visited_at) }}</span>
-                                        <span class="text-sm text-gray-500">投稿日: {{ formatDate(review.created_at) }}</span>
-                                        <span v-if="review.user" class="text-sm text-gray-500">
+                                        <span class="text-sm text-gray-700">訪問日: {{ formatDate(review.visited_at) }}</span>
+                                        <span class="text-sm text-gray-700">投稿日: {{ formatDate(review.created_at) }}</span>
+                                        <span v-if="review.user" class="text-sm text-gray-700">
                                             投稿者: {{ review.user.name }}
                                         </span>
                                     </div>
@@ -122,19 +122,6 @@
                             </div>
 
                             <!-- アクションメニュー -->
-                            <div class="flex items-center space-x-2">
-                                <template v-if="authStore.isLoggedIn && review.user && review.user.id === authStore.user?.id">
-                                    <NuxtLink
-                                        :to="`/reviews/${review.id}/edit`"
-                                        class="text-sm text-blue-600 hover:text-blue-800"
-                                        @click.stop>
-                                        編集
-                                    </NuxtLink>
-                                    <button @click.stop="deleteReview(review)" class="text-sm text-red-600 hover:text-red-800">
-                                        削除
-                                    </button>
-                                </template>
-                            </div>
                         </div>
 
                         <!-- 評価部分 -->
@@ -198,20 +185,20 @@
                                         @error="handleReviewImageError(image)" />
                                 </div>
                             </div>
-                            <div v-if="review.images.length > 4" class="mt-2 text-sm text-gray-500">
+                            <div v-if="review.images.length > 4" class="mt-2 text-sm text-gray-700">
                                 他{{ review.images.length - 4 }}枚の画像があります
                             </div>
                         </div>
 
                         <!-- フッター -->
                         <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <div class="flex items-center space-x-4 text-sm text-gray-700">
                                 <span v-if="review.updated_at !== review.created_at">
                                     更新: {{ formatDate(review.updated_at) }}
                                 </span>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <span class="text-sm text-gray-500">クリックで詳細を見る →</span>
+                                <span class="text-sm text-gray-700">クリックで詳細を見る →</span>
                             </div>
                         </div>
                     </div>
@@ -238,7 +225,7 @@
                         d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-gray-900">レビューがありません</h3>
-                <p class="mt-1 text-sm text-gray-500">
+                <p class="mt-1 text-sm text-gray-700">
                     {{
                         selectedRating || selectedRepeatIntention
                             ? 'フィルター条件に一致するレビューが見つかりませんでした。'
@@ -332,20 +319,6 @@ const loadReviews = async () => {
     }
 }
 
-// レビュー削除
-const deleteReview = async (review: Review) => {
-    if (!confirm(`レビュー「${review.shop?.name}」を削除しますか？この操作は元に戻せません。`)) {
-        return
-    }
-
-    try {
-        await $api.reviews.delete(review.id)
-        await loadReviews()
-    } catch (err) {
-        console.error('Failed to delete review:', err)
-        error.value = 'レビューの削除に失敗しました'
-    }
-}
 
 // ユーティリティ関数
 const formatDate = (dateString: string) => {
