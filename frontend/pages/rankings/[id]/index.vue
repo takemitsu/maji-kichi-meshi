@@ -37,78 +37,80 @@
                 <div class="mb-8">
                     <div class="md:flex md:items-start md:justify-between">
                         <div class="min-w-0 flex-1">
-                            <div class="flex items-center space-x-3">
-                                <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                                    {{ ranking.title }}
-                                </h1>
+                            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                                {{ ranking.title }}
+                            </h1>
 
-                                <!-- ステータスバッジ（自分のランキングのみ） -->
-                                <span
-                                    v-if="isOwner"
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                                    :class="{
-                                        'bg-green-100 text-green-800': ranking.is_public,
-                                        'bg-gray-100 text-gray-800': !ranking.is_public,
-                                    }">
-                                    {{ ranking.is_public ? '公開' : '非公開' }}
-                                </span>
-                            </div>
+                            <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
+                                <!-- ユーザー情報 + ステータス -->
+                                <div class="flex items-center text-sm text-gray-700">
+                                    <UserAvatar
+                                        :user-name="ranking.user?.name || 'ユーザー'"
+                                        :profile-image-url="ranking.user?.profile_image?.urls?.thumbnail"
+                                        size="xs"
+                                        class="mr-2" />
+                                    <span class="mr-2">{{ ranking.user?.name }}</span>
 
-                            <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
-                                <div class="mt-2 flex items-center text-sm text-gray-700">
-                                    <div class="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center mr-2">
-                                        <span class="text-xs font-medium text-gray-700">
-                                            {{ ranking.user?.name?.charAt(0).toUpperCase() }}
+                                    <!-- ステータスバッジ（自分のランキングのみ） -->
+                                    <span
+                                        v-if="isOwner"
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                        :class="{
+                                            'bg-green-100 text-green-800': ranking.is_public,
+                                            'bg-gray-100 text-gray-800': !ranking.is_public,
+                                        }">
+                                        {{ ranking.is_public ? '公開' : '非公開' }}
+                                    </span>
+                                </div>
+
+                                <!-- メタ情報 -->
+                                <div class="flex items-center text-sm text-gray-700 space-x-4 sm:pl-0 pl-6">
+                                    <div class="flex items-center">
+                                        <svg
+                                            class="flex-shrink-0 mr-1 h-4 w-4 text-gray-400 fill-none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                        </svg>
+                                        {{ ranking.category?.name || '総合' }}
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <svg
+                                            class="flex-shrink-0 mr-1 h-4 w-4 text-gray-400 fill-none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
+                                        </svg>
+                                        {{ ranking.shops?.length || 0 }}店舗
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <svg
+                                            class="flex-shrink-0 mr-1 h-4 w-4 text-gray-400 fill-none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span v-if="ranking.created_at === ranking.updated_at">
+                                            {{ formatDate(ranking.created_at) }}
+                                        </span>
+                                        <span v-else>
+                                            {{ formatDate(ranking.updated_at) }}
                                         </span>
                                     </div>
-                                    {{ ranking.user?.name }}
-                                </div>
-
-                                <div class="mt-2 flex items-center text-sm text-gray-700">
-                                    <svg
-                                        class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                    </svg>
-                                    {{ ranking.category?.name || '総合' }}
-                                </div>
-
-                                <div class="mt-2 flex items-center text-sm text-gray-700">
-                                    <svg
-                                        class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
-                                    </svg>
-                                    {{ ranking.shops?.length || 0 }}店舗
-                                </div>
-
-                                <div class="mt-2 flex items-center text-sm text-gray-700">
-                                    <svg
-                                        class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span v-if="ranking.created_at === ranking.updated_at">
-                                        作成: {{ formatDate(ranking.created_at) }}
-                                    </span>
-                                    <span v-else>
-                                        作成: {{ formatDate(ranking.created_at) }} | 更新: {{ formatDate(ranking.updated_at) }}
-                                    </span>
                                 </div>
                             </div>
 

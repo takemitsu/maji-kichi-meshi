@@ -98,7 +98,7 @@
                                     {{ ranking.description }}
                                 </p>
 
-                                <div class="flex items-center space-x-4 mt-3">
+                                <div class="flex flex-wrap items-center space-x-4 mt-3">
                                     <div class="flex items-center text-sm text-gray-700">
                                         <svg class="w-4 h-4 mr-1 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
