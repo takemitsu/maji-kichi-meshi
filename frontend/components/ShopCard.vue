@@ -6,9 +6,9 @@
         @touchend="handleTouchEnd">
         <!-- 店舗画像 -->
         <div ref="imageContainer" class="relative h-48 bg-gray-200 overflow-hidden">
-            <template v-if="shop.image_url && shouldLoadImage">
+            <template v-if="firstImage && shouldLoadImage">
                 <img
-                    :src="shop.image_url"
+                    :src="firstImage.urls.large"
                     :alt="shop.name"
                     class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     @error="handleImageError"
@@ -175,6 +175,11 @@ const toggleActionMenu = () => {
 const closeActionMenu = () => {
     isActionMenuOpen.value = false
 }
+
+// 計算されたプロパティ
+const firstImage = computed(() => {
+    return props.shop.images && props.shop.images.length > 0 ? props.shop.images[0] : null
+})
 
 // ユーティリティ関数
 const formatDate = (dateString: string) => {

@@ -27,10 +27,7 @@ class ReviewResource extends JsonResource
             'visited_at' => $this->visited_at->format('Y-m-d'),
             'has_images' => $this->hasImages(),
             'images' => ReviewImageResource::collection($this->whenLoaded('publishedImages')),
-            'user' => [
-                'id' => $this->user_id,
-                'name' => $this->whenLoaded('user', fn () => $this->user->name),
-            ],
+            'user' => new UserResource($this->whenLoaded('user')),
             'shop' => [
                 'id' => $this->shop_id,
                 'name' => $this->whenLoaded('shop', fn () => $this->shop->name),

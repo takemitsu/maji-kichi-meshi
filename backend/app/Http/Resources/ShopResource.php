@@ -44,7 +44,7 @@ class ShopResource extends JsonResource
                     });
                 }
             ),
-            'distance' => $this->when(isset($this->distance), round($this->distance, 2)),
+            'distance' => $this->when(isset($this->distance) && $this->distance !== null, round($this->distance, 2)),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

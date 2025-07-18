@@ -36,10 +36,10 @@
                             <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                                 {{ shop.name }}
                             </h1>
-                            <div class="mt-2 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
-                                <div class="mt-2 flex items-center text-sm text-gray-700">
+                            <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
+                                <div class="flex items-center text-sm text-gray-700">
                                     <svg
-                                        class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
+                                        class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400 fill-none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path
@@ -55,9 +55,9 @@
                                     </svg>
                                     {{ shop.address }}
                                 </div>
-                                <div v-if="shop.phone" class="mt-2 flex items-center text-sm text-gray-700">
+                                <div v-if="shop.phone" class="flex items-center text-sm text-gray-700">
                                     <svg
-                                        class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 fill-none"
+                                        class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400 fill-none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path
@@ -137,36 +137,37 @@
                                 </div>
                             </div>
                             <!-- 画像なしプレースホルダー -->
-                            <div v-else class="mb-6 h-32 bg-gray-200 rounded-lg flex items-center justify-center">
-                                <div class="text-center">
-                                    <svg
-                                        class="mx-auto w-12 h-12 text-gray-400 fill-none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <p class="mt-2 text-sm text-gray-700">画像なし</p>
+                            <div v-else class="mb-6">
+                                <h4 class="text-sm font-medium text-gray-700 mb-3">店舗画像</h4>
+                                <div class="h-32 bg-gray-200 rounded-lg flex items-center justify-center">
+                                    <div class="text-center">
+                                        <svg
+                                            class="mx-auto w-12 h-12 text-gray-400 fill-none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <p class="mt-2 text-sm text-gray-700">画像なし</p>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="space-y-4">
+                                <!-- カテゴリ -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">店舗名</label>
-                                    <p class="mt-1 text-sm text-gray-900">{{ shop.name }}</p>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">住所</label>
-                                    <p class="mt-1 text-sm text-gray-900">{{ shop.address }}</p>
-                                </div>
-
-                                <div v-if="shop.phone">
-                                    <label class="block text-sm font-medium text-gray-700">電話番号</label>
-                                    <p class="mt-1 text-sm text-gray-900">{{ shop.phone }}</p>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">カテゴリ</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span
+                                            v-for="category in shop.categories"
+                                            :key="category.id"
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                            {{ category.name }}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div v-if="shop.website">
@@ -191,19 +192,6 @@
 
                     <!-- サイドバー情報 -->
                     <div class="space-y-4 md:space-y-6">
-                        <!-- カテゴリ -->
-                        <div class="bg-white rounded-lg shadow p-4 md:p-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">カテゴリ</h3>
-                            <div class="flex flex-wrap gap-2">
-                                <span
-                                    v-for="category in shop.categories"
-                                    :key="category.id"
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                    {{ category.name }}
-                                </span>
-                            </div>
-                        </div>
-
                         <!-- 統計情報 -->
                         <div class="bg-white rounded-lg shadow p-4 md:p-6">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">統計情報</h3>
@@ -269,14 +257,12 @@
 
                     <div v-if="recentReviews.length > 0" class="divide-y divide-gray-200">
                         <div v-for="review in recentReviews" :key="review.id" class="px-6 py-4">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                                        <span class="text-sm font-medium text-gray-700">
-                                            {{ review.user?.name?.charAt(0).toUpperCase() }}
-                                        </span>
-                                    </div>
-                                </div>
+                            <div class="flex items-start space-x-3">
+                                <UserAvatar
+                                    :user-name="review.user?.name || 'ユーザー'"
+                                    :profile-image-url="review.user?.profile_image?.urls?.thumbnail"
+                                    size="sm"
+                                    class="flex-shrink-0" />
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center space-x-2">
                                         <p class="text-sm font-medium text-gray-900">
@@ -288,7 +274,7 @@
                                         </div>
                                         <span class="text-sm text-gray-700">{{ formatDate(review.created_at) }}</span>
                                     </div>
-                                    <p v-if="review.memo" class="mt-1 text-sm text-gray-700">
+                                    <p v-if="review.memo" class="mt-1 text-sm text-gray-700 line-clamp-2">
                                         {{ review.memo }}
                                     </p>
                                 </div>
