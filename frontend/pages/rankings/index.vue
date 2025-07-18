@@ -209,8 +209,8 @@
                 <h3 class="mt-2 text-sm font-medium text-gray-900">ランキングがありません</h3>
                 <p class="mt-1 text-sm text-gray-500">
                     {{
-                        searchQuery || selectedCategory || selectedVisibility
-                            ? '検索条件に一致するランキングが見つかりませんでした。'
+                        selectedCategory || selectedVisibility
+                            ? 'フィルター条件に一致するランキングが見つかりませんでした。'
                             : '最初のランキングを作成してみましょう。'
                     }}
                 </p>
@@ -304,7 +304,6 @@ const loadCategories = async () => {
         console.error('Failed to load categories:', err)
     }
 }
-
 
 // ユーティリティ関数
 const formatDate = (dateString: string) => {

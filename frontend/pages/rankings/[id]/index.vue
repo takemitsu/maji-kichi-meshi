@@ -147,7 +147,6 @@
 
                 <!-- ランキング本体 -->
                 <div class="bg-white rounded-lg shadow">
-
                     <!-- 店舗ランキング -->
                     <div v-if="ranking.shops && ranking.shops.length > 0" class="divide-y divide-gray-200">
                         <div v-for="shop in ranking.shops" :key="shop.id" class="p-6 hover:bg-gray-50 transition-colors">
@@ -227,12 +226,11 @@
                     </div>
                 </div>
 
-
                 <!-- 関連アクション -->
                 <div class="mt-8 border-t border-gray-200 pt-6">
                     <div class="flex items-center justify-between text-sm text-gray-600">
-                        <NuxtLink 
-                            :to="ranking.is_public ? '/rankings/public' : '/rankings'" 
+                        <NuxtLink
+                            :to="ranking.is_public ? '/rankings/public' : '/rankings'"
                             class="flex items-center hover:text-gray-900 transition-colors">
                             ← {{ ranking.is_public ? '公開ランキング' : 'マイランキング' }}一覧に戻る
                         </NuxtLink>
@@ -245,9 +243,9 @@
                                 {{ ranking.category.name }}の他のランキングを見る →
                             </NuxtLink>
 
-                            <NuxtLink 
-                                v-if="!isOwner" 
-                                to="/rankings/create" 
+                            <NuxtLink
+                                v-if="!isOwner"
+                                to="/rankings/create"
                                 class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
                                 自分もランキングを作成
                             </NuxtLink>
@@ -332,7 +330,6 @@ const deleteRanking = async () => {
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP')
 }
-
 
 // 初期化
 onMounted(async () => {

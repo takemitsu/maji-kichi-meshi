@@ -294,7 +294,7 @@ onMounted(async () => {
     if (route.query.category_id) {
         selectedCategory.value = route.query.category_id as string
     }
-    
+
     await Promise.all([loadRankings(), loadCategories()])
 })
 

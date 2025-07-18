@@ -60,7 +60,6 @@
             <!-- ローディング -->
             <LoadingSpinner v-if="loading" />
 
-
             <!-- エラーメッセージ -->
             <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 

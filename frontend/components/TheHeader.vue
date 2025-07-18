@@ -37,7 +37,6 @@
                     </NuxtLink>
                 </div>
 
-
                 <!-- 右側メニュー -->
                 <div class="flex items-center space-x-4">
                     <!-- 未認証の場合 -->
@@ -182,7 +181,9 @@
                                         to="/rankings"
                                         class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                                         :class="{
-                                            'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings') && !$route.path.startsWith('/rankings/public'),
+                                            'text-blue-600 bg-blue-50':
+                                                $route.path.startsWith('/rankings') &&
+                                                !$route.path.startsWith('/rankings/public'),
                                         }"
                                         @click="closeMobileMenu">
                                         マイランキング
