@@ -187,6 +187,7 @@ const handleCategoryFilter = () => {
 const handlePageChange = (page: number) => {
     currentPage.value = page
     loadShops()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 // ShopCardコンポーネントでアクションメニューを処理

@@ -31,29 +31,8 @@
             </div>
 
             <!-- フィルター -->
-            <div class="mb-6 space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- 検索 -->
-                    <div class="md:col-span-2">
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400 fill-none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                            </div>
-                            <input
-                                v-model="searchQuery"
-                                @input="handleSearch"
-                                type="text"
-                                placeholder="検索..."
-                                class="w-full py-2 pr-3 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                        </div>
-                    </div>
-
+            <div class="mb-6">
+                <div class="grid grid-cols-2 gap-4 max-w-md">
                     <!-- 評価フィルター -->
                     <div>
                         <select v-model="selectedRating" @change="handleFilter" class="input-field">
@@ -81,11 +60,6 @@
             <!-- ローディング -->
             <LoadingSpinner v-if="loading" />
 
-            <!-- 検索/フィルタリング中 -->
-            <div v-if="searchLoading && !loading" class="flex items-center justify-center py-4">
-                <LoadingSpinner size="sm" />
-                <span class="ml-2 text-sm text-gray-600">検索中...</span>
-            </div>
 
             <!-- エラーメッセージ -->
             <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
@@ -267,8 +241,8 @@
                 <h3 class="mt-2 text-sm font-medium text-gray-900">レビューがありません</h3>
                 <p class="mt-1 text-sm text-gray-500">
                     {{
-                        searchQuery || selectedRating || selectedRepeatIntention
-                            ? '検索条件に一致するレビューが見つかりませんでした。'
+                        selectedRating || selectedRepeatIntention
+                            ? 'フィルター条件に一致するレビューが見つかりませんでした。'
                             : authStore.isLoggedIn
                               ? '最初のレビューを作成してみましょう。'
                               : 'まだレビューがありません。'
@@ -302,9 +276,7 @@ const authStore = useAuthStore()
 // リアクティブデータ
 const reviews = ref<Review[]>([])
 const loading = ref(true)
-const searchLoading = ref(false)
 const error = ref('')
-const searchQuery = ref('')
 const selectedRating = ref('')
 const selectedRepeatIntention = ref('')
 const selectedImage = ref<ReviewImage | null>(null)
@@ -315,35 +287,17 @@ const perPage = ref(20)
 const totalItems = ref(0)
 const totalPages = ref(0)
 
-// URLパラメータから初期値を設定
-onMounted(() => {
-    if (route.query.shop_id) {
-        // 特定の店舗のレビューを表示する場合
-        searchQuery.value = (route.query.shop_name as string) || ''
-    }
-})
-
-// 検索とフィルター
-const handleSearch = useDebounceFn(() => {
-    currentPage.value = 1 // 検索時は1ページ目に戻る
-    searchLoading.value = true
-    loadReviews().finally(() => {
-        searchLoading.value = false
-    })
-}, 300)
-
+// フィルター
 const handleFilter = () => {
     currentPage.value = 1 // フィルター変更時は1ページ目に戻る
-    searchLoading.value = true
-    loadReviews().finally(() => {
-        searchLoading.value = false
-    })
+    loadReviews()
 }
 
 // ページ変更
 const handlePageChange = (page: number) => {
     currentPage.value = page
     loadReviews()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 // レビューデータ取得
@@ -356,7 +310,6 @@ const loadReviews = async () => {
             per_page: perPage.value,
         }
 
-        if (searchQuery.value) params.search = searchQuery.value
         if (selectedRating.value) params.rating = selectedRating.value
         if (selectedRepeatIntention.value) params.repeat_intention = selectedRepeatIntention.value
         if (route.query.shop_id) params.shop_id = String(route.query.shop_id)
