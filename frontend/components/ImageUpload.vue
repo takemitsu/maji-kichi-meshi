@@ -15,7 +15,7 @@
                     </svg>
                     画像を選択
                 </button>
-                <span class="text-sm text-gray-500">{{ images.length }}/5</span>
+                <span class="text-sm text-gray-700">{{ images.length }}/5</span>
             </div>
         </div>
 

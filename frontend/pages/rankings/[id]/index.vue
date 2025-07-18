@@ -149,11 +149,11 @@
                 <div class="bg-white rounded-lg shadow">
                     <!-- 店舗ランキング -->
                     <div v-if="ranking.shops && ranking.shops.length > 0" class="divide-y divide-gray-200">
-                        <div v-for="shop in ranking.shops" :key="shop.id" class="p-6 hover:bg-gray-50 transition-colors">
+                        <div v-for="shop in ranking.shops" :key="shop.id" class="p-4 md:p-6 hover:bg-gray-50 transition-colors">
                             <div class="flex items-center space-x-4">
                                 <!-- 順位 -->
                                 <div
-                                    class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold ring-2"
+                                    class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ring-2"
                                     :class="{
                                         'bg-yellow-100 text-yellow-800 ring-yellow-400': shop.rank_position === 1,
                                         'bg-gray-100 text-gray-800 ring-gray-400': shop.rank_position === 2,

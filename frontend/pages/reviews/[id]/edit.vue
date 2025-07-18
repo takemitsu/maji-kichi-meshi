@@ -16,9 +16,9 @@
             <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
             <!-- フォーム -->
-            <form v-if="!loading && review" @submit.prevent="submitReview" class="space-y-6">
+            <form v-if="!loading && review" @submit.prevent="submitReview" class="space-y-4 md:space-y-6">
                 <!-- 店舗情報（読み取り専用） -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">店舗情報</h3>
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div>
@@ -32,10 +32,10 @@
                 </div>
 
                 <!-- 評価 -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">評価</h3>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <!-- 星評価 -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -86,7 +86,7 @@
                 </div>
 
                 <!-- 訪問日 -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">訪問日</h3>
                     <div class="max-w-xs">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -98,7 +98,7 @@
                 </div>
 
                 <!-- コメント -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">コメント</h3>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">感想・メモ（任意）</label>
@@ -112,7 +112,7 @@
                 </div>
 
                 <!-- 写真管理 -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">写真</h3>
 
                     <!-- 既存の画像 -->
@@ -152,7 +152,7 @@
                 </div>
 
                 <!-- 更新履歴 -->
-                <div class="bg-gray-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">更新履歴</h3>
                     <div class="text-sm text-gray-600 space-y-2">
                         <div>

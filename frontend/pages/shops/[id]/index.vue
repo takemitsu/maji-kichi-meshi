@@ -101,16 +101,16 @@
                 </div>
 
                 <!-- 店舗情報カード -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
                     <!-- 基本情報 -->
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <div class="bg-white rounded-lg shadow p-4 md:p-6">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">基本情報</h3>
 
                             <!-- 店舗画像ギャラリー -->
                             <div v-if="shop.images && shop.images.length > 0" class="mb-6">
                                 <h4 class="text-sm font-medium text-gray-700 mb-3">店舗画像</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div
                                         v-for="image in shop.images"
                                         :key="image.id"
@@ -190,9 +190,9 @@
                     </div>
 
                     <!-- サイドバー情報 -->
-                    <div class="space-y-6">
+                    <div class="space-y-4 md:space-y-6">
                         <!-- カテゴリ -->
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <div class="bg-white rounded-lg shadow p-4 md:p-6">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">カテゴリ</h3>
                             <div class="flex flex-wrap gap-2">
                                 <span
@@ -205,7 +205,7 @@
                         </div>
 
                         <!-- 統計情報 -->
-                        <div class="bg-white rounded-lg shadow p-6">
+                        <div class="bg-white rounded-lg shadow p-4 md:p-6">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">統計情報</h3>
                             <div class="space-y-3">
                                 <div class="flex justify-between">

@@ -38,7 +38,7 @@
                         <span v-if="shop.highlightedName" v-html="shop.highlightedName"></span>
                         <span v-else>{{ shop.name }}</span>
                     </h3>
-                    <p class="text-sm text-gray-500 mt-1">
+                    <p class="text-sm text-gray-700 mt-1">
                         <span v-if="shop.highlightedAddress" v-html="shop.highlightedAddress"></span>
                         <span v-else>{{ shop.address }}</span>
                     </p>
@@ -111,7 +111,7 @@
                             {{ shop.average_rating.toFixed(1) }}
                         </span>
                     </div>
-                    <span class="text-sm text-gray-500">({{ shop.review_count || 0 }}件)</span>
+                    <span class="text-sm text-gray-700">({{ shop.review_count || 0 }}件)</span>
                 </div>
 
                 <span class="text-xs text-gray-400">

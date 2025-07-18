@@ -6,7 +6,7 @@
 
             <div class="flex-1">
                 <h3 class="text-lg font-medium text-gray-900">プロフィール画像</h3>
-                <p class="text-sm text-gray-500">JPG、PNG、GIF、WebP形式に対応。最大5MB。</p>
+                <p class="text-sm text-gray-700">JPG、PNG、GIF、WebP形式に対応。最大5MB。</p>
             </div>
         </div>
 

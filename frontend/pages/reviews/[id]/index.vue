@@ -102,10 +102,10 @@
                 <!-- レビュー内容 -->
                 <div class="bg-white rounded-lg shadow">
                     <!-- 評価セクション -->
-                    <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="px-4 md:px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">評価</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                             <!-- 星評価 -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">星評価</label>
@@ -169,7 +169,7 @@
                     </div>
 
                     <!-- メタデータセクション -->
-                    <div class="px-6 py-4">
+                    <div class="px-4 md:px-6 py-4">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">詳細情報</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                             <div>
@@ -195,7 +195,7 @@
                 </div>
 
                 <!-- 関連アクション -->
-                <div class="mt-8 bg-gray-50 rounded-lg p-6">
+                <div class="mt-8 bg-gray-50 rounded-lg p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">関連アクション</h3>
                     <div class="flex flex-wrap gap-4">
                         <NuxtLink :to="`/shops/${review.shop?.id}`" class="btn-secondary">店舗詳細を見る</NuxtLink>

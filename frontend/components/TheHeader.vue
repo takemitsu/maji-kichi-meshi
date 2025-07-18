@@ -170,7 +170,7 @@
                                         <p class="text-sm font-medium text-gray-900 truncate">
                                             {{ authStore.user?.name }}
                                         </p>
-                                        <p class="text-xs text-gray-500 truncate">
+                                        <p class="text-xs text-gray-700 truncate">
                                             {{ authStore.user?.email }}
                                         </p>
                                     </div>

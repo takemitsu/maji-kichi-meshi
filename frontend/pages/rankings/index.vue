@@ -38,7 +38,7 @@
 
             <!-- フィルター -->
             <div class="mb-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
+                <div class="grid grid-cols-2 gap-4 max-w-md">
                     <!-- カテゴリフィルター -->
                     <div>
                         <select v-model="selectedCategory" @change="handleFilter" class="input-field">
@@ -67,12 +67,12 @@
             <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
             <!-- ランキング一覧 -->
-            <div v-if="!loading && rankings.length > 0" class="space-y-6">
+            <div v-if="!loading && rankings.length > 0" class="space-y-4 md:space-y-6">
                 <div
                     v-for="ranking in rankings"
                     :key="ranking.id"
                     class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200">
-                    <div class="p-6">
+                    <div class="p-4 md:p-6">
                         <!-- ヘッダー部分 -->
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1 min-w-0">
@@ -127,7 +127,7 @@
                                                 stroke-width="2"
                                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
-                                        更新: {{ formatDate(ranking.updated_at) }}
+                                        {{ formatDate(ranking.updated_at) }}
                                     </div>
                                 </div>
                             </div>
@@ -162,14 +162,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- 空の状態 -->
-                        <div v-else class="border-t border-gray-200 pt-4 text-center">
-                            <p class="text-sm text-gray-700">まだ店舗が登録されていません</p>
-                            <NuxtLink :to="`/rankings/${ranking.id}/edit`" class="text-sm text-blue-600 hover:text-blue-800">
-                                店舗を追加する
-                            </NuxtLink>
                         </div>
                     </div>
                 </div>

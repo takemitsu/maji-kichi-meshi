@@ -23,7 +23,7 @@
             </div>
 
             <!-- 表示名変更セクション -->
-            <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <div class="bg-white rounded-lg shadow p-4 md:p-6 mb-6">
                 <h2 class="text-lg font-semibold mb-4">表示名</h2>
                 <form @submit.prevent="updateDisplayName">
                     <div class="mb-4">
@@ -39,7 +39,7 @@
             </div>
 
             <!-- プロフィール画像セクション -->
-            <div class="bg-white rounded-lg shadow p-6">
+            <div class="bg-white rounded-lg shadow p-4 md:p-6">
                 <h2 class="text-lg font-semibold mb-4">プロフィール画像</h2>
                 <p class="text-sm text-gray-600 mb-4">レビューやランキングで表示されるプロフィール画像を設定できます</p>
                 <ProfileImageUpload

@@ -20,9 +20,9 @@
                 @retry="handleRetry" />
 
             <!-- フォーム -->
-            <form @submit.prevent="submitReview" class="space-y-6">
+            <form @submit.prevent="submitReview" class="space-y-4 md:space-y-6">
                 <!-- 店舗選択 -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">店舗選択</h3>
 
                     <div v-if="selectedShop" class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
@@ -106,10 +106,10 @@
                 </div>
 
                 <!-- 評価 -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">評価</h3>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <!-- 星評価 -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -186,7 +186,7 @@
                 </div>
 
                 <!-- 訪問日 -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">訪問日</h3>
                     <div class="max-w-xs">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -207,7 +207,7 @@
                 </div>
 
                 <!-- コメント -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">コメント</h3>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">感想・メモ（任意）</label>
@@ -221,7 +221,7 @@
                 </div>
 
                 <!-- 写真アップロード -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">写真</h3>
                     <ImageUpload v-model="uploadedImages" :max-files="5" />
                 </div>

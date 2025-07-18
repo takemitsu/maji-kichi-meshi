@@ -7,8 +7,8 @@
             </div>
 
             <!-- 統計情報 -->
-            <div class="grid grid-cols-2 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow p-6">
+            <div class="grid grid-cols-2 gap-4 md:gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
@@ -58,20 +58,20 @@
             </div>
 
             <!-- アクションボタン -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">ランキング</h3>
                     <p class="text-sm text-gray-600 mb-4">個人的なランキングを作成・編集します</p>
                     <NuxtLink to="/rankings" class="btn-primary inline-block text-center w-full">マイランキングを見る</NuxtLink>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">レビュー一覧</h3>
                     <p class="text-sm text-gray-600 mb-4">訪問記録とレビューを作成・編集します</p>
                     <NuxtLink to="/reviews" class="btn-primary inline-block text-center w-full">レビュー一覧を見る</NuxtLink>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">店舗一覧</h3>
                     <p class="text-sm text-gray-600 mb-4">お気に入りの店舗を登録・編集します</p>
                     <NuxtLink to="/shops" class="btn-primary inline-block text-center w-full">店舗一覧を見る</NuxtLink>

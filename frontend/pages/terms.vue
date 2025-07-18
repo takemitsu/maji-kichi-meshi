@@ -133,7 +133,7 @@
 
                     <section class="mb-8">
                         <h2 class="text-xl font-semibold text-gray-900 mb-4">7. 免責事項</h2>
-                        <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 md:p-6">
                             <h3 class="text-lg font-medium text-red-900 mb-4">開発者の免責</h3>
                             <ul class="list-disc list-inside text-red-700 space-y-2">
                                 <li>
@@ -198,7 +198,7 @@
                         </p>
                     </section>
 
-                    <div class="mt-12 p-6 bg-gray-50 rounded-lg">
+                    <div class="mt-12 p-4 md:p-6 bg-gray-50 rounded-lg">
                         <p class="text-sm text-gray-600 text-center">
                             本サービスは個人開発プロジェクトです。
                             <br />

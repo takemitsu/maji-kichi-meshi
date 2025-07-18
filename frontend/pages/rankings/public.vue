@@ -41,12 +41,12 @@
             <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
             <!-- 公開ランキング一覧 -->
-            <div v-if="!loading && rankings.length > 0" class="space-y-6">
+            <div v-if="!loading && rankings.length > 0" class="space-y-4 md:space-y-6">
                 <div
                     v-for="ranking in rankings"
                     :key="ranking.id"
                     class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200">
-                    <div class="p-6">
+                    <div class="p-4 md:p-6">
                         <!-- ヘッダー部分 -->
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1 min-w-0">
@@ -65,11 +65,11 @@
                                 <div class="flex items-center space-x-4 mt-3">
                                     <!-- 作成者 -->
                                     <div class="flex items-center text-sm text-gray-700">
-                                        <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center mr-2">
-                                            <span class="text-xs font-medium text-gray-700">
-                                                {{ ranking.user?.name?.charAt(0).toUpperCase() }}
-                                            </span>
-                                        </div>
+                                        <UserAvatar
+                                            :user-name="ranking.user?.name || 'ユーザー'"
+                                            :profile-image-url="ranking.user?.profile_image?.urls?.thumbnail"
+                                            size="xs"
+                                            class="mr-2" />
                                         {{ ranking.user?.name }}
                                     </div>
 
@@ -106,11 +106,6 @@
                                         {{ formatDate(ranking.updated_at) }}
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- アクション -->
-                            <div class="flex items-center space-x-2">
-                                <NuxtLink :to="`/rankings/${ranking.id}`" class="btn-secondary text-sm">詳細を見る</NuxtLink>
                             </div>
                         </div>
 

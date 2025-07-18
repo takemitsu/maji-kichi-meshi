@@ -81,8 +81,8 @@
             <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
             <!-- 店舗一覧 -->
-            <div v-if="!loading && shops.length > 0" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-if="!loading && shops.length > 0" class="space-y-4 md:space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     <ShopCard
                         v-for="shop in shops"
                         :key="shop.id"

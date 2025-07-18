@@ -64,13 +64,13 @@
             <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
             <!-- レビュー一覧 -->
-            <div v-if="!loading && reviews.length > 0" class="space-y-6">
+            <div v-if="!loading && reviews.length > 0" class="space-y-4 md:space-y-6">
                 <div
                     v-for="review in reviews"
                     :key="review.id"
                     class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 cursor-pointer"
                     @click="navigateToReview(review)">
-                    <div class="p-6">
+                    <div class="p-4 md:p-6">
                         <!-- ヘッダー部分 -->
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-start space-x-4">
@@ -318,7 +318,6 @@ const loadReviews = async () => {
         loading.value = false
     }
 }
-
 
 // ユーティリティ関数
 const formatDate = (dateString: string) => {

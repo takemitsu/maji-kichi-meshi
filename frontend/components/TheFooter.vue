@@ -50,10 +50,10 @@
                             <NuxtLink to="/terms" class="text-sm text-gray-600 hover:text-gray-900">利用規約</NuxtLink>
                         </li>
                         <li>
-                            <p class="text-sm text-gray-500">個人開発プロジェクト</p>
+                            <p class="text-sm text-gray-700">個人開発プロジェクト</p>
                         </li>
                         <li>
-                            <p class="text-sm text-gray-500">利用は自己責任で</p>
+                            <p class="text-sm text-gray-700">利用は自己責任で</p>
                         </li>
                     </ul>
                 </div>
@@ -62,12 +62,12 @@
             <!-- コピーライト -->
             <div class="mt-8 pt-6 border-t border-gray-200">
                 <div class="flex flex-col md:flex-row justify-between items-center">
-                    <p class="text-sm text-gray-500">© {{ currentYear }} マジキチメシ. All rights reserved.</p>
+                    <p class="text-sm text-gray-700">© {{ currentYear }} マジキチメシ. All rights reserved.</p>
                     <div class="mt-4 md:mt-0 flex space-x-4">
                         <!-- ソーシャルリンク（将来用） -->
                         <div class="flex space-x-4">
                             <!-- Twitter -->
-                            <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <a href="#" class="text-gray-400 hover:text-gray-700">
                                 <span class="sr-only">Twitter</span>
                                 <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
                                     <path
@@ -75,7 +75,7 @@
                                 </svg>
                             </a>
                             <!-- GitHub -->
-                            <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <a href="#" class="text-gray-400 hover:text-gray-700">
                                 <span class="sr-only">GitHub</span>
                                 <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
                                     <path

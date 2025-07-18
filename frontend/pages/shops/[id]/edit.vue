@@ -49,8 +49,8 @@
                 </div>
 
                 <!-- フォーム -->
-                <form @submit.prevent="submitForm" class="space-y-6">
-                    <div class="bg-white rounded-lg shadow p-6">
+                <form @submit.prevent="submitForm" class="space-y-4 md:space-y-6">
+                    <div class="bg-white rounded-lg shadow p-4 md:p-6">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">基本情報</h3>
 
                         <div class="space-y-4">
@@ -121,7 +121,7 @@
                     </div>
 
                     <!-- 画像アップロード -->
-                    <div class="bg-white rounded-lg shadow p-6">
+                    <div class="bg-white rounded-lg shadow p-4 md:p-6">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">店舗画像</h3>
 
                         <!-- 既存画像 -->
