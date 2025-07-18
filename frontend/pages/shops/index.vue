@@ -11,8 +11,8 @@
                         <p class="mt-1 text-sm text-gray-500">
                             {{
                                 authStore.isLoggedIn
-                                    ? '登録済みの店舗を管理・編集できます'
-                                    : '登録されている店舗を検索・閲覧できます'
+                                    ? '登録済みの店舗を検索・追加・編集できます'
+                                    : '登録されている店舗を検索・閲覧できます（編集にはログインが必要です）'
                             }}
                         </p>
                     </div>
@@ -49,7 +49,7 @@
                                 v-model="searchQuery"
                                 @input="handleSearch"
                                 type="text"
-                                placeholder="店舗名で検索..."
+                                placeholder="検索..."
                                 class="w-full py-2 pr-3 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                             <div v-if="searchLoading" class="absolute inset-y-0 right-0 pr-3 flex items-center">
                                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
@@ -245,7 +245,7 @@ const editShop = (shop: Shop) => {
 }
 
 const deleteShop = async (shop: Shop) => {
-    if (!confirm(`「${shop.name}」を削除しますか？この操作は元に戻せません。`)) {
+    if (!confirm(`店舗「${shop.name}」を削除しますか？この操作は元に戻せません。`)) {
         return
     }
 

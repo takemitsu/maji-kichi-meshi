@@ -42,8 +42,9 @@
                                     {{ ranking.title }}
                                 </h1>
 
-                                <!-- ステータスバッジ -->
+                                <!-- ステータスバッジ（自分のランキングのみ） -->
                                 <span
+                                    v-if="isOwner"
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
                                     :class="{
                                         'bg-green-100 text-green-800': ranking.is_public,
@@ -117,7 +118,7 @@
                         </div>
 
                         <!-- アクション（自分のランキングの場合のみ） -->
-                        <div v-if="isOwner" class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
+                        <div v-if="isOwner" class="mt-4 flex space-x-3 justify-end md:justify-start md:ml-4 md:mt-0">
                             <NuxtLink :to="`/rankings/${ranking.id}/edit`" class="btn-secondary flex items-center">
                                 <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -146,9 +147,6 @@
 
                 <!-- ランキング本体 -->
                 <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900">{{ ranking.title }} ランキング</h3>
-                    </div>
 
                     <!-- 店舗ランキング -->
                     <div v-if="ranking.shops && ranking.shops.length > 0" class="divide-y divide-gray-200">
@@ -231,21 +229,29 @@
 
 
                 <!-- 関連アクション -->
-                <div class="mt-8 bg-white rounded-lg shadow p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">関連アクション</h3>
-                    <div class="flex flex-wrap gap-4">
-                        <NuxtLink :to="ranking.is_public ? '/rankings/public' : '/rankings'" class="btn-secondary">
-                            {{ ranking.is_public ? '公開ランキング' : 'マイランキング' }}一覧に戻る
+                <div class="mt-8 border-t border-gray-200 pt-6">
+                    <div class="flex items-center justify-between text-sm text-gray-600">
+                        <NuxtLink 
+                            :to="ranking.is_public ? '/rankings/public' : '/rankings'" 
+                            class="flex items-center hover:text-gray-900 transition-colors">
+                            ← {{ ranking.is_public ? '公開ランキング' : 'マイランキング' }}一覧に戻る
                         </NuxtLink>
 
-                        <NuxtLink
-                            v-if="ranking.category"
-                            :to="`/rankings/public?category_id=${ranking.category.id}`"
-                            class="btn-secondary">
-                            {{ ranking.category.name }}の他のランキング
-                        </NuxtLink>
+                        <div class="flex items-center space-x-6">
+                            <NuxtLink
+                                v-if="ranking.category"
+                                :to="`/rankings/public?category_id=${ranking.category.id}`"
+                                class="hover:text-gray-900 transition-colors">
+                                {{ ranking.category.name }}の他のランキングを見る →
+                            </NuxtLink>
 
-                        <NuxtLink v-if="!isOwner" to="/rankings/create" class="btn-primary">自分もランキングを作成</NuxtLink>
+                            <NuxtLink 
+                                v-if="!isOwner" 
+                                to="/rankings/create" 
+                                class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                                自分もランキングを作成
+                            </NuxtLink>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -300,7 +306,7 @@ const loadRanking = async () => {
 
 // ランキング削除
 const deleteRanking = async () => {
-    if (!ranking.value || !confirm(`「${ranking.value.title}」を削除しますか？この操作は元に戻せません。`)) {
+    if (!ranking.value || !confirm(`ランキング「${ranking.value.title}」を削除しますか？この操作は元に戻せません。`)) {
         return
     }
 

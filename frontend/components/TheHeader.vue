@@ -15,9 +15,9 @@
                         to="/rankings/public"
                         class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                         :class="{
-                            'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
+                            'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings/public'),
                         }">
-                        ランキング
+                        みんなのランキング
                     </NuxtLink>
                     <NuxtLink
                         to="/reviews"
@@ -37,17 +37,6 @@
                     </NuxtLink>
                 </div>
 
-                <!-- 認証済みユーザー専用ナビ -->
-                <div v-if="authStore.isLoggedIn" class="hidden md:flex items-center">
-                    <NuxtLink
-                        to="/dashboard"
-                        class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                        :class="{
-                            'text-blue-600 bg-blue-50': $route.path === '/dashboard',
-                        }">
-                        マイページ
-                    </NuxtLink>
-                </div>
 
                 <!-- 右側メニュー -->
                 <div class="flex items-center space-x-4">
@@ -145,10 +134,10 @@
                             to="/rankings/public"
                             class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                             :class="{
-                                'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
+                                'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings/public'),
                             }"
                             @click="closeMobileMenu">
-                            ランキング
+                            みんなのランキング
                         </NuxtLink>
                         <NuxtLink
                             to="/reviews"
@@ -168,35 +157,8 @@
                             @click="closeMobileMenu">
                             店舗
                         </NuxtLink>
-                        <template v-if="authStore.isLoggedIn">
-                            <NuxtLink
-                                to="/dashboard"
-                                class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                                :class="{
-                                    'text-blue-600 bg-blue-50': $route.path === '/dashboard',
-                                }"
-                                @click="closeMobileMenu">
-                                ダッシュボード
-                            </NuxtLink>
-                            <NuxtLink
-                                to="/reviews"
-                                class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                                :class="{
-                                    'text-blue-600 bg-blue-50': $route.path.startsWith('/reviews'),
-                                }"
-                                @click="closeMobileMenu">
-                                レビュー
-                            </NuxtLink>
-                            <NuxtLink
-                                to="/rankings"
-                                class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                                :class="{
-                                    'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings'),
-                                }"
-                                @click="closeMobileMenu">
-                                ランキング
-                            </NuxtLink>
 
+                        <template v-if="authStore.isLoggedIn">
                             <!-- モバイル用ユーザーメニュー -->
                             <div class="border-t border-gray-200 pt-4 mt-4">
                                 <div class="flex items-center px-3 py-2">
@@ -216,7 +178,30 @@
                                 </div>
 
                                 <div class="mt-2 space-y-1">
-                                    <!-- プロフィール・設定は今後実装予定 -->
+                                    <NuxtLink
+                                        to="/rankings"
+                                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                                        :class="{
+                                            'text-blue-600 bg-blue-50': $route.path.startsWith('/rankings') && !$route.path.startsWith('/rankings/public'),
+                                        }"
+                                        @click="closeMobileMenu">
+                                        マイランキング
+                                    </NuxtLink>
+                                    <NuxtLink
+                                        to="/dashboard"
+                                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                                        :class="{
+                                            'text-blue-600 bg-blue-50': $route.path === '/dashboard',
+                                        }"
+                                        @click="closeMobileMenu">
+                                        ダッシュボード
+                                    </NuxtLink>
+                                    <NuxtLink
+                                        to="/settings"
+                                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                                        @click="closeMobileMenu">
+                                        設定
+                                    </NuxtLink>
                                     <button
                                         @click="logout"
                                         class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-900 hover:bg-red-50">

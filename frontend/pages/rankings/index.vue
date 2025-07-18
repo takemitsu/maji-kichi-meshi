@@ -6,7 +6,7 @@
                 <div class="md:flex md:items-center md:justify-between">
                     <div class="min-w-0 flex-1">
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                            ランキング管理
+                            マイランキング
                         </h1>
                         <p class="mt-1 text-sm text-gray-500">あなたの個人的な店舗ランキングを作成・管理できます</p>
                     </div>
@@ -24,7 +24,7 @@
                                     stroke-width="2"
                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                             </svg>
-                            公開ランキング
+                            みんなのランキングを見る
                         </NuxtLink>
                         <NuxtLink to="/rankings/create" class="btn-primary flex items-center">
                             <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,9 +38,9 @@
 
             <!-- フィルター -->
             <div class="mb-6 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- 検索 -->
-                    <div>
+                    <div class="sm:col-span-2 lg:col-span-2">
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400 fill-none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,13 +55,13 @@
                                 v-model="searchQuery"
                                 @input="handleSearch"
                                 type="text"
-                                placeholder="ランキング名で検索..."
+                                placeholder="検索..."
                                 class="w-full py-2 pr-3 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         </div>
                     </div>
 
                     <!-- カテゴリフィルター -->
-                    <div>
+                    <div class="lg:col-span-1">
                         <select v-model="selectedCategory" @change="handleFilter" class="input-field">
                             <option value="">全てのカテゴリ</option>
                             <option v-for="category in categories" :key="category.id" :value="category.id">
@@ -71,7 +71,7 @@
                     </div>
 
                     <!-- 公開状態フィルター -->
-                    <div>
+                    <div class="lg:col-span-1">
                         <select v-model="selectedVisibility" @change="handleFilter" class="input-field">
                             <option value="">全ての状態</option>
                             <option value="public">公開</option>
@@ -169,7 +169,6 @@
 
                         <!-- 上位店舗プレビュー -->
                         <div v-if="ranking.shops && ranking.shops.length > 0" class="border-t border-gray-200 pt-4">
-                            <h4 class="text-sm font-medium text-gray-700 mb-3">上位店舗</h4>
                             <div class="grid grid-cols-1 gap-3">
                                 <div
                                     v-for="shop in ranking.shops.slice(0, 3)"
@@ -341,7 +340,7 @@ const loadCategories = async () => {
 
 // ランキング削除
 const deleteRanking = async (ranking: Ranking) => {
-    if (!confirm(`「${ranking.title}」を削除しますか？この操作は元に戻せません。`)) {
+    if (!confirm(`ランキング「${ranking.title}」を削除しますか？この操作は元に戻せません。`)) {
         return
     }
 

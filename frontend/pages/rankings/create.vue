@@ -6,7 +6,7 @@
                 <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                     ランキングを作成
                 </h1>
-                <p class="mt-1 text-sm text-gray-500">あなただけの吉祥寺店舗ランキングを作成しましょう</p>
+                <p class="mt-1 text-sm text-gray-500">吉祥寺の店舗ランキングを作成して、お気に入りを整理しましょう</p>
             </div>
 
             <!-- エラーメッセージ -->
@@ -29,7 +29,7 @@
                                 v-model="form.title"
                                 type="text"
                                 class="input-field"
-                                placeholder="俺の吉祥寺ラーメンランキング"
+                                placeholder="私の吉祥寺ラーメンランキング"
                                 maxlength="100"
                                 required />
                             <p class="mt-1 text-sm text-gray-500">{{ form.title.length }}/100 文字</p>
@@ -99,7 +99,7 @@
                                 v-model="shopSearchQuery"
                                 @input="handleShopSearch"
                                 type="text"
-                                placeholder="店舗名で検索..."
+                                placeholder="検索..."
                                 class="input-field" />
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400 fill-none" stroke="currentColor" viewBox="0 0 24 24">

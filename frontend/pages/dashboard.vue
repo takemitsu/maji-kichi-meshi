@@ -7,7 +7,7 @@
             </div>
 
             <!-- 統計情報 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="grid grid-cols-2 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -62,7 +62,7 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">ランキング</h3>
                     <p class="text-sm text-gray-600 mb-4">個人的なランキングを作成・編集します</p>
-                    <NuxtLink to="/rankings" class="btn-primary inline-block text-center w-full">ランキングを編集</NuxtLink>
+                    <NuxtLink to="/rankings" class="btn-primary inline-block text-center w-full">マイランキングを見る</NuxtLink>
                 </div>
 
                 <div class="bg-white rounded-lg shadow p-6">

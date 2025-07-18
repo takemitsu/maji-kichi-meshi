@@ -6,7 +6,7 @@
                 <div class="md:flex md:items-center md:justify-between">
                     <div class="min-w-0 flex-1">
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                            {{ authStore.isLoggedIn ? 'レビュー管理' : 'レビュー一覧' }}
+                            レビュー一覧
                         </h1>
                         <p class="mt-1 text-sm text-gray-500">
                             {{
@@ -32,7 +32,7 @@
 
             <!-- フィルター -->
             <div class="mb-6 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- 検索 -->
                     <div class="md:col-span-2">
                         <div class="relative">
@@ -49,7 +49,7 @@
                                 v-model="searchQuery"
                                 @input="handleSearch"
                                 type="text"
-                                placeholder="店舗名やコメントで検索..."
+                                placeholder="検索..."
                                 class="w-full py-2 pr-3 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         </div>
                     </div>
@@ -70,9 +70,9 @@
                     <div>
                         <select v-model="selectedRepeatIntention" @change="handleFilter" class="input-field">
                             <option value="">リピート意向</option>
-                            <option value="yes">また行く</option>
+                            <option value="yes">またいく</option>
                             <option value="maybe">わからん</option>
-                            <option value="no">行かない</option>
+                            <option value="no">いかない</option>
                         </select>
                     </div>
                 </div>
@@ -382,7 +382,7 @@ const loadReviews = async () => {
 
 // レビュー削除
 const deleteReview = async (review: Review) => {
-    if (!confirm(`「${review.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)) {
+    if (!confirm(`レビュー「${review.shop?.name}」を削除しますか？この操作は元に戻せません。`)) {
         return
     }
 
@@ -403,11 +403,11 @@ const formatDate = (dateString: string) => {
 const getRepeatIntentionText = (intention: string) => {
     switch (intention) {
         case 'yes':
-            return 'また行く'
+            return 'またいく'
         case 'maybe':
             return 'わからん'
         case 'no':
-            return '行かない'
+            return 'いかない'
         default:
             return '未設定'
     }
@@ -441,7 +441,7 @@ onMounted(async () => {
 
 // メタデータ設定
 useHead({
-    title: 'レビュー管理 - マジキチメシ',
+    title: 'レビュー一覧 - マジキチメシ',
     meta: [{ name: 'description', content: '訪問記録とレビューの管理ページ' }],
 })
 </script>

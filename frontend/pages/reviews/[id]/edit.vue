@@ -224,9 +224,9 @@ const form = ref({
 
 // リピート意向オプション
 const repeatOptions = [
-    { value: 'yes', label: 'また行く' },
+    { value: 'yes', label: 'またいく' },
     { value: 'maybe', label: 'わからん' },
-    { value: 'no', label: '行かない' },
+    { value: 'no', label: 'いかない' },
 ]
 
 // 今日の日付（最大値として使用）
@@ -316,7 +316,7 @@ const submitReview = async () => {
 
 // レビュー削除
 const deleteReview = async () => {
-    if (!review.value || !confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)) {
+    if (!review.value || !confirm(`レビュー「${review.value.shop?.name}」を削除しますか？この操作は元に戻せません。`)) {
         return
     }
 

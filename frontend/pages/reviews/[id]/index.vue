@@ -279,7 +279,7 @@ const loadReview = async () => {
 
 // レビュー削除
 const deleteReview = async () => {
-    if (!review.value || !confirm(`「${review.value.shop?.name}」のレビューを削除しますか？この操作は元に戻せません。`)) {
+    if (!review.value || !confirm(`レビュー「${review.value.shop?.name}」を削除しますか？この操作は元に戻せません。`)) {
         return
     }
 
@@ -319,11 +319,11 @@ const formatDateTime = (dateString: string) => {
 const getRepeatIntentionText = (intention: string) => {
     switch (intention) {
         case 'yes':
-            return 'また行く'
+            return 'またいく'
         case 'maybe':
             return 'わからん'
         case 'no':
-            return '行かない'
+            return 'いかない'
         default:
             return '未設定'
     }

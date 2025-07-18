@@ -53,7 +53,7 @@
                                     v-model="shopSearchQuery"
                                     @input="handleShopSearch"
                                     type="text"
-                                    placeholder="店舗名で検索..."
+                                    placeholder="検索..."
                                     class="input-field" />
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400 fill-none" stroke="currentColor" viewBox="0 0 24 24">
@@ -287,9 +287,9 @@ const uploadedImages = ref<File[]>([])
 
 // リピート意向オプション
 const repeatOptions = [
-    { value: 'yes', label: 'また行く' },
+    { value: 'yes', label: 'またいく' },
     { value: 'maybe', label: 'わからん' },
-    { value: 'no', label: '行かない' },
+    { value: 'no', label: 'いかない' },
 ]
 
 // 今日の日付（最大値として使用）

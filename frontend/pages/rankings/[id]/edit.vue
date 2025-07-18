@@ -134,7 +134,7 @@
                                     v-model="shopSearchQuery"
                                     @input="handleShopSearch"
                                     type="text"
-                                    placeholder="店舗名で検索..."
+                                    placeholder="検索..."
                                     class="input-field" />
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400 fill-none" stroke="currentColor" viewBox="0 0 24 24">

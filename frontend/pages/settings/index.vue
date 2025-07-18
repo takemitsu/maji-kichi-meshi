@@ -3,6 +3,22 @@
         <div class="px-4 py-6 sm:px-0">
             <h1 class="text-2xl font-bold text-gray-900 mb-8">アカウント設定</h1>
 
+            <!-- 成功メッセージ -->
+            <div v-if="showSuccess" class="mb-6 bg-green-50 border border-green-200 rounded-md p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-green-800">
+                            {{ successMessage }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <!-- 表示名変更セクション -->
             <div class="bg-white rounded-lg shadow p-6 mb-6">
                 <h2 class="text-lg font-semibold mb-4">表示名</h2>
@@ -22,6 +38,7 @@
             <!-- プロフィール画像セクション -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-lg font-semibold mb-4">プロフィール画像</h2>
+                <p class="text-sm text-gray-600 mb-4">レビューやランキングで表示されるプロフィール画像を設定できます</p>
                 <ProfileImageUpload
                     :user-name="authStore.user?.name || ''"
                     :current-image-url="currentProfileImageUrl"
@@ -43,6 +60,8 @@ const { $api } = useNuxtApp()
 
 const displayName = ref(authStore.user?.name || '')
 const currentProfileImageUrl = ref<string | null>(null)
+const successMessage = ref('')
+const showSuccess = ref(false)
 
 // プロフィール画像URLを取得
 const fetchProfileImageUrl = async () => {
@@ -59,13 +78,17 @@ const fetchProfileImageUrl = async () => {
 // 表示名更新
 const updateDisplayName = async () => {
     try {
-        const response = await $api.profile.update({ name: displayName.value })
+        await $api.profile.update({ name: displayName.value })
 
         // 認証ストアのユーザー情報を更新
         authStore.updateUser({ name: displayName.value })
 
-        // 成功メッセージを表示（ログ）
-        console.info('表示名を更新しました:', response.data.name)
+        // 成功メッセージを表示
+        successMessage.value = '表示名を更新しました'
+        showSuccess.value = true
+        setTimeout(() => {
+            showSuccess.value = false
+        }, 3000)
     } catch (error) {
         console.error('表示名更新エラー:', error)
         // エラー時は元の値に戻す
