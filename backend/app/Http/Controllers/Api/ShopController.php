@@ -27,7 +27,7 @@ class ShopController extends Controller
         // Filter by category
         if ($request->has('category')) {
             $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('slug', $request->category);
+                $q->where('categories.id', $request->category);
             });
         }
 

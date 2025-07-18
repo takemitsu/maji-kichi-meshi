@@ -90,7 +90,7 @@ class ShopApiTest extends TestCase
 
         Shop::factory()->create(['name' => 'Other Shop']);
 
-        $response = $this->getJson('/api/shops?category=ramen');
+        $response = $this->getJson('/api/shops?category=' . $category->id);
 
         $response->assertStatus(200);
         $data = $response->json('data');
