@@ -45,6 +45,9 @@ class ShopController extends Controller
             $query->near($latitude, $longitude, $radius);
         }
 
+        // Sort by created_at descending (newest first)
+        $query->orderBy('created_at', 'desc');
+
         // Pagination
         $perPage = min($request->get('per_page', 15), 50); // Max 50 items per page
         $shops = $query->paginate($perPage);
