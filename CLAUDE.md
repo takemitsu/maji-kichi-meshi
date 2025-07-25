@@ -88,6 +88,10 @@ php artisan filament:install
 # takemitsu@notespace.jp / admin2024
 # admin@majikichi-meshi.com / admin123
 
+# テスト実行
+php artisan test        # Laravel標準テスト実行
+php artisan test --coverage  # カバレッジ付きテスト実行
+
 # コード品質ツール
 composer pint           # Laravel Pint (コードフォーマット)
 composer stan           # PHPStan (静的解析)
