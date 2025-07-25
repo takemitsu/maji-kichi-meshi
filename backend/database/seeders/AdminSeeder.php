@@ -12,27 +12,7 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // 管理者ユーザーを作成
-        User::create([
-            'name' => 'System Admin',
-            'email' => 'admin@majikichi-meshi.com',
-            'password' => 'admin123',
-            'email_verified_at' => now(),
-            'role' => 'admin',
-            'status' => 'active',
-        ]);
-
-        // モデレーターユーザーを作成
-        User::create([
-            'name' => 'Content Moderator',
-            'email' => 'moderator@majikichi-meshi.com',
-            'password' => 'moderator123',
-            'email_verified_at' => now(),
-            'role' => 'moderator',
-            'status' => 'active',
-        ]);
-
-        // 開発用の管理者ユーザー
+        // 開発用の管理者ユーザーのみ作成
         if (app()->environment('local')) {
             User::create([
                 'name' => 'Dev Admin',
@@ -42,8 +22,10 @@ class AdminSeeder extends Seeder
                 'role' => 'admin',
                 'status' => 'active',
             ]);
+            
+            $this->command->info('Development admin user created successfully.');
+        } else {
+            $this->command->info('AdminSeeder: For production, use "php artisan admin:create" command instead.');
         }
-
-        $this->command->info('Admin users created successfully.');
     }
 }

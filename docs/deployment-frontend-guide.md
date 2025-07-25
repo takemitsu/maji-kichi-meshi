@@ -525,9 +525,16 @@ php artisan jwt:secret
 # マイグレーション実行
 php artisan migrate --force
 
-# 基本データ投入（本番用シーダー）
-php artisan db:seed --class=AdminSeeder
+# 基本データ投入（カテゴリマスタ）
 php artisan db:seed --class=CategorySeeder
+
+# 管理者ユーザー作成（対話式）
+php artisan admin:create
+# Email address: admin@your-domain.com
+# Full name: System Admin  
+# Password: [強固なパスワードを入力]
+# Confirm password: [同じパスワードを再入力]
+# Select role: admin
 
 # ファイルシステム権限設定
 sudo chown -R www-data:www-data storage bootstrap/cache
@@ -797,7 +804,7 @@ sudo tail -f /var/www/api/storage/logs/laravel-$(date +%Y-%m-%d).log | grep -E "
 
 **追記者**: バックエンド担当Claude  
 **追記日**: 2025-07-10  
-**対象**: Laravel 12.0 + PHP 8.2以上 + PHP-FPM  
+**対象**: Laravel 12.19.3 + PHP 8.2以上 + PHP-FPM  
 **作成者**: フロントエンド担当Claude  
 **作成日**: 2025-07-10  
 **対象**: Nuxt.js 3.17.6 + SPA モード  
