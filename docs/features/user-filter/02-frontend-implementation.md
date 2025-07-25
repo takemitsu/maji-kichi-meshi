@@ -7,31 +7,91 @@
 ### 1. レビュー一覧ページの拡張
 **ファイル**: `frontend/pages/reviews/index.vue`
 
-#### QueryString パラメータ対応
+#### 既存コードとの統合（完全な実装例）
+
+**修正対象**: `frontend/pages/reviews/index.vue`
+
 ```vue
 <script setup lang="ts">
-// 既存のクエリパラメータに user_id を追加
+import type { Review, User } from '~/types'
+
+// 既存のクエリパラメータに user_id を追加  
 const route = useRoute()
+const router = useRouter()
+
+// 既存のリアクティブ変数
+const currentPage = ref(1)
+const searchQuery = ref('')
 const shopId = ref(route.query.shop_id as string || '')
 const userId = ref(route.query.user_id as string || '')  // 新規追加
 
-// API呼び出し時にパラメータ追加
-const { data: reviews, pending } = await $fetch('/api/reviews', {
-  query: {
+// ページネーション関数（既存）
+const updatePage = (page: number) => {
+  currentPage.value = page
+  // URLのクエリパラメータも更新
+  router.push({
+    query: {
+      ...route.query,
+      page: page.toString()
+    }
+  })
+}
+
+// API呼び出し（既存のパターンに user_id 追加）
+const { data: reviewsData, pending, refresh } = await $fetch<{
+  data: Review[]
+  meta: { total: number, per_page: number, current_page: number }
+}>('/api/reviews', {
+  query: computed(() => ({
     ...(shopId.value && { shop_id: shopId.value }),
     ...(userId.value && { user_id: userId.value }),  // 新規追加
+    ...(searchQuery.value && { search: searchQuery.value }),
     page: currentPage.value,
-  }
+  })),
+  watch: [shopId, userId, searchQuery, currentPage]  // userId を watch 対象に追加
 })
 
-// ユーザー情報取得（user_id がある場合のみ）
-const { data: userInfo } = await $fetch(`/api/users/${userId.value}/info`, {
-  key: `user-${userId.value}`,
+// 計算プロパティ（既存）
+const reviews = computed(() => reviewsData.value?.data || [])
+const totalPages = computed(() => Math.ceil((reviewsData.value?.meta.total || 0) / (reviewsData.value?.meta.per_page || 10)))
+
+// ユーザー情報取得（新規）
+const { data: userInfo, error: userError } = await $fetch<User | null>(`/api/users/${userId.value}/info`, {
+  key: `user-info-${userId.value}`,
   server: false,
   lazy: true,
   default: () => null,
-  // user_id がない場合はスキップ
-  skip: !userId.value
+  skip: !userId.value,
+  onResponseError({ response }) {
+    if (response.status === 404) {
+      // 存在しないユーザーIDの場合
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'ユーザーが見つかりません'
+      })
+    }
+  }
+})
+
+// 店舗情報取得（既存、user_id フィルタ時は不要だが互換性のため残す）
+const { data: shopInfo } = await $fetch<Shop | null>(`/api/shops/${shopId.value}`, {
+  key: `shop-info-${shopId.value}`,
+  server: false,
+  lazy: true,
+  default: () => null,
+  skip: !shopId.value
+})
+
+// 日付フォーマット関数（既存）
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('ja-JP')
+}
+
+// URLクエリパラメータの監視（既存に user_id 追加）
+watch([() => route.query.shop_id, () => route.query.user_id], ([newShopId, newUserId]) => {
+  shopId.value = newShopId as string || ''
+  userId.value = newUserId as string || ''
+  currentPage.value = 1  // フィルタ変更時は1ページ目に戻る
 })
 </script>
 ```
@@ -122,14 +182,17 @@ const userId = ref(route.query.user_id as string || '')  // 新規追加
 <template>
   <NuxtLink 
     :to="getUserPageUrl()" 
-    class="text-blue-600 hover:text-blue-800 font-medium"
+    class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
     :class="customClass"
+    @click="trackUserClick"
   >
     {{ user.name }}
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
+import type { User } from '~/types'
+
 interface Props {
   user: {
     id: number
@@ -139,12 +202,115 @@ interface Props {
   customClass?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  customClass: ''
+})
 
 const getUserPageUrl = () => {
   return `/${props.pageType}?user_id=${props.user.id}`
 }
+
+// アナリティクス用（将来的に追加可能）
+const trackUserClick = () => {
+  // console.log(`User ${props.user.id} clicked for ${props.pageType}`)
+}
 </script>
+```
+
+### 4. 既存ページでの具体的な統合方法
+
+#### A. レビュー詳細ページ（`pages/reviews/[id].vue`）
+
+**修正箇所**: レビュー投稿者名の表示部分
+
+```vue
+<!-- Before: 既存のコード -->
+<div class="flex items-center space-x-2 text-sm text-gray-600">
+  <span>投稿者:</span>
+  <span class="font-medium">{{ review.user.name }}</span>
+</div>
+
+<!-- After: UserLinkコンポーネントに置き換え -->
+<div class="flex items-center space-x-2 text-sm text-gray-600">
+  <span>投稿者:</span>
+  <UserLink 
+    :user="review.user" 
+    page-type="reviews"
+    custom-class="font-medium"
+  />
+</div>
+```
+
+#### B. 店舗詳細ページ（`pages/shops/[id]/index.vue`）
+
+**修正箇所**: レビュー一覧でのユーザー名表示
+
+```vue
+<!-- Before: 既存のレビューカード -->
+<div v-for="review in shop.reviews" :key="review.id" class="bg-white p-4 rounded-lg shadow">
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center space-x-2">
+      <div class="text-sm font-medium text-gray-900">
+        {{ review.user.name }}
+      </div>
+      <div class="text-sm text-gray-500">
+        {{ formatDate(review.created_at) }}
+      </div>
+    </div>
+    <!-- 評価表示 -->
+  </div>
+  <p class="text-gray-700">{{ review.comment }}</p>
+</div>
+
+<!-- After: UserLinkコンポーネント使用 -->
+<div v-for="review in shop.reviews" :key="review.id" class="bg-white p-4 rounded-lg shadow">
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center space-x-2">
+      <UserLink 
+        :user="review.user" 
+        page-type="reviews"
+        custom-class="text-sm font-medium"
+      />
+      <div class="text-sm text-gray-500">
+        {{ formatDate(review.created_at) }}
+      </div>
+    </div>
+    <!-- 評価表示 -->
+  </div>
+  <p class="text-gray-700">{{ review.comment }}</p>
+</div>
+```
+
+#### C. レビュー一覧ページ（`pages/reviews/index.vue`）
+
+**修正箇所**: レビューカードでのユーザー名表示
+
+```vue
+<!-- Before: 既存のレビューカード -->
+<div v-for="review in reviews" :key="review.id" class="bg-white rounded-lg shadow p-6">
+  <div class="flex items-start justify-between mb-4">
+    <div>
+      <h3 class="font-bold text-lg mb-1">{{ review.shop.name }}</h3>
+      <p class="text-sm text-gray-600">by {{ review.user.name }}</p>
+    </div>
+    <!-- 評価・日付 -->
+  </div>
+  <!-- レビュー内容 -->
+</div>
+
+<!-- After: UserLinkコンポーネント使用 -->
+<div v-for="review in reviews" :key="review.id" class="bg-white rounded-lg shadow p-6">
+  <div class="flex items-start justify-between mb-4">
+    <div>
+      <h3 class="font-bold text-lg mb-1">{{ review.shop.name }}</h3>
+      <p class="text-sm text-gray-600">
+        by <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
+      </p>
+    </div>
+    <!-- 評価・日付 -->
+  </div>
+  <!-- レビュー内容 -->
+</div>
 ```
 
 ### 4. 既存ページにユーザーリンク追加

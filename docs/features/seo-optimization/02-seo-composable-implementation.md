@@ -21,11 +21,45 @@ export const useSeoMeta = () => {
     type?: 'website' | 'article'
     noindex?: boolean
   }) => {
-    // 実装詳細
+    const fullUrl = `${baseUrl}${route.path}`
+    const ogImage = params.image || `${baseUrl}/default-og-image.jpg`
+    
+    return {
+      title: params.title,
+      meta: [
+        { name: 'description', content: params.description },
+        { name: 'robots', content: params.noindex ? 'noindex, nofollow' : 'index, follow' },
+        // Open Graph
+        { property: 'og:title', content: params.title },
+        { property: 'og:description', content: params.description },
+        { property: 'og:image', content: ogImage },
+        { property: 'og:type', content: params.type || 'website' },
+        { property: 'og:url', content: fullUrl },
+        { property: 'og:site_name', content: 'マジキチメシ' },
+        // Twitter Cards
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: params.title },
+        { name: 'twitter:description', content: params.description },
+        { name: 'twitter:image', content: ogImage },
+      ],
+      link: [
+        { rel: 'canonical', href: fullUrl }
+      ]
+    }
   }
   
   const generateJsonLd = (data: Record<string, any>) => {
-    // 構造化データ生成
+    return {
+      script: [
+        {
+          type: 'application/ld+json',
+          innerHTML: JSON.stringify({
+            '@context': 'https://schema.org',
+            ...data
+          })
+        }
+      ]
+    }
   }
   
   return { generateSeoMeta, generateJsonLd, baseUrl }
