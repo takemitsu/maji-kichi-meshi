@@ -121,23 +121,20 @@ if (authStore.isLoggedIn) {
     await navigateTo('/dashboard')
 }
 
-// ボタンのクリックハンドラー（将来のボタン実装時に使用）
-// const handleFeatureClick = (route: string) => {
-//   if (authStore.isLoggedIn) {
-//     navigateTo(route)
-//   } else {
-//     navigateTo('/login')
-//   }
-// }
+// SEO設定（useCustomSeoMeta composable使用）
+const { generateSeoMeta, generateJsonLd } = useCustomSeoMeta()
 
-// メタデータ設定
-useHead({
-    title: 'マジキチメシ - 吉祥寺地域の個人的な店舗ランキング',
-    meta: [
-        {
-            name: 'description',
-            content: '吉祥寺地域の個人的な店舗ランキング作成・共有アプリ',
-        },
-    ],
-})
+useHead(generateSeoMeta({
+    title: '吉祥寺グルメランキング - マジキチメシ',
+    description: '吉祥寺の美味しいお店を実際に訪問したユーザーがランキング形式で紹介。レビュー・口コミで本当に美味しいお店を見つけよう。',
+    type: 'website',
+}))
+
+// 構造化データ(JSON-LD)の追加
+useHead(generateJsonLd({
+    '@type': 'WebSite',
+    name: 'マジキチメシ',
+    description: '吉祥寺グルメランキング・レビューサイト',
+    url: useRuntimeConfig().public.siteUrl,
+}))
 </script>
