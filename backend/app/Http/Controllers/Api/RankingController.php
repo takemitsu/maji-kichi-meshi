@@ -13,6 +13,15 @@ class RankingController extends Controller
 {
     public function index(Request $request)
     {
+        // バリデーション
+        $request->validate([
+            'search' => 'sometimes|string|max:255',
+            'category_id' => 'sometimes|exists:categories,id',
+            'user_id' => 'sometimes|exists:users,id',
+            'is_public' => 'sometimes|boolean',
+            'per_page' => 'sometimes|integer|min:1|max:50',
+        ]);
+
         $query = Ranking::with(['user', 'category', 'items.shop.publishedImages', 'items.shop.categories']);
 
         // Search by title
@@ -200,6 +209,14 @@ class RankingController extends Controller
 
     public function publicRankings(Request $request)
     {
+        // バリデーション
+        $request->validate([
+            'search' => 'sometimes|string|max:255',
+            'category_id' => 'sometimes|exists:categories,id',
+            'user_id' => 'sometimes|exists:users,id',
+            'per_page' => 'sometimes|integer|min:1|max:50',
+        ]);
+
         $query = Ranking::with(['user', 'category', 'items.shop.publishedImages', 'items.shop.categories'])
             ->public();
 

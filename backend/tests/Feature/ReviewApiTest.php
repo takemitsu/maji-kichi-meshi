@@ -338,4 +338,36 @@ class ReviewApiTest extends TestCase
         $this->assertCount(1, $data);
         $this->assertEquals($user1->id, $data[0]['user']['id']);
     }
+
+    /** @test */
+    public function can_filter_reviews_by_user()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        // user1 のレビュー2件
+        Review::factory(2)->create(['user_id' => $user1->id, 'shop_id' => $shop->id]);
+        // user2 のレビュー1件
+        Review::factory(1)->create(['user_id' => $user2->id, 'shop_id' => $shop->id]);
+
+        $response = $this->getJson("/api/reviews?user_id={$user1->id}");
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(2, $data);
+
+        // 全てのレビューがuser1のものであることを確認
+        foreach ($data as $review) {
+            $this->assertEquals($user1->id, $review['user']['id']);
+        }
+    }
+
+    /** @test */
+    public function returns_error_for_invalid_user_id()
+    {
+        $response = $this->getJson('/api/reviews?user_id=99999');
+
+        $response->assertStatus(422);
+    }
 }

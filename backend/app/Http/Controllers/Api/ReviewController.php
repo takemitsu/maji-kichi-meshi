@@ -19,6 +19,19 @@ class ReviewController extends Controller
      */
     public function index(Request $request)
     {
+        // バリデーション
+        $request->validate([
+            'user_id' => 'sometimes|exists:users,id',
+            'shop_id' => 'sometimes|exists:shops,id',
+            'rating' => 'sometimes|integer|min:1|max:5',
+            'repeat_intention' => 'sometimes|in:yes,maybe,no',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date|after_or_equal:start_date',
+            'recent_only' => 'sometimes|boolean',
+            'recent_days' => 'sometimes|integer|min:1|max:365',
+            'per_page' => 'sometimes|integer|min:1|max:50',
+        ]);
+
         $query = Review::with(['user', 'shop', 'publishedImages']);
 
         // Filter by user

@@ -997,4 +997,28 @@ class RankingApiTest extends TestCase
         $this->assertTrue($shopIds->contains($shop1->id));
         $this->assertTrue($shopIds->contains($shop2->id));
     }
+
+    /** @test */
+    public function can_filter_rankings_by_user()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $category = Category::first();
+
+        // user1 のランキング2件
+        Ranking::factory(2)->create(['user_id' => $user1->id, 'category_id' => $category->id]);
+        // user2 のランキング1件
+        Ranking::factory(1)->create(['user_id' => $user2->id, 'category_id' => $category->id]);
+
+        $response = $this->getJson("/api/rankings?user_id={$user1->id}");
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(2, $data);
+
+        // 全てのランキングがuser1のものであることを確認
+        foreach ($data as $ranking) {
+            $this->assertEquals($user1->id, $ranking['user']['id']);
+        }
+    }
 }

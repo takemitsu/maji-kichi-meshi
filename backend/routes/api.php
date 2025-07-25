@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\StatsController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,6 +43,7 @@ Route::get('/reviews/{review}', [ReviewController::class, 'show']);
 Route::get('/rankings', [RankingController::class, 'index']);
 Route::get('/rankings/{ranking}', [RankingController::class, 'show']);
 Route::get('/public-rankings', [RankingController::class, 'publicRankings']);
+Route::get('/users/{user}/info', [UserController::class, 'info']);
 
 // Image serving (public access with moderation check)
 Route::get('/images/{size}/{filename}', [ImageController::class, 'serve'])
