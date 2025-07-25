@@ -75,18 +75,34 @@ npm ci --production=false
 npm run type-check
 
 # Lint チェック実行（コード品質確認）
-npm run lint
+npm run lint:fix
 ```
 
 #### 2-3. 環境変数設定
 ```bash
-# 本番用環境変数設定
-export API_BASE_URL="https://your-domain.com/api"
+# .env.example から .env ファイルを作成
+cp .env.example .env
 
-# または .env ファイル作成
-cat > .env << 'EOF'
+# 本番環境用の設定に編集
+vim .env
+
+# 以下のように設定:
+```
+
+```bash
+# SEO・環境設定用環境変数
+# 本番環境では実際のドメインを設定してください
+
+# サイトURL（SEOメタデータ・canonical URL用）
+SITE_URL=https://your-domain.com
+
+# API エンドポイント
 API_BASE_URL=https://your-domain.com/api
-EOF
+```
+
+```bash
+# 設定確認
+cat .env
 ```
 
 #### 2-4. SPA ビルド実行
@@ -386,7 +402,7 @@ Laravel API + PHP-FPM + nginx構成での本番デプロイ手順です。
 ## 🎯 バックエンド前提条件
 - Sakura VPS（既存環境）
 - nginx 1.28.0
-- PHP 8.3.23 + PHP-FPM
+- PHP 8.2以上 + PHP-FPM
 - PostgreSQL または MySQL
 - Composer
 
@@ -414,7 +430,7 @@ Laravel API + PHP-FPM + nginx構成での本番デプロイ手順です。
 #### B1-1. PHP環境確認
 ```bash
 # PHP バージョン確認
-php --version  # PHP 8.3.23確認
+php --version  # PHP 8.2以上確認
 php-fpm8.3 --version
 
 # 必要な拡張確認
@@ -494,6 +510,7 @@ QUEUE_CONNECTION=database
 #### B2-2. 依存関係とキー生成
 ```bash
 # Composer dependencies（本番用）
+# 注意: filament:upgrade が自動実行されます
 composer install --optimize-autoloader --no-dev
 
 # Laravel キー生成
@@ -780,7 +797,7 @@ sudo tail -f /var/www/api/storage/logs/laravel-$(date +%Y-%m-%d).log | grep -E "
 
 **追記者**: バックエンド担当Claude  
 **追記日**: 2025-07-10  
-**対象**: Laravel 11.4.0 + PHP 8.3.23 + PHP-FPM  
+**対象**: Laravel 12.0 + PHP 8.2以上 + PHP-FPM  
 **作成者**: フロントエンド担当Claude  
 **作成日**: 2025-07-10  
 **対象**: Nuxt.js 3.17.6 + SPA モード  
