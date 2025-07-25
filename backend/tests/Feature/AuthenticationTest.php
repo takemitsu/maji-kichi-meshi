@@ -25,16 +25,14 @@ class AuthenticationTest extends TestCase
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
     }
 
-    /** @test */
-    public function it_requires_authentication_for_me_endpoint()
+    public function test_it_requires_authentication_for_me_endpoint()
     {
         $response = $this->getJson('/api/auth/me');
 
         $response->assertStatus(401);
     }
 
-    /** @test */
-    public function it_returns_user_info_when_authenticated()
+    public function test_it_returns_user_info_when_authenticated()
     {
         $user = User::factory()->create([
             'name' => 'Test User',
@@ -58,8 +56,7 @@ class AuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_can_logout_with_valid_token()
+    public function test_it_can_logout_with_valid_token()
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -76,8 +73,7 @@ class AuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_returns_error_for_invalid_oauth_provider()
+    public function test_it_returns_error_for_invalid_oauth_provider()
     {
         $response = $this->getJson('/api/auth/invalid-provider');
 
@@ -87,8 +83,7 @@ class AuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_handles_oauth_callback_for_new_user()
+    public function test_it_handles_oauth_callback_for_new_user()
     {
         // Mock Socialite
         $socialiteUser = Mockery::mock(\Laravel\Socialite\Two\User::class);
@@ -135,8 +130,7 @@ class AuthenticationTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_handles_oauth_callback_for_existing_user()
+    public function test_it_handles_oauth_callback_for_existing_user()
     {
         // Create existing user and OAuth provider
         $user = User::factory()->create(['email' => 'test@example.com']);
@@ -181,8 +175,7 @@ class AuthenticationTest extends TestCase
         $this->assertEquals(1, User::where('email', 'test@example.com')->count());
     }
 
-    /** @test */
-    public function it_returns_token_info_for_authenticated_user()
+    public function test_it_returns_token_info_for_authenticated_user()
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -208,8 +201,7 @@ class AuthenticationTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_can_update_user_profile()
+    public function test_it_can_update_user_profile()
     {
         $user = User::factory()->create(['name' => 'Original Name']);
         $token = JWTAuth::fromUser($user);
@@ -236,8 +228,7 @@ class AuthenticationTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_requires_authentication_to_update_profile()
+    public function test_it_requires_authentication_to_update_profile()
     {
         $response = $this->putJson('/api/auth/me', [
             'name' => 'New Name',
@@ -246,8 +237,7 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
-    public function it_validates_profile_update_data()
+    public function test_it_validates_profile_update_data()
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);

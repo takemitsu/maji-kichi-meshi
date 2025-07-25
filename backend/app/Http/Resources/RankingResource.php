@@ -25,17 +25,14 @@ class RankingResource extends JsonResource
             'is_public' => $this->is_public,
             'user' => new UserResource($this->whenLoaded('user')),
             'category' => new CategoryResource($this->whenLoaded('category')),
-            'shops' => $this->when(
-                $this->relationLoaded('items'),
-                function () {
-                    return $this->items->map(function ($item) {
-                        $shopData = (new ShopResource($item->shop))->toArray(request());
-                        $shopData['rank_position'] = $item->rank_position;
-
-                        return $shopData;
-                    });
-                }
-            ),
+            'shops' => $this->whenLoaded('items', function () {
+                return $this->items->map(function ($item) {
+                    return array_merge(
+                        (new ShopResource($item->shop))->resolve(),
+                        ['rank_position' => $item->rank_position]
+                    );
+                });
+            }),
             'shops_count' => $this->whenLoaded('items', function () {
                 return $this->items->count();
             }) ?? 0,

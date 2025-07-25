@@ -14,7 +14,7 @@ class StatsApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_dashboard_stats_returns_correct_counts()
+    public function test_test_dashboard_stats_returns_correct_counts()
     {
         // ユーザーと関連データを作成
         $user = User::factory()->create();
@@ -42,14 +42,14 @@ class StatsApiTest extends TestCase
             ]);
     }
 
-    public function test_dashboard_stats_requires_authentication()
+    public function test_test_dashboard_stats_requires_authentication()
     {
         $response = $this->getJson('/api/stats/dashboard');
 
         $response->assertStatus(401);
     }
 
-    public function test_dashboard_stats_returns_zero_counts_for_new_user()
+    public function test_test_dashboard_stats_returns_zero_counts_for_new_user()
     {
         $user = User::factory()->create();
 

@@ -22,8 +22,7 @@ class ShopApiTest extends TestCase
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
     }
 
-    /** @test */
-    public function it_can_list_shops()
+    public function test_it_can_list_shops()
     {
         // Create test shops
         $shop1 = Shop::factory()->create(['name' => 'Test Shop 1']);
@@ -51,8 +50,7 @@ class ShopApiTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_can_show_single_shop()
+    public function test_it_can_show_single_shop()
     {
         $shop = Shop::factory()->create(['name' => 'Test Shop']);
 
@@ -67,8 +65,7 @@ class ShopApiTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function it_can_search_shops_by_name()
+    public function test_it_can_search_shops_by_name()
     {
         Shop::factory()->create(['name' => 'Ramen Shop']);
         Shop::factory()->create(['name' => 'Cafe Shop']);
@@ -81,8 +78,7 @@ class ShopApiTest extends TestCase
         $this->assertEquals('Ramen Shop', $data[0]['name']);
     }
 
-    /** @test */
-    public function it_can_filter_shops_by_category()
+    public function test_it_can_filter_shops_by_category()
     {
         $category = Category::where('slug', 'ramen')->first();
         $shop = Shop::factory()->create(['name' => 'Ramen Shop']);
@@ -98,8 +94,7 @@ class ShopApiTest extends TestCase
         $this->assertEquals('Ramen Shop', $data[0]['name']);
     }
 
-    /** @test */
-    public function it_requires_authentication_to_create_shop()
+    public function test_it_requires_authentication_to_create_shop()
     {
         $response = $this->postJson('/api/shops', [
             'name' => 'New Shop',
@@ -111,8 +106,7 @@ class ShopApiTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
-    public function authenticated_user_can_create_shop()
+    public function test_authenticated_user_can_create_shop()
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -142,8 +136,7 @@ class ShopApiTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function it_validates_shop_creation_data()
+    public function test_it_validates_shop_creation_data()
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -164,8 +157,7 @@ class ShopApiTest extends TestCase
         // address, latitude, longitude are now nullable, so only name is required
     }
 
-    /** @test */
-    public function authenticated_user_can_update_shop()
+    public function test_authenticated_user_can_update_shop()
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -192,8 +184,7 @@ class ShopApiTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function authenticated_user_can_delete_shop()
+    public function test_authenticated_user_can_delete_shop()
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);

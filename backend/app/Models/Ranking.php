@@ -33,30 +33,9 @@ class Ranking extends Model
         return $this->hasMany(RankingItem::class)->orderBy('rank_position');
     }
 
-    public function shops()
-    {
-        return $this->belongsToMany(Shop::class, 'ranking_items')
-            ->withPivot(['rank_position'])
-            ->orderBy('rank_position');
-    }
-
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    // 店舗リストを取得（改善されたN+1対策）
-    public function getShopsWithDetails()
-    {
-        return $this->items()
-            ->with(['shop.publishedImages', 'shop.categories'])
-            ->get()
-            ->map(function ($item) {
-                $shopData = $item->shop;
-                $shopData->rank_position = $item->rank_position;
-
-                return $shopData;
-            });
     }
 
     public function scopePublic($query)

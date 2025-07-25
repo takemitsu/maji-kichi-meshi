@@ -10,8 +10,7 @@ class UserApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function can_get_user_info()
+    public function test_can_get_user_info()
     {
         $user = User::factory()->create(['name' => 'Test User']);
 
@@ -27,8 +26,7 @@ class UserApiTest extends TestCase
             ]);
     }
 
-    /** @test */
-    public function returns_404_for_nonexistent_user()
+    public function test_returns_404_for_nonexistent_user()
     {
         $response = $this->getJson('/api/users/99999/info');
 

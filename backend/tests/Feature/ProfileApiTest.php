@@ -12,14 +12,14 @@ class ProfileApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_show_requires_authentication()
+    public function test_test_profile_show_requires_authentication()
     {
         $response = $this->getJson('/api/profile');
 
         $response->assertStatus(401);
     }
 
-    public function test_authenticated_user_can_get_profile()
+    public function test_test_authenticated_user_can_get_profile()
     {
         $user = User::factory()->create([
             'name' => 'Test User',
@@ -40,7 +40,7 @@ class ProfileApiTest extends TestCase
             ]);
     }
 
-    public function test_authenticated_user_can_update_profile()
+    public function test_test_authenticated_user_can_update_profile()
     {
         $user = User::factory()->create([
             'name' => 'Original Name',
@@ -68,7 +68,7 @@ class ProfileApiTest extends TestCase
         ]);
     }
 
-    public function test_profile_update_validates_email_uniqueness()
+    public function test_test_profile_update_validates_email_uniqueness()
     {
         $user1 = User::factory()->create(['email' => 'user1@example.com']);
         $user2 = User::factory()->create(['email' => 'user2@example.com']);
@@ -87,7 +87,7 @@ class ProfileApiTest extends TestCase
             ->assertJsonValidationErrors(['email']);
     }
 
-    public function test_user_can_upload_profile_image()
+    public function test_test_user_can_upload_profile_image()
     {
         Storage::fake('public');
 
@@ -121,7 +121,7 @@ class ProfileApiTest extends TestCase
         $this->assertNotNull($user->profile_image_uploaded_at);
     }
 
-    public function test_profile_image_upload_validates_file_type()
+    public function test_test_profile_image_upload_validates_file_type()
     {
         Storage::fake('public');
 
@@ -143,7 +143,7 @@ class ProfileApiTest extends TestCase
             ->assertJsonValidationErrors(['profile_image']);
     }
 
-    public function test_profile_image_upload_validates_file_size()
+    public function test_test_profile_image_upload_validates_file_size()
     {
         Storage::fake('public');
 
@@ -166,7 +166,7 @@ class ProfileApiTest extends TestCase
             ->assertJsonValidationErrors(['profile_image']);
     }
 
-    public function test_user_can_delete_profile_image()
+    public function test_test_user_can_delete_profile_image()
     {
         Storage::fake('public');
 
@@ -197,7 +197,7 @@ class ProfileApiTest extends TestCase
         $this->assertNull($user->profile_image_uploaded_at);
     }
 
-    public function test_delete_profile_image_fails_when_no_image()
+    public function test_test_delete_profile_image_fails_when_no_image()
     {
         $user = User::factory()->create();
 
@@ -210,7 +210,7 @@ class ProfileApiTest extends TestCase
             ]);
     }
 
-    public function test_user_can_get_profile_image_url()
+    public function test_test_user_can_get_profile_image_url()
     {
         Storage::fake('public');
 
@@ -236,7 +236,7 @@ class ProfileApiTest extends TestCase
             ]);
     }
 
-    public function test_get_profile_image_url_fails_when_no_image()
+    public function test_test_get_profile_image_url_fails_when_no_image()
     {
         $user = User::factory()->create();
 
@@ -249,7 +249,7 @@ class ProfileApiTest extends TestCase
             ]);
     }
 
-    public function test_profile_image_upload_replaces_existing_image()
+    public function test_test_profile_image_upload_replaces_existing_image()
     {
         Storage::fake('public');
 
@@ -279,7 +279,7 @@ class ProfileApiTest extends TestCase
         $this->assertNotEquals($firstFilename, $secondFilename);
     }
 
-    public function test_profile_api_requires_authentication()
+    public function test_test_profile_api_requires_authentication()
     {
         $response = $this->putJson('/api/profile', [
             'name' => 'Test Name',
@@ -288,7 +288,7 @@ class ProfileApiTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function test_profile_image_apis_require_authentication()
+    public function test_test_profile_image_apis_require_authentication()
     {
         Storage::fake('public');
 

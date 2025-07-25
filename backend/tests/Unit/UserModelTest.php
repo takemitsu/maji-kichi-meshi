@@ -12,8 +12,7 @@ class UserModelTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_implements_jwt_subject()
+    public function test_it_implements_jwt_subject()
     {
         $user = User::factory()->create();
 
@@ -22,8 +21,7 @@ class UserModelTest extends TestCase
         $this->assertIsArray($user->getJWTCustomClaims());
     }
 
-    /** @test */
-    public function it_can_generate_jwt_token()
+    public function test_it_can_generate_jwt_token()
     {
         $user = User::factory()->create();
 
@@ -33,8 +31,7 @@ class UserModelTest extends TestCase
         $this->assertNotEmpty($token);
     }
 
-    /** @test */
-    public function it_has_oauth_providers_relationship()
+    public function test_it_has_oauth_providers_relationship()
     {
         $user = User::factory()->create();
         $oauthProvider = OAuthProvider::factory()->create(['user_id' => $user->id]);
@@ -44,24 +41,21 @@ class UserModelTest extends TestCase
         $this->assertEquals($oauthProvider->id, $user->oauthProviders()->first()->id);
     }
 
-    /** @test */
-    public function it_has_reviews_relationship()
+    public function test_it_has_reviews_relationship()
     {
         $user = User::factory()->create();
 
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->reviews());
     }
 
-    /** @test */
-    public function it_has_rankings_relationship()
+    public function test_it_has_rankings_relationship()
     {
         $user = User::factory()->create();
 
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->rankings());
     }
 
-    /** @test */
-    public function it_hides_sensitive_attributes()
+    public function test_it_hides_sensitive_attributes()
     {
         $user = User::factory()->create([
             'password' => 'secret123',
@@ -73,8 +67,7 @@ class UserModelTest extends TestCase
         $this->assertArrayNotHasKey('remember_token', $array);
     }
 
-    /** @test */
-    public function it_casts_email_verified_at_to_datetime()
+    public function test_it_casts_email_verified_at_to_datetime()
     {
         $user = User::factory()->create([
             'email_verified_at' => now(),

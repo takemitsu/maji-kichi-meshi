@@ -12,8 +12,7 @@ class AdminUserModelTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function user_can_be_created_with_admin_role()
+    public function test_user_can_be_created_with_admin_role()
     {
         $user = User::factory()->create([
             'role' => 'admin',
@@ -24,8 +23,7 @@ class AdminUserModelTest extends TestCase
         $this->assertTrue($user->isAdmin());
     }
 
-    /** @test */
-    public function user_can_be_created_with_moderator_role()
+    public function test_user_can_be_created_with_moderator_role()
     {
         $user = User::factory()->create([
             'role' => 'moderator',
@@ -37,8 +35,7 @@ class AdminUserModelTest extends TestCase
         $this->assertFalse($user->isAdmin());
     }
 
-    /** @test */
-    public function user_can_be_created_with_regular_user_role()
+    public function test_user_can_be_created_with_regular_user_role()
     {
         $user = User::factory()->create([
             'role' => 'user',
@@ -50,8 +47,7 @@ class AdminUserModelTest extends TestCase
         $this->assertFalse($user->isModerator());
     }
 
-    /** @test */
-    public function user_defaults_to_user_role_when_not_specified()
+    public function test_user_defaults_to_user_role_when_not_specified()
     {
         $user = User::factory()->create();
 
@@ -60,8 +56,7 @@ class AdminUserModelTest extends TestCase
         $this->assertFalse($user->isModerator());
     }
 
-    /** @test */
-    public function user_defaults_to_active_status_when_not_specified()
+    public function test_user_defaults_to_active_status_when_not_specified()
     {
         $user = User::factory()->create();
 
@@ -69,8 +64,7 @@ class AdminUserModelTest extends TestCase
         $this->assertTrue($user->isActive());
     }
 
-    /** @test */
-    public function user_can_be_banned()
+    public function test_user_can_be_banned()
     {
         $user = User::factory()->create([
             'status' => 'banned',
@@ -80,8 +74,7 @@ class AdminUserModelTest extends TestCase
         $this->assertFalse($user->isActive());
     }
 
-    /** @test */
-    public function user_can_be_marked_as_deleted()
+    public function test_user_can_be_marked_as_deleted()
     {
         $user = User::factory()->create([
             'status' => 'deleted',
@@ -91,8 +84,7 @@ class AdminUserModelTest extends TestCase
         $this->assertFalse($user->isActive());
     }
 
-    /** @test */
-    public function admin_is_also_moderator()
+    public function test_admin_is_also_moderator()
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $moderator = User::factory()->create(['role' => 'moderator']);
@@ -103,8 +95,7 @@ class AdminUserModelTest extends TestCase
         $this->assertFalse($user->isModerator());
     }
 
-    /** @test */
-    public function role_and_status_are_hidden_from_api_responses()
+    public function test_role_and_status_are_hidden_from_api_responses()
     {
         $user = User::factory()->create([
             'role' => 'admin',
@@ -119,8 +110,7 @@ class AdminUserModelTest extends TestCase
         $this->assertContains('remember_token', $hiddenAttributes);
     }
 
-    /** @test */
-    public function user_can_have_reviews_relationship()
+    public function test_user_can_have_reviews_relationship()
     {
         $user = User::factory()->create();
 
@@ -130,8 +120,7 @@ class AdminUserModelTest extends TestCase
         );
     }
 
-    /** @test */
-    public function user_can_have_rankings_relationship()
+    public function test_user_can_have_rankings_relationship()
     {
         $user = User::factory()->create();
 
@@ -141,8 +130,7 @@ class AdminUserModelTest extends TestCase
         );
     }
 
-    /** @test */
-    public function user_can_have_oauth_providers_relationship()
+    public function test_user_can_have_oauth_providers_relationship()
     {
         $user = User::factory()->create();
 
@@ -152,8 +140,7 @@ class AdminUserModelTest extends TestCase
         );
     }
 
-    /** @test */
-    public function shop_model_has_correct_status_methods()
+    public function test_shop_model_has_correct_status_methods()
     {
         $activeShop = Shop::factory()->create(['status' => 'active']);
         $hiddenShop = Shop::factory()->create(['status' => 'hidden']);
@@ -169,8 +156,7 @@ class AdminUserModelTest extends TestCase
         $this->assertFalse($deletedShop->isHidden());
     }
 
-    /** @test */
-    public function shop_model_has_moderator_relationship()
+    public function test_shop_model_has_moderator_relationship()
     {
         $moderator = User::factory()->create(['role' => 'admin']);
         $shop = Shop::factory()->create([
@@ -187,8 +173,7 @@ class AdminUserModelTest extends TestCase
         $this->assertEquals($moderator->id, $shop->moderator->id);
     }
 
-    /** @test */
-    public function review_image_model_has_correct_moderation_methods()
+    public function test_review_image_model_has_correct_moderation_methods()
     {
         $review = \App\Models\Review::factory()->create();
 
@@ -218,8 +203,7 @@ class AdminUserModelTest extends TestCase
         $this->assertTrue($rejectedImage->isRejected());
     }
 
-    /** @test */
-    public function review_image_model_has_moderator_relationship()
+    public function test_review_image_model_has_moderator_relationship()
     {
         $review = \App\Models\Review::factory()->create();
         $moderator = User::factory()->create(['role' => 'admin']);
