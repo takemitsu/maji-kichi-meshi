@@ -1033,34 +1033,34 @@ class RankingApiTest extends TestCase
 
         // user1 のランキング2件（新しいランキングシステム対応）
         $ranking1 = Ranking::factory()->create([
-            'user_id' => $user1->id, 
+            'user_id' => $user1->id,
             'category_id' => $category->id,
-            'is_public' => true
+            'is_public' => true,
         ]);
         $ranking1->items()->create([
             'shop_id' => $shop1->id,
-            'rank_position' => 1
+            'rank_position' => 1,
         ]);
 
         $ranking2 = Ranking::factory()->create([
-            'user_id' => $user1->id, 
+            'user_id' => $user1->id,
             'category_id' => $category->id,
-            'is_public' => true
+            'is_public' => true,
         ]);
         $ranking2->items()->create([
             'shop_id' => $shop2->id,
-            'rank_position' => 1
+            'rank_position' => 1,
         ]);
 
         // user2 のランキング1件
         $ranking3 = Ranking::factory()->create([
-            'user_id' => $user2->id, 
+            'user_id' => $user2->id,
             'category_id' => $category->id,
-            'is_public' => true
+            'is_public' => true,
         ]);
         $ranking3->items()->create([
             'shop_id' => $shop1->id,
-            'rank_position' => 1
+            'rank_position' => 1,
         ]);
 
         $response = $this->getJson("/api/rankings?user_id={$user1->id}");

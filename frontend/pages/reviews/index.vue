@@ -33,15 +33,9 @@
             </div>
 
             <!-- ユーザー情報表示（user_id フィルタ時のみ） -->
-            <div v-if="userInfo" class="bg-blue-50 p-3 md:p-4 rounded-lg mb-4">
+            <div v-if="userInfo" class="bg-blue-50 p-3 md:p-4 rounded-lg mb-4 -mt-4">
                 <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4">
-                    <div class="text-sm text-gray-600">
-                        登録日: {{ formatDate(userInfo.created_at) }}
-                    </div>
-                    <NuxtLink 
-                        to="/reviews" 
-                        class="text-blue-600 hover:text-blue-800 text-sm underline"
-                    >
+                    <NuxtLink to="/reviews" class="text-blue-600 hover:text-blue-800 text-sm underline">
                         全レビューを見る
                     </NuxtLink>
                 </div>
@@ -126,7 +120,8 @@
                                     <div class="mt-2 flex items-center space-x-2 text-sm text-gray-700">
                                         <span>{{ formatDate(review.visited_at) }}</span>
                                         <span v-if="review.user" class="text-gray-500">
-                                            by <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
+                                            by
+                                            <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
                                         </span>
                                     </div>
                                 </div>
@@ -247,7 +242,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Review, ReviewImage, User, Shop, PaginatedResponse } from '~/types/api'
+import type { Review, ReviewImage } from '~/types/api'
 
 // レビュー閲覧はログイン不要、作成・編集時にログインチェック
 
@@ -263,37 +258,38 @@ const selectedRepeatIntention = ref('')
 const selectedImage = ref<ReviewImage | null>(null)
 
 // user_id フィルタ対応
-const shopId = ref(route.query.shop_id as string || '')
-const userId = ref(route.query.user_id as string || '')
+const shopId = ref((route.query.shop_id as string) || '')
+const userId = ref((route.query.user_id as string) || '')
 
 // ユーザー情報取得（user_id フィルタ時のみ）
-const userInfo = ref<User | null>(null)
-const userError = ref<Error | null>(null)
-
-if (userId.value) {
-  try {
-    userInfo.value = await $fetch<User>(`/api/users/${userId.value}/info`)
-  } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'status' in err && err.status === 404) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'ユーザーが見つかりません',
-      })
-    }
-    userError.value = err instanceof Error ? err : new Error('ユーザー情報の取得に失敗しました')
-  }
-}
+const api = useApi()
+const { data: userInfo } = await useLazyAsyncData(
+    'user-info-reviews',
+    async () => {
+        if (!userId.value) return null
+        return await api.users.info(parseInt(userId.value))
+    },
+    {
+        server: false,
+        watch: [userId],
+        default: () => null,
+    },
+)
 
 // 店舗情報取得（既存）
-const shopInfo = ref<Shop | null>(null)
-
-if (shopId.value) {
-  try {
-    shopInfo.value = await $fetch<Shop>(`/api/shops/${shopId.value}`)
-  } catch (err) {
-    console.error('Failed to load shop info:', err)
-  }
-}
+const { data: shopInfo } = await useLazyAsyncData(
+    'shop-info-reviews',
+    async () => {
+        if (!shopId.value) return null
+        const response = await api.shops.get(parseInt(shopId.value))
+        return response.data
+    },
+    {
+        server: false,
+        watch: [shopId],
+        default: () => null,
+    },
+)
 
 // ページネーション
 const currentPage = ref(1)
@@ -329,7 +325,8 @@ const loadReviews = async () => {
         if (shopId.value) params.shop_id = shopId.value
         if (userId.value) params.user_id = userId.value
 
-        const response = await $fetch<PaginatedResponse<Review>>('/api/reviews', { query: params })
+        const api = useApi()
+        const response = await api.reviews.list(params)
 
         // ページネーション対応のレスポンス処理
         reviews.value = response.data || []
@@ -389,10 +386,10 @@ const handleReviewImageError = (_image: ReviewImage) => {
 
 // URLクエリパラメータの監視
 watch([() => route.query.shop_id, () => route.query.user_id], ([newShopId, newUserId]) => {
-  shopId.value = newShopId as string || ''
-  userId.value = newUserId as string || ''
-  currentPage.value = 1  // フィルタ変更時は1ページ目に戻る
-  loadReviews()
+    shopId.value = (newShopId as string) || ''
+    userId.value = (newUserId as string) || ''
+    currentPage.value = 1 // フィルタ変更時は1ページ目に戻る
+    loadReviews()
 })
 
 // 初期化
@@ -402,20 +399,20 @@ onMounted(async () => {
 
 // SEOメタタグ設定
 useSeoMeta({
-  title: computed(() => {
-    if (userInfo.value) {
-      return `${userInfo.value.name}さんのレビュー | マジキチメシ`
-    }
-    if (shopInfo.value) {
-      return `${shopInfo.value.name}のレビュー | マジキチメシ`
-    }
-    return 'レビュー一覧 | マジキチメシ'
-  }),
-  description: computed(() => {
-    if (userInfo.value) {
-      return `${userInfo.value.name}さんが投稿したレビューの一覧です。`
-    }
-    return '吉祥寺の店舗レビュー一覧'
-  }),
+    title: computed(() => {
+        if (userInfo.value) {
+            return `${userInfo.value.name}さんのレビュー | マジキチメシ`
+        }
+        if (shopInfo.value) {
+            return `${shopInfo.value.name}のレビュー | マジキチメシ`
+        }
+        return 'レビュー一覧 | マジキチメシ'
+    }),
+    description: computed(() => {
+        if (userInfo.value) {
+            return `${userInfo.value.name}さんが投稿したレビューの一覧です。`
+        }
+        return '吉祥寺の店舗レビュー一覧'
+    }),
 })
 </script>

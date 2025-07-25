@@ -9,9 +9,11 @@
                             <span v-if="userInfo">{{ userInfo.name }}さんのランキング</span>
                             <span v-else>みんなのランキング</span>
                         </h1>
-                        <p class="mt-1 text-sm text-gray-700">みんなが公開している吉祥寺の店舗ランキングを見ることができます</p>
+                        <p v-if="!userInfo" class="mt-1 text-sm text-gray-700">
+                            みんなが公開している吉祥寺の店舗ランキングを見ることができます
+                        </p>
                     </div>
-                    <div class="mt-4 flex md:ml-4 md:mt-0">
+                    <div v-if="authStore.isLoggedIn" class="mt-4 flex md:ml-4 md:mt-0">
                         <NuxtLink to="/rankings" class="btn-secondary flex items-center">
                             <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -19,19 +21,16 @@
                             マイランキング
                         </NuxtLink>
                     </div>
+                    <div v-else class="mt-4 flex md:ml-4 md:mt-0">
+                        <span class="text-sm text-gray-700 px-3 py-2">ランキングを作成するにはログインが必要です</span>
+                    </div>
                 </div>
             </div>
 
             <!-- ユーザー情報表示（user_id フィルタ時のみ） -->
-            <div v-if="userInfo" class="bg-blue-50 p-3 md:p-4 rounded-lg mb-4">
+            <div v-if="userInfo" class="bg-blue-50 p-3 md:p-4 rounded-lg mb-4 -mt-4">
                 <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4">
-                    <div class="text-sm text-gray-600">
-                        登録日: {{ formatDate(userInfo.created_at) }}
-                    </div>
-                    <NuxtLink 
-                        to="/rankings/public" 
-                        class="text-blue-600 hover:text-blue-800 text-sm underline"
-                    >
+                    <NuxtLink to="/rankings/public" class="text-blue-600 hover:text-blue-800 text-sm underline">
                         全ランキングを見る
                     </NuxtLink>
                 </div>
@@ -226,9 +225,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Ranking, Category, User, PaginatedResponse } from '~/types/api'
+import type { Ranking, Category } from '~/types/api'
 
 const route = useRoute()
+const authStore = useAuthStore()
 
 // リアクティブデータ
 const rankings = ref<Ranking[]>([])
@@ -238,26 +238,23 @@ const error = ref('')
 const selectedCategory = ref('')
 
 // user_id フィルタ対応
-const categoryId = ref(route.query.category_id as string || '')
-const userId = ref(route.query.user_id as string || '')
+const categoryId = ref((route.query.category_id as string) || '')
+const userId = ref((route.query.user_id as string) || '')
 
 // ユーザー情報取得（user_id フィルタ時のみ）
-const userInfo = ref<User | null>(null)
-const userError = ref<Error | null>(null)
-
-if (userId.value) {
-  try {
-    userInfo.value = await $fetch<User>(`/api/users/${userId.value}/info`)
-  } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'status' in err && err.status === 404) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'ユーザーが見つかりません',
-      })
-    }
-    userError.value = err instanceof Error ? err : new Error('ユーザー情報の取得に失敗しました')
-  }
-}
+const api = useApi()
+const { data: userInfo } = await useLazyAsyncData(
+    'user-info',
+    async () => {
+        if (!userId.value) return null
+        return await api.users.info(parseInt(userId.value))
+    },
+    {
+        server: false,
+        watch: [userId],
+        default: () => null,
+    },
+)
 
 // ページネーション
 const currentPage = ref(1)
@@ -290,7 +287,8 @@ const loadRankings = async () => {
         if (categoryId.value) params.category_id = categoryId.value
         if (userId.value) params.user_id = userId.value
 
-        const response = await $fetch<PaginatedResponse<Ranking>>('/api/rankings/public', { query: params })
+        const api = useApi()
+        const response = await api.rankings.publicRankings(params)
 
         // ページネーション対応のレスポンス処理
         rankings.value = response.data || []
@@ -312,7 +310,8 @@ const loadRankings = async () => {
 // カテゴリデータ取得
 const loadCategories = async () => {
     try {
-        const response = await $fetch<{ data: Category[] }>('/api/categories')
+        const api = useApi()
+        const response = await api.categories.list()
         categories.value = response.data || []
     } catch (err) {
         console.error('Failed to load categories:', err)
@@ -326,11 +325,11 @@ const formatDate = (dateString: string) => {
 
 // URLクエリパラメータの監視
 watch([() => route.query.category_id, () => route.query.user_id], ([newCategoryId, newUserId]) => {
-  categoryId.value = newCategoryId as string || ''
-  userId.value = newUserId as string || ''
-  selectedCategory.value = newCategoryId as string || ''
-  currentPage.value = 1
-  loadRankings()
+    categoryId.value = (newCategoryId as string) || ''
+    userId.value = (newUserId as string) || ''
+    selectedCategory.value = (newCategoryId as string) || ''
+    currentPage.value = 1
+    loadRankings()
 })
 
 // 初期化
@@ -349,17 +348,17 @@ onMounted(async () => {
 
 // SEOメタタグ設定
 useSeoMeta({
-  title: computed(() => {
-    if (userInfo.value) {
-      return `${userInfo.value.name}さんのランキング | マジキチメシ`
-    }
-    return 'みんなのランキング | マジキチメシ'
-  }),
-  description: computed(() => {
-    if (userInfo.value) {
-      return `${userInfo.value.name}さんが作成したランキングの一覧です。`
-    }
-    return 'みんなが公開している吉祥寺の店舗ランキング一覧'
-  }),
+    title: computed(() => {
+        if (userInfo.value) {
+            return `${userInfo.value.name}さんのランキング | マジキチメシ`
+        }
+        return 'みんなのランキング | マジキチメシ'
+    }),
+    description: computed(() => {
+        if (userInfo.value) {
+            return `${userInfo.value.name}さんが作成したランキングの一覧です。`
+        }
+        return 'みんなが公開している吉祥寺の店舗ランキング一覧'
+    }),
 })
 </script>

@@ -238,6 +238,11 @@ export const useApi = () => {
             dashboard: () => apiFetch<ApiResponse<{ reviews_count: number; rankings_count: number }>>('/stats/dashboard'),
         },
 
+        // ユーザー関連
+        users: {
+            info: (id: number) => apiFetch<User>(`/users/${id}/info`),
+        },
+
         // プロフィール関連
         profile: {
             // プロフィール情報取得

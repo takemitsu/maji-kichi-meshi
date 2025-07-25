@@ -119,7 +119,7 @@ export interface ShopImage {
 
 export interface User {
     id: number
-    name: string  
+    name: string
     email: string
     avatar?: string
     profile_image?: {
