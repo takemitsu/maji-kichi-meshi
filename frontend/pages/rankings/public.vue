@@ -6,7 +6,8 @@
                 <div class="md:flex md:items-center md:justify-between">
                     <div class="min-w-0 flex-1">
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                            みんなのランキング
+                            <span v-if="userInfo">{{ userInfo.name }}さんのランキング</span>
+                            <span v-else>みんなのランキング</span>
                         </h1>
                         <p class="mt-1 text-sm text-gray-700">みんなが公開している吉祥寺の店舗ランキングを見ることができます</p>
                     </div>
@@ -18,6 +19,21 @@
                             マイランキング
                         </NuxtLink>
                     </div>
+                </div>
+            </div>
+
+            <!-- ユーザー情報表示（user_id フィルタ時のみ） -->
+            <div v-if="userInfo" class="bg-blue-50 p-3 md:p-4 rounded-lg mb-4">
+                <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4">
+                    <div class="text-sm text-gray-600">
+                        登録日: {{ formatDate(userInfo.created_at) }}
+                    </div>
+                    <NuxtLink 
+                        to="/rankings/public" 
+                        class="text-blue-600 hover:text-blue-800 text-sm underline"
+                    >
+                        全ランキングを見る
+                    </NuxtLink>
                 </div>
             </div>
 
@@ -70,7 +86,7 @@
                                             :profile-image-url="ranking.user?.profile_image?.urls?.thumbnail"
                                             size="xs"
                                             class="mr-2" />
-                                        {{ ranking.user?.name }}
+                                        <UserLink :user="ranking.user" page-type="rankings" custom-class="text-sm" />
                                     </div>
 
                                     <!-- メタ情報 -->
@@ -210,9 +226,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Ranking, Category } from '~/types/api'
+import type { Ranking, Category, User, PaginatedResponse } from '~/types/api'
 
-const { $api } = useNuxtApp()
+const route = useRoute()
 
 // リアクティブデータ
 const rankings = ref<Ranking[]>([])
@@ -220,6 +236,28 @@ const categories = ref<Category[]>([])
 const loading = ref(true)
 const error = ref('')
 const selectedCategory = ref('')
+
+// user_id フィルタ対応
+const categoryId = ref(route.query.category_id as string || '')
+const userId = ref(route.query.user_id as string || '')
+
+// ユーザー情報取得（user_id フィルタ時のみ）
+const userInfo = ref<User | null>(null)
+const userError = ref<Error | null>(null)
+
+if (userId.value) {
+  try {
+    userInfo.value = await $fetch<User>(`/api/users/${userId.value}/info`)
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'status' in err && err.status === 404) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'ユーザーが見つかりません',
+      })
+    }
+    userError.value = err instanceof Error ? err : new Error('ユーザー情報の取得に失敗しました')
+  }
+}
 
 // ページネーション
 const currentPage = ref(1)
@@ -249,9 +287,10 @@ const loadRankings = async () => {
             page: currentPage.value,
             per_page: perPage.value,
         }
-        if (selectedCategory.value) params.category_id = selectedCategory.value
+        if (categoryId.value) params.category_id = categoryId.value
+        if (userId.value) params.user_id = userId.value
 
-        const response = await $api.rankings.publicRankings(params)
+        const response = await $fetch<PaginatedResponse<Ranking>>('/api/rankings/public', { query: params })
 
         // ページネーション対応のレスポンス処理
         rankings.value = response.data || []
@@ -273,7 +312,7 @@ const loadRankings = async () => {
 // カテゴリデータ取得
 const loadCategories = async () => {
     try {
-        const response = await $api.categories.list()
+        const response = await $fetch<{ data: Category[] }>('/api/categories')
         categories.value = response.data || []
     } catch (err) {
         console.error('Failed to load categories:', err)
@@ -285,25 +324,42 @@ const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP')
 }
 
+// URLクエリパラメータの監視
+watch([() => route.query.category_id, () => route.query.user_id], ([newCategoryId, newUserId]) => {
+  categoryId.value = newCategoryId as string || ''
+  userId.value = newUserId as string || ''
+  selectedCategory.value = newCategoryId as string || ''
+  currentPage.value = 1
+  loadRankings()
+})
+
 // 初期化
 onMounted(async () => {
     // URLパラメータから初期値を設定
-    const route = useRoute()
     if (route.query.category_id) {
         selectedCategory.value = route.query.category_id as string
+        categoryId.value = route.query.category_id as string
+    }
+    if (route.query.user_id) {
+        userId.value = route.query.user_id as string
     }
 
     await Promise.all([loadRankings(), loadCategories()])
 })
 
-// メタデータ設定
-useHead({
-    title: '公開ランキング - マジキチメシ',
-    meta: [
-        {
-            name: 'description',
-            content: 'みんなが公開している吉祥寺の店舗ランキング一覧',
-        },
-    ],
+// SEOメタタグ設定
+useSeoMeta({
+  title: computed(() => {
+    if (userInfo.value) {
+      return `${userInfo.value.name}さんのランキング | マジキチメシ`
+    }
+    return 'みんなのランキング | マジキチメシ'
+  }),
+  description: computed(() => {
+    if (userInfo.value) {
+      return `${userInfo.value.name}さんが作成したランキングの一覧です。`
+    }
+    return 'みんなが公開している吉祥寺の店舗ランキング一覧'
+  }),
 })
 </script>

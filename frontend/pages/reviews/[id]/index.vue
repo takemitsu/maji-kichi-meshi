@@ -166,6 +166,10 @@
                                 最終更新: {{ formatDateTime(review.updated_at) }}
                             </div>
                             <div>
+                                投稿者:
+                                <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
+                            </div>
+                            <div>
                                 店舗:
                                 <NuxtLink :to="`/shops/${review.shop?.id}`" class="text-blue-600 hover:text-blue-800">
                                     {{ review.shop?.name }}

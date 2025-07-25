@@ -265,9 +265,7 @@
                                     class="flex-shrink-0" />
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center space-x-2">
-                                        <p class="text-sm font-medium text-gray-900">
-                                            {{ review.user?.name }}
-                                        </p>
+                                        <UserLink :user="review.user" page-type="reviews" custom-class="text-sm font-medium" />
                                         <div class="flex items-center">
                                             <span class="text-sm text-yellow-400">★</span>
                                             <span class="text-sm text-gray-600">{{ review.rating }}</span>

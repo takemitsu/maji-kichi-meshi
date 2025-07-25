@@ -73,10 +73,7 @@ export interface Review {
     visited_at: string
     has_images: boolean
     images: ReviewImage[]
-    user: {
-        id: number
-        name: string
-    }
+    user: User
     shop: {
         id: number
         name: string
@@ -120,19 +117,29 @@ export interface ShopImage {
     updated_at: string
 }
 
+export interface User {
+    id: number
+    name: string  
+    email: string
+    avatar?: string
+    profile_image?: {
+        urls: {
+            thumbnail: string
+            small: string
+            medium: string
+            large: string
+        }
+    }
+    created_at: string
+    updated_at: string
+}
+
 export interface Ranking {
     id: number
     title: string
     description?: string
     is_public: boolean
-    user: {
-        id: number
-        name: string
-        email: string
-        avatar?: string
-        created_at: string
-        updated_at: string
-    }
+    user: User
     category?: Category
     shops?: (Shop & { rank_position: number })[]
     created_at: string

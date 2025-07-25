@@ -49,7 +49,7 @@
                                         :profile-image-url="ranking.user?.profile_image?.urls?.thumbnail"
                                         size="xs"
                                         class="mr-2" />
-                                    <span class="mr-2">{{ ranking.user?.name }}</span>
+                                    <UserLink :user="ranking.user" page-type="rankings" custom-class="text-sm mr-2" />
 
                                     <!-- ステータスバッジ（自分のランキングのみ） -->
                                     <span
