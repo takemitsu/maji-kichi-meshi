@@ -373,3 +373,26 @@ YYYYmmddHHMMSS-[type]-[description].md
 - `README.md`, `CLAUDE.md`
 - `concept.md`, `technical-specs.md`, `database-er-diagram.md`
 - その他の設計書・仕様書類
+
+## 機能開発ワークフロー
+
+新機能開発は `docs/features/` ディレクトリを使用した標準ワークフローに従ってください。
+
+### ディレクトリ構成
+```
+docs/features/
+├── feature-name/
+│   ├── README.md           # 機能概要・仕様・要件
+│   ├── 01-task-name.md     # 個別タスク（連番）
+│   ├── 02-task-name.md     # 個別タスク
+│   └── progress.md         # 進捗管理・完了記録
+```
+
+### 開発手順
+1. **企画**: `docs/features/feature-name/` ディレクトリ作成
+2. **要件定義**: `README.md` に機能仕様記載
+3. **タスク分解**: `01-*.md`, `02-*.md` で個別タスク定義
+4. **進捗管理**: `progress.md` でタスク状況追跡
+5. **完了記録**: 最終結果・引き継ぎ事項を記録
+
+詳細は `docs/development-workflow.md` を参照してください。

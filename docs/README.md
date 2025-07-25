@@ -15,6 +15,7 @@
 - **[session-log.md](./session-log.md)** - 開発セッションの作業記録
 - **[database-design-decisions.md](./database-design-decisions.md)** - データベース設計判断の記録
 - **[future-development-plan.md](./future-development-plan.md)** - 将来の開発計画・TODO
+- **[development-workflow.md](./development-workflow.md)** - 機能開発の標準ワークフロー
 
 ### デプロイメント・設定ガイド
 - **[deployment-frontend-guide.md](./deployment-frontend-guide.md)** - フロントエンド静的配信設定
