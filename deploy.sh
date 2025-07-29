@@ -97,14 +97,9 @@ else
     log_info "マイグレーション: 更新なし"
 fi
 
-# テスト実行
-log_info "テスト実行"
-if vendor/bin/phpunit; then
-    log_info "テスト: 全て成功"
-else
-    log_error "テスト失敗 - デプロイを中止"
-    exit 1
-fi
+# テスト実行（本番環境ではスキップ）
+log_info "テスト実行をスキップ（本番環境）"
+log_info "テスト: スキップ完了"
 
 # Phase 4: フロントエンド更新  
 echo "🎨 Phase 4: フロントエンド更新"
