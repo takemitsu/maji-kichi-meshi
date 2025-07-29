@@ -95,7 +95,7 @@ class ReviewController extends Controller
             'memo' => 'nullable|string|max:1000',
             'visited_at' => 'required|date|before_or_equal:today',
             'images' => 'nullable|array|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048', // 2MB
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
         ]);
 
         if ($validator->fails()) {
@@ -254,7 +254,7 @@ class ReviewController extends Controller
 
         $validator = Validator::make($request->all(), [
             'images' => 'required|array|min:1|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048', // 2MB（現在のPHP制限に合わせる）
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB（現在のPHP制限に合わせる）
         ]);
 
         if ($validator->fails()) {

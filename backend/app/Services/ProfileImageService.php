@@ -164,7 +164,7 @@ class ProfileImageService
                 'required',
                 'image',
                 'mimes:jpeg,png,jpg,gif,webp',
-                'max:5120', // 5MB
+                'max:10240', // 10MB
                 'dimensions:min_width=100,min_height=100,max_width=3000,max_height=3000',
             ],
         ];
