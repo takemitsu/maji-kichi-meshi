@@ -17,6 +17,7 @@
                 </button>
                 <span class="text-sm text-gray-700">{{ images.length }}/5</span>
             </div>
+            <p class="text-xs text-gray-500 mt-1">合計10MBまで</p>
         </div>
 
         <!-- 画像プレビュー -->
@@ -86,10 +87,10 @@ const handleFileSelect = (event: Event) => {
         return
     }
 
-    // ファイルサイズチェック (5MB制限)
-    const oversizedFiles = files.filter((file) => file.size > 5 * 1024 * 1024)
+    // ファイルサイズチェック (10MB制限)
+    const oversizedFiles = files.filter((file) => file.size > 10 * 1024 * 1024)
     if (oversizedFiles.length > 0) {
-        error.value = 'ファイルサイズは5MB以下にしてください'
+        error.value = 'ファイルサイズは10MB以下にしてください'
         return
     }
 

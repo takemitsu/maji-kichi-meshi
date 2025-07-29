@@ -6,7 +6,7 @@
 
             <div class="flex-1">
                 <h3 class="text-lg font-medium text-gray-900">プロフィール画像</h3>
-                <p class="text-sm text-gray-700">JPG、PNG、GIF、WebP形式に対応。最大5MB。</p>
+                <p class="text-sm text-gray-700">JPG、PNG、GIF、WebP形式に対応。最大10MB。</p>
             </div>
         </div>
 
@@ -156,10 +156,10 @@ const validateFile = async (file: File): Promise<boolean> => {
         return false
     }
 
-    // ファイルサイズチェック（5MB）
-    const maxSize = 5 * 1024 * 1024
+    // ファイルサイズチェック（10MB）
+    const maxSize = 10 * 1024 * 1024
     if (file.size > maxSize) {
-        error.value = 'ファイルサイズは5MB以下にしてください。'
+        error.value = 'ファイルサイズは10MB以下にしてください。'
         return false
     }
 
