@@ -76,13 +76,13 @@
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-xl font-semibold text-gray-900">店舗検索</h3>
+                            <h3 class="text-xl font-semibold text-gray-900">店舗</h3>
                         </div>
                         <div class="text-center">
                             <NuxtLink
                                 to="/shops"
                                 class="btn-primary inline-block text-center transform group-hover:scale-105 transition-transform">
-                                店舗を探す
+                                店舗を見る
                             </NuxtLink>
                         </div>
                     </div>

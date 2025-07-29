@@ -29,6 +29,11 @@
                                 </dd>
                             </dl>
                         </div>
+                        <div class="flex-shrink-0">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
                     </div>
                 </NuxtLink>
 
@@ -53,6 +58,11 @@
                                 </dd>
                             </dl>
                         </div>
+                        <div class="flex-shrink-0">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
                     </div>
                 </NuxtLink>
             </div>
@@ -61,20 +71,17 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">ランキング</h3>
-                    <p class="text-sm text-gray-600 mb-4">個人的なランキングを作成・編集します</p>
                     <NuxtLink to="/rankings/public" class="btn-primary inline-block text-center w-full">ランキングを見る</NuxtLink>
                 </div>
 
                 <div class="bg-white rounded-lg shadow p-4 md:p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">レビュー一覧</h3>
-                    <p class="text-sm text-gray-600 mb-4">訪問記録とレビューを作成・編集します</p>
-                    <NuxtLink to="/reviews" class="btn-primary inline-block text-center w-full">レビュー一覧を見る</NuxtLink>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">レビュー</h3>
+                    <NuxtLink to="/reviews" class="btn-primary inline-block text-center w-full">レビューを見る</NuxtLink>
                 </div>
 
                 <div class="bg-white rounded-lg shadow p-4 md:p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">店舗一覧</h3>
-                    <p class="text-sm text-gray-600 mb-4">お気に入りの店舗を登録・編集します</p>
-                    <NuxtLink to="/shops" class="btn-primary inline-block text-center w-full">店舗一覧を見る</NuxtLink>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">店舗</h3>
+                    <NuxtLink to="/shops" class="btn-primary inline-block text-center w-full">店舗を見る</NuxtLink>
                 </div>
             </div>
         </div>

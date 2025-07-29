@@ -17,7 +17,7 @@
                 </button>
                 <span class="text-sm text-gray-700">{{ images.length }}/5</span>
             </div>
-            <p class="text-xs text-gray-500 mt-1">合計10MBまで</p>
+            <p class="text-sm text-gray-700 mt-1">合計10MBまで</p>
         </div>
 
         <!-- 画像プレビュー -->
