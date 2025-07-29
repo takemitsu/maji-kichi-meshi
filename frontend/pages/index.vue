@@ -34,7 +34,6 @@
                                 class="btn-primary inline-block text-center transform group-hover:scale-105 transition-transform">
                                 ランキングを見る
                             </NuxtLink>
-                            <p class="text-xs text-gray-700 mt-4">※ ログイン不要</p>
                         </div>
                     </div>
                 </div>
@@ -60,7 +59,6 @@
                                 class="btn-primary inline-block text-center transform group-hover:scale-105 transition-transform">
                                 レビューを見る
                             </NuxtLink>
-                            <p class="text-xs text-gray-700 mt-4">※ ログイン不要</p>
                         </div>
                     </div>
                 </div>
@@ -86,7 +84,6 @@
                                 class="btn-primary inline-block text-center transform group-hover:scale-105 transition-transform">
                                 店舗を探す
                             </NuxtLink>
-                            <p class="text-xs text-gray-700 mt-4">※ ログイン不要</p>
                         </div>
                     </div>
                 </div>
