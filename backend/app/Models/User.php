@@ -386,12 +386,4 @@ class User extends Authenticatable implements JWTSubject, FilamentUser
         $this->profile_image_uploaded_at = null;
         $this->save();
     }
-
-    /**
-     * Determine if the user can access the given Filament panel.
-     */
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return $this->isModerator();
-    }
 }
