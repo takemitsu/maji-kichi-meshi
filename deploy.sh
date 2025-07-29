@@ -99,7 +99,7 @@ fi
 
 # テスト実行
 log_info "テスト実行"
-if php artisan test; then
+if vendor/bin/phpunit; then
     log_info "テスト: 全て成功"
 else
     log_error "テスト失敗 - デプロイを中止"
