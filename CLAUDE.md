@@ -23,11 +23,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Intervention Image (画像処理) - ✅ 実装完了
 
 ### Database
-- PostgreSQL (メイン)
-- MySQL (既存環境、比較用)
+- MySQL (本番環境)
+- SQLite (開発環境)
 
 ### Authentication
-- OAuth: Google, GitHub, LINE, Twitter
+- OAuth: Google (専用) ※将来的に要望があれば他プロバイダー追加可能
 - Laravel Socialite → JWTトークン発行
 - Web/Mobile共通認証
 - ハイブリッド認証: 一般ユーザー(JWT) + 管理者(セッション) - ✅ 実装完了
@@ -43,7 +43,7 @@ Frontend (Nuxt.js SPA) → 静的ホスティング (nginx/CDN)
     ↓ JWT Auth
 Backend (Laravel API) → Sakura VPS
     ↓ 
-Database (PostgreSQL)
+Database (MySQL)
 
 Admin (Laravel Filament)
     ↓
@@ -189,7 +189,7 @@ maji-kichi-meshi/
 
 ### 主要テーブル（実装済み）
 - `users` - ユーザー情報 + 管理者権限(role/status)
-- `oauth_providers` - OAuth連携情報（Google, GitHub, LINE, Twitter）
+- `oauth_providers` - OAuth連携情報（Google専用）
 - `shops` - 店舗情報（Google Places ID対応、緯度経度） + 管理者制御(status)
 - `categories` - カテゴリマスタ（基本/時間帯/ランキング用）
 - `shop_categories` - 店舗カテゴリ中間テーブル（複数選択対応）
@@ -203,7 +203,7 @@ maji-kichi-meshi/
 
 ### 認証システム（完了 ✅）
 - **JWT認証実装済み**: 1週間有効期限、リフレッシュ機能なし
-- **OAuth対応済み**: Google, GitHub, LINE, Twitter (Laravel Socialite)
+- **OAuth対応済み**: Google専用 (Laravel Socialite) ※GitHub/LINE/Twitter等は要望次第で追加可能
 - **API保護**: 認証が必要なエンドポイントの適切な保護
 - **テストカバレッジ**: 包括的な認証テスト実装
 
@@ -227,7 +227,7 @@ maji-kichi-meshi/
 
 - 個人プロジェクトから開始、将来的に共有機能拡張
 - 既存Sakura VPS環境を活用
-- PostgreSQL新規導入予定（MySQL環境との比較検討）
+- MySQL本番環境採用（SQLite開発環境）
 - 管理画面はLaravel Filamentで効率開発
 
 ## 技術的発見・注意事項
@@ -237,6 +237,13 @@ maji-kichi-meshi/
 - `User::create()` では正常動作、`User::updateOrCreate()` では動作しない場合がある
 - 手動ハッシュ化（`Hash::make()`）と併用すると二重ハッシュ化される
 - シーダーでは平文パスワードを使用し、キャストによる自動ハッシュ化に依存する
+
+### Laravel Filament本番環境要件
+- **FilamentUserインターフェース必須**: 本番環境では`User`モデルに`FilamentUser`実装が必要
+- **canAccessPanel()メソッド**: `canAccessPanel(\Filament\Panel $panel): bool`の実装必須
+- **nginx設定注意**: `location ^~ /admin`でSPAのcatch-allより優先度を高くする
+- **PHP-FPMソケット権限**: `sudo usermod -a -G nginx www-data`で権限解決
+- **2FA必須設定**: 管理者はTwo-Factor Authentication設定が必要（FilamentAdminMiddleware実装済み）
 
 ## Development Progress
 
@@ -322,7 +329,15 @@ maji-kichi-meshi/
 - [x] **URL状態管理** → ⚠️ やる方向で棚上げ（検索・フィルタ体験向上、実装コスト高）
 - 詳細: `docs/2025071*-task-mobile-ui-*.md` 参照
 
-### Phase 9: Future Enhancement (計画)
+### Phase 9: Production Deployment & Infrastructure ✅ 完了
+- [x] nginx統合設定での管理画面アクセス問題解決
+- [x] PHP-FPMソケット権限問題解決（`sudo usermod -a -G nginx www-data`）
+- [x] Filament本番環境認証問題解決（FilamentUserインターフェース実装）
+- [x] Laravel Filament 2FA設定・動作確認完了
+- [x] フロントエンド+バックエンド統合nginx設定での動作確認完了
+- [x] 本番デプロイメントガイド作成（`docs/20250729-production-deployment-guide.md`）
+
+### Phase 10: Future Enhancement (計画)
 - [ ] Google Places API 連携
 - [x] ~~**アプリライク匿名ユーザー機能**~~ ❌ **計画停止** (2025-07-10)
   - **停止理由**: 重大リスクが価値を上回る（詳細: docs/20250710185000-report-anonymous-user-concerns.md）
@@ -331,8 +346,8 @@ maji-kichi-meshi/
 - [ ] パフォーマンス最適化
 - [ ] デプロイメント自動化
 
-### 🎯 プロジェクト完了状況: **100%** (管理機能含む完全版 + モバイル最適化)
-**OAuth設定完了後、即座に本番リリース可能 + 管理者機能完備 + モバイルファースト対応**
+### 🎯 プロジェクト完了状況: **100%** (本番デプロイ完了版)
+**管理画面含む完全システム + モバイルファースト対応 + 本番環境動作確認済み**
 
 ## Documentation
 
@@ -400,3 +415,51 @@ docs/features/
 5. **完了記録**: 最終結果・引き継ぎ事項を記録
 
 詳細は `docs/development-workflow.md` を参照してください。
+
+## Deployment
+
+### 本番環境デプロイ手順
+
+```bash
+# 1. デプロイメント環境に移動
+cd ~/deployment/maji-kichi-meshi/
+
+# 2. 最新コードを取得
+git pull origin main
+
+# 3. デプロイスクリプト実行
+./scripts/deploy.sh
+```
+
+### デプロイ後の確認事項
+
+1. **フロントエンド確認**：
+   - `https://maji-kichi-meshi.takemitsu.net/` にアクセス
+   - ログイン・機能動作確認
+
+2. **管理画面確認**：
+   - `https://maji-kichi-meshi.takemitsu.net/admin` にアクセス
+   - 2FA設定またはダッシュボードが表示されるか確認
+
+3. **API確認**：
+   - `https://maji-kichi-meshi.takemitsu.net/api/shops` 等のAPIエンドポイント動作確認
+
+### トラブルシューティング
+
+**管理画面で403エラーが発生する場合**：
+- PHP-FPMソケット権限確認：`sudo usermod -a -G nginx www-data`
+- UserモデルにFilamentUserインターフェース実装確認
+- nginx設定の`location ^~ /admin`ブロック確認
+- 詳細トラブルシューティング：`docs/20250729-production-deployment-guide.md`参照
+
+**500エラーが発生する場合**：
+```bash
+# Laravelログ確認
+tail -f /var/www/maji-kichi-backend/storage/logs/laravel-$(date +%Y-%m-%d).log
+
+# キャッシュクリア
+cd /var/www/maji-kichi-backend
+sudo -u www-data php artisan config:clear
+sudo -u www-data php artisan route:clear
+sudo -u www-data php artisan cache:clear
+```

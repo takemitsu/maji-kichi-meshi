@@ -19,7 +19,6 @@
 
 ### デプロイメント・設定ガイド
 - **[deployment-frontend-guide.md](./deployment-frontend-guide.md)** - フロントエンド静的配信設定
-- **[oauth-setup-guide.md](./oauth-setup-guide.md)** - OAuth認証設定ガイド
 
 ### アーカイブ
 - **[archive/](./archive/)** - 完了済みの開発記録・レポート類
@@ -57,13 +56,13 @@ YYYYmmddHHMMSS-[type]-[description].md
 
 ## プロジェクト状況
 
-### 🎯 プロジェクト完了状況: **100%** (管理機能含む完全版)
+### 🎯 プロジェクト完了状況: **100%** (本番デプロイ完了版)
 **OAuth設定完了後、即座に本番リリース可能 + 管理者機能完備**
 
-全8フェーズ完了済み。詳細な完了機能一覧・テスト結果は `technical-specs.md` を参照。
+全9フェーズ完了済み。詳細な完了機能一覧・テスト結果は `technical-specs.md` を参照。
 
 ### 主要完了機能
-- ✅ **認証システム**: OAuth (Google/GitHub/LINE/Twitter) + JWT
+- ✅ **認証システム**: OAuth (Google専用) + JWT
 - ✅ **コア機能**: 店舗管理・レビュー・ランキング
 - ✅ **フロントエンド**: Vue/Nuxt SPA + モバイル対応
 - ✅ **画像機能**: アップロード・自動リサイズ・検閲

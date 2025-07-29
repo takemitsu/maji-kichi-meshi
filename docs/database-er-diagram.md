@@ -73,7 +73,7 @@ erDiagram
     oauth_providers {
         bigint id PK
         bigint user_id FK
-        string provider "Google/GitHub/LINE/Twitter"
+        string provider "Google専用"
         string provider_id "プロバイダー側ユーザーID"
         string provider_token "OAuthトークン"
         timestamp created_at
@@ -267,7 +267,7 @@ ON "reviews" ("user_id", "shop_id")
 ### 完了済み機能 ✅
 - [x] 全テーブルのマイグレーション（19テーブル）
 - [x] 全モデル実装（リレーション、スコープ、アクセサ）
-- [x] JWT + OAuth認証システム（Google/GitHub/LINE/Twitter）
+- [x] JWT + OAuth認証システム（Google専用）
 - [x] 画像アップロード・リサイズ機能（Intervention Image）
 - [x] 管理者システム（Laravel Filament）
 - [x] 包括的なテストカバレッジ（98%成功率）
@@ -295,7 +295,7 @@ ON "reviews" ("user_id", "shop_id")
 18. `2025_07_09_140001_create_ranking_items_table.php`
 19. `2025_07_10_120000_add_profile_image_fields_to_users_table.php`
 
-### Phase 8完了: 管理機能含む完全版 ✅
+### Phase 9完了: 本番デプロイ完了版 ✅
 **プロジェクト完了状況: 100%**
 - OAuth設定完了後、即座に本番リリース可能
 - 管理者機能完備

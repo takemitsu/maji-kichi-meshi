@@ -403,7 +403,7 @@ Laravel API + PHP-FPM + nginx構成での本番デプロイ手順です。
 - Sakura VPS（既存環境）
 - nginx 1.28.0
 - PHP 8.2以上 + PHP-FPM
-- PostgreSQL または MySQL
+- MySQL
 - Composer
 
 ## 📂 バックエンドアーキテクチャ
@@ -418,7 +418,7 @@ Laravel API + PHP-FPM + nginx構成での本番デプロイ手順です。
                            └─────────────────────┘
                                       │
                            ┌─────────────────────┐
-                           │  PostgreSQL/MySQL   │
+                           │      MySQL         │
                            │   Database          │
                            └─────────────────────┘
 ```
@@ -480,7 +480,7 @@ LOG_LEVEL=info
 # データベース設定
 DB_CONNECTION=pgsql  # または mysql
 DB_HOST=127.0.0.1
-DB_PORT=5432  # PostgreSQL の場合
+DB_PORT=3306  # MySQL の場合
 DB_DATABASE=maji_kichi_meshi
 DB_USERNAME=your_db_user
 DB_PASSWORD=your_db_password
