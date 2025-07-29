@@ -218,7 +218,7 @@ class RankingApiNormalizedTest extends TestCase
 
         $errors = $response->json('errors');
         $this->assertArrayHasKey('shops', $errors);
-        $this->assertStringContainsString('10 items', $errors['shops'][0]);
+        $this->assertEquals('validation.max.array', $errors['shops'][0]);
     }
 
     public function test_user_can_update_own_ranking()

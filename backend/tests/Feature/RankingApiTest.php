@@ -316,7 +316,7 @@ class RankingApiTest extends TestCase
 
         $errors = $response->json('errors');
         $this->assertArrayHasKey('shops', $errors);
-        $this->assertStringContainsString('10 items', $errors['shops'][0]);
+        $this->assertEquals('validation.max.array', $errors['shops'][0]);
     }
 
     public function test_it_adjusts_positions_when_inserting_ranking()

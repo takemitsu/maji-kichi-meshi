@@ -98,8 +98,8 @@ class ShopImageTest extends TestCase
             'error' => 'Validation failed',
             'messages' => [
                 'images.0' => [
-                    'The images.0 field must be an image.',
-                    'The images.0 field must be a file of type: jpeg, png, jpg, gif, webp.',
+                    'validation.image',
+                    'validation.mimes',
                 ],
             ],
         ]);
