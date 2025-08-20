@@ -113,7 +113,7 @@
 <script setup lang="ts">
 const authStore = useAuthStore()
 
-// 認証済みユーザーは自動的にダッシュボードにリダイレクト
+// 認証済みユーザーは自動的にマイページにリダイレクト
 if (authStore.isLoggedIn) {
     await navigateTo('/dashboard')
 }

@@ -135,7 +135,7 @@ onMounted(async () => {
 
 // メタデータ設定
 useHead({
-    title: 'ダッシュボード - マジキチメシ',
-    meta: [{ name: 'description', content: 'マジキチメシのダッシュボードページ' }],
+    title: 'マイページ - マジキチメシ',
+    meta: [{ name: 'description', content: 'マジキチメシのマイページ' }],
 })
 </script>

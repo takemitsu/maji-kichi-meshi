@@ -10,9 +10,7 @@
                         <NuxtLink v-if="!authStore.isLoggedIn" to="/login" class="text-sm text-blue-600 hover:text-blue-800">
                             ログインして始める
                         </NuxtLink>
-                        <NuxtLink v-else to="/dashboard" class="text-sm text-blue-600 hover:text-blue-800">
-                            ダッシュボード
-                        </NuxtLink>
+                        <NuxtLink v-else to="/dashboard" class="text-sm text-blue-600 hover:text-blue-800">マイページ</NuxtLink>
                     </div>
                 </div>
 

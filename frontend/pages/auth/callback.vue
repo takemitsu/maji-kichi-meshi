@@ -41,7 +41,7 @@
                         </svg>
                     </div>
                     <h2 class="text-2xl font-bold text-green-900">認証が完了しました</h2>
-                    <p class="text-green-600">ダッシュボードにリダイレクト中...</p>
+                    <p class="text-green-600">マイページにリダイレクト中...</p>
                 </div>
             </div>
         </div>
@@ -104,7 +104,7 @@ onMounted(async () => {
         // 少し待ってからリダイレクト
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        // ダッシュボードにリダイレクト
+        // マイページにリダイレクト
         await navigateTo('/dashboard')
     } catch (err) {
         console.error('OAuth callback error:', err)
