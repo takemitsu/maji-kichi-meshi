@@ -256,7 +256,11 @@
                     </div>
 
                     <div v-if="recentReviews.length > 0" class="divide-y divide-gray-200">
-                        <div v-for="review in recentReviews" :key="review.id" class="px-6 py-4">
+                        <NuxtLink
+                            v-for="review in recentReviews"
+                            :key="review.id"
+                            :to="`/reviews/${review.id}`"
+                            class="block px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
                             <div class="flex items-start space-x-3">
                                 <UserAvatar
                                     :user-name="review.user?.name || 'ユーザー'"
@@ -277,7 +281,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </NuxtLink>
                     </div>
 
                     <div v-else class="px-6 py-8 text-center">
