@@ -463,3 +463,21 @@ sudo -u www-data php artisan config:clear
 sudo -u www-data php artisan route:clear
 sudo -u www-data php artisan cache:clear
 ```
+
+## Hooks 設定
+
+### Claude Code Hooks 動作確認
+
+このプロジェクトでは Claude Code の UserPromptSubmit hook が設定されています。
+
+**動作確認方法**:
+Claude に「hooksは機能していますか？」または「<user-prompt-submit-hook>の内容を教えて」と質問してください。
+
+正常に動作している場合、Claude は以下の内容を確認できると回答します：
+- 実装前確認の注意事項
+- セキュリティ制限（フルパス禁止、深い遡り禁止、設定ファイル禁止）
+
+**設定ファイル**:
+- `.claude/settings.json` - 共有可能なhooks設定
+- `.claude/prompt-hook.sh` - 実行されるスクリプト
+- `.claude/settings.local.json` - ローカル固有のpermissions設定
