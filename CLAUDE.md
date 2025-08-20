@@ -467,6 +467,28 @@ sudo -u www-data php artisan route:clear
 sudo -u www-data php artisan cache:clear
 ```
 
+### バックアップ管理
+
+**バックアップ一覧確認**：
+```bash
+ls -la /var/www/ | grep backup
+```
+
+**容量確認**：
+```bash
+du -sh /var/www/*.backup.*
+```
+
+**古いバックアップ削除**：
+```bash
+# 7日より古いバックアップを自動削除
+sudo find /var/www/ -name "*.backup.*" -type d -mtime +7 -exec rm -rf {} \;
+
+# 特定日付のバックアップを削除（例：20250729）
+sudo rm -rf /var/www/maji-kichi-backend.backup.20250729_*
+sudo rm -rf /var/www/maji-kichi-frontend.backup.20250729_*
+```
+
 ## Hooks 設定
 
 ### Claude Code Hooks 動作確認
