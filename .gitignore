@@ -57,7 +57,5 @@ node_modules/
 vendor/
 
 # Serena MCP Server
-.serena/logs/
-.serena/memories/
-.serena/.cache/
-.serena/temp/
+.serena/*
+!.serena/project.yml
