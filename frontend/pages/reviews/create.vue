@@ -414,24 +414,13 @@ const submitReview = async () => {
             const errorObj = err as { status: number; data: { error?: string } | null }
 
             if (errorObj.status === 422) {
-                // バックエンドからのエラーメッセージを確認
-                const errorData = errorObj.data
-                if (errorData?.error?.includes('You have already reviewed')) {
-                    setError({
-                        title: '重複レビュー',
-                        message:
-                            'この店舗には既にレビューを投稿済みです。既存のレビューを編集するか、別の店舗を選択してください。',
-                        retryable: false,
-                        retryAction: null,
-                    })
-                } else {
-                    setError({
-                        title: '入力エラー',
-                        message: 'フォームの入力内容を確認してください。必須項目が未入力の可能性があります。',
-                        retryable: false,
-                        retryAction: null,
-                    })
-                }
+                // バックエンドからのバリデーションエラー
+                setError({
+                    title: '入力エラー',
+                    message: 'フォームの入力内容を確認してください。必須項目が未入力の可能性があります。',
+                    retryable: false,
+                    retryAction: null,
+                })
             } else if (errorObj.status === 401) {
                 setError({
                     title: '認証エラー',

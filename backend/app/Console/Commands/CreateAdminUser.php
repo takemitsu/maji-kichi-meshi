@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class CreateAdminUser extends Command
@@ -36,10 +35,11 @@ class CreateAdminUser extends Command
 
         // メールアドレス取得
         $email = $this->option('email') ?: $this->ask('Email address');
-        
+
         // 既存ユーザーチェック
         if (User::where('email', $email)->exists()) {
             $this->error("User with email '{$email}' already exists!");
+
             return Command::FAILURE;
         }
 
@@ -48,12 +48,13 @@ class CreateAdminUser extends Command
 
         // パスワード取得
         $password = $this->option('password') ?: $this->secret('Password (min 8 characters)');
-        
+
         // パスワード確認（オプション指定時以外）
         if (!$this->option('password')) {
             $passwordConfirm = $this->secret('Confirm password');
             if ($password !== $passwordConfirm) {
                 $this->error('Passwords do not match!');
+
                 return Command::FAILURE;
             }
         }
@@ -79,6 +80,7 @@ class CreateAdminUser extends Command
             foreach ($validator->errors()->all() as $error) {
                 $this->error($error);
             }
+
             return Command::FAILURE;
         }
 
@@ -104,6 +106,7 @@ class CreateAdminUser extends Command
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->error("Failed to create user: {$e->getMessage()}");
+
             return Command::FAILURE;
         }
     }

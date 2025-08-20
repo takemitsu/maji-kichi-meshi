@@ -22,7 +22,7 @@ class AdminSeeder extends Seeder
                 'role' => 'admin',
                 'status' => 'active',
             ]);
-            
+
             $this->command->info('Development admin user created successfully.');
         } else {
             $this->command->info('AdminSeeder: For production, use "php artisan admin:create" command instead.');

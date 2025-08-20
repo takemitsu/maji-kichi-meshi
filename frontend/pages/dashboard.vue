@@ -8,7 +8,9 @@
 
             <!-- 統計情報 -->
             <div class="grid grid-cols-2 gap-4 md:gap-6 mb-8">
-                <NuxtLink :to="`/reviews?user_id=${authStore.user?.id}`" class="bg-white rounded-lg shadow p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer">
+                <NuxtLink
+                    :to="`/reviews?user_id=${authStore.user?.id}`"
+                    class="bg-white rounded-lg shadow p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
@@ -37,7 +39,9 @@
                     </div>
                 </NuxtLink>
 
-                <NuxtLink to="/rankings" class="bg-white rounded-lg shadow p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer">
+                <NuxtLink
+                    to="/rankings"
+                    class="bg-white rounded-lg shadow p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
@@ -71,7 +75,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow p-4 md:p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">ランキング</h3>
-                    <NuxtLink to="/rankings/public" class="btn-primary inline-block text-center w-full">ランキングを見る</NuxtLink>
+                    <NuxtLink to="/rankings/public" class="btn-primary inline-block text-center w-full">
+                        ランキングを見る
+                    </NuxtLink>
                 </div>
 
                 <div class="bg-white rounded-lg shadow p-4 md:p-6">

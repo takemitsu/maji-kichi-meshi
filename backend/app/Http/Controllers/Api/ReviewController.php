@@ -112,22 +112,7 @@ class ReviewController extends Controller
             ], 422);
         }
 
-        // Check if user already reviewed this shop
-        $existingReview = Review::where('user_id', Auth::id())
-            ->where('shop_id', $request->shop_id)
-            ->first();
-
-        if ($existingReview) {
-            \Log::warning('Duplicate review attempt', [
-                'user_id' => Auth::id(),
-                'shop_id' => $request->shop_id,
-                'existing_review_id' => $existingReview->id,
-            ]);
-
-            return response()->json([
-                'error' => 'You have already reviewed this shop. Please update your existing review instead.',
-            ], 422);
-        }
+        // Multiple reviews per shop are allowed - no duplicate check needed
 
         $data = $validator->validated();
         $data['user_id'] = Auth::id();

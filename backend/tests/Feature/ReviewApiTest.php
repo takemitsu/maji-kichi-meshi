@@ -180,7 +180,7 @@ class ReviewApiTest extends TestCase
         $this->assertArrayHasKey('visited_at', $errors);
     }
 
-    public function test_it_prevents_duplicate_reviews_for_same_shop()
+    public function test_it_allows_multiple_reviews_for_same_shop()
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -192,7 +192,7 @@ class ReviewApiTest extends TestCase
             'shop_id' => $shop->id,
         ]);
 
-        // Try to create second review for same shop
+        // Create second review for same shop (should be allowed)
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/reviews', [
@@ -202,10 +202,25 @@ class ReviewApiTest extends TestCase
             'visited_at' => '2024-01-01',
         ]);
 
-        $response->assertStatus(422)
-            ->assertJson([
-                'error' => 'You have already reviewed this shop. Please update your existing review instead.',
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'rating',
+                    'repeat_intention',
+                    'visited_at',
+                    'user' => ['id', 'name'],
+                    'shop' => ['id', 'name'],
+                ],
             ]);
+
+        // Verify both reviews exist in database
+        $this->assertDatabaseCount('reviews', 2);
+        $this->assertDatabaseHas('reviews', [
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'rating' => 3,
+        ]);
     }
 
     public function test_user_can_update_own_review()

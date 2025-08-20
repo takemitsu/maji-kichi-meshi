@@ -67,7 +67,11 @@
                         <!-- ソーシャルリンク（将来用） -->
                         <div class="flex space-x-4">
                             <!-- GitHub -->
-                            <a href="https://github.com/takemitsu/maji-kichi-meshi" class="text-gray-400 hover:text-gray-700" target="_blank" rel="noopener noreferrer">
+                            <a
+                                href="https://github.com/takemitsu/maji-kichi-meshi"
+                                class="text-gray-400 hover:text-gray-700"
+                                target="_blank"
+                                rel="noopener noreferrer">
                                 <span class="sr-only">GitHub</span>
                                 <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
                                     <path
