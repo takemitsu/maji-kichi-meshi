@@ -22,8 +22,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'profile_image' => $this->hasProfileImage() ? [
-                'urls' => $this->getProfileImageUrls(),
+            'profile_image' => $this->resource->hasProfileImage() ? [
+                'urls' => $this->resource->getProfileImageUrls(),
                 'uploaded_at' => $this->profile_image_uploaded_at,
             ] : null,
             'created_at' => $this->created_at,

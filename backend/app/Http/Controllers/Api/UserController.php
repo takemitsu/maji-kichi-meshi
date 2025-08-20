@@ -16,8 +16,8 @@ class UserController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'created_at' => $user->created_at,
-            'profile_image' => $user->profile_image ? [
-                'urls' => $user->profile_image->urls,
+            'profile_image' => $user->hasProfileImage() ? [
+                'urls' => $user->getProfileImageUrls(),
             ] : null,
         ]);
     }

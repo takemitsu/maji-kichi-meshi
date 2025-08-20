@@ -100,7 +100,7 @@ class RankingResource extends Resource
                     ->label('タイトル')
                     ->searchable()
                     ->limit(30)
-                    ->tooltip(fn (Ranking $record): ?string => $record->title),
+                    ->tooltip(fn (Ranking $record): string => $record->title),
                 Tables\Columns\TextColumn::make('description')
                     ->label('説明')
                     ->limit(40)
