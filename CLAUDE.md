@@ -95,6 +95,9 @@ php artisan test --coverage  # カバレッジ付きテスト実行
 # コード品質ツール
 composer pint           # Laravel Pint (コードフォーマット)
 composer stan           # PHPStan (静的解析)
+
+# PHPStan 詳細実行（推奨）
+./vendor/bin/phpstan analyse --memory-limit=1024M  # メモリ不足対策
 ```
 
 ### Frontend (Vue/Nuxt)

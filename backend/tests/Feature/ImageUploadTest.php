@@ -276,4 +276,70 @@ class ImageUploadTest extends TestCase
         Storage::disk('public')->assertMissing($image->medium_path);
         Storage::disk('public')->assertMissing($image->large_path);
     }
+
+    public function test_multiple_reviews_with_images_for_same_shop()
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        // Create first review with images
+        $image1 = UploadedFile::fake()->image('first-visit.jpg', 100, 100);
+        $image2 = UploadedFile::fake()->image('first-visit-2.jpg', 100, 100);
+
+        $response1 = $this->actingAs($user, 'api')->postJson('/api/reviews', [
+            'shop_id' => $shop->id,
+            'rating' => 4,
+            'repeat_intention' => 'yes',
+            'visited_at' => '2024-01-01',
+            'memo' => 'First visit',
+            'images' => [$image1, $image2],
+        ]);
+
+        $response1->assertStatus(201);
+        $firstReviewId = $response1->json('data.id');
+
+        // Create second review with different images
+        $image3 = UploadedFile::fake()->image('second-visit.jpg', 100, 100);
+        $image4 = UploadedFile::fake()->image('second-visit-2.jpg', 100, 100);
+        $image5 = UploadedFile::fake()->image('second-visit-3.jpg', 100, 100);
+
+        $response2 = $this->actingAs($user, 'api')->postJson('/api/reviews', [
+            'shop_id' => $shop->id,
+            'rating' => 5,
+            'repeat_intention' => 'yes',
+            'visited_at' => '2024-02-01',
+            'memo' => 'Second visit',
+            'images' => [$image3, $image4, $image5],
+        ]);
+
+        $response2->assertStatus(201);
+        $secondReviewId = $response2->json('data.id');
+
+        // Verify both reviews exist with their respective images
+        $this->assertDatabaseCount('reviews', 2);
+        $this->assertDatabaseCount('review_images', 5); // 2 + 3 images
+
+        // Verify first review has 2 images
+        $firstReviewImages = ReviewImage::where('review_id', $firstReviewId)->count();
+        $this->assertEquals(2, $firstReviewImages);
+
+        // Verify second review has 3 images
+        $secondReviewImages = ReviewImage::where('review_id', $secondReviewId)->count();
+        $this->assertEquals(3, $secondReviewImages);
+
+        // Verify both reviews are for the same shop but different
+        $this->assertDatabaseHas('reviews', [
+            'id' => $firstReviewId,
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'memo' => 'First visit',
+        ]);
+
+        $this->assertDatabaseHas('reviews', [
+            'id' => $secondReviewId,
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'memo' => 'Second visit',
+        ]);
+    }
 }

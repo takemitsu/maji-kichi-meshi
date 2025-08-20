@@ -223,6 +223,146 @@ class ReviewApiTest extends TestCase
         ]);
     }
 
+    public function test_user_can_create_multiple_reviews_different_dates()
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Create first review for 2024-01-01
+        $response1 = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/reviews', [
+            'shop_id' => $shop->id,
+            'rating' => 4,
+            'repeat_intention' => 'yes',
+            'visited_at' => '2024-01-01',
+            'memo' => 'First visit',
+        ]);
+
+        $response1->assertStatus(201);
+
+        // Create second review for 2024-02-01
+        $response2 = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/reviews', [
+            'shop_id' => $shop->id,
+            'rating' => 5,
+            'repeat_intention' => 'yes',
+            'visited_at' => '2024-02-01',
+            'memo' => 'Second visit - even better!',
+        ]);
+
+        $response2->assertStatus(201);
+
+        // Create third review for 2024-03-01
+        $response3 = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/reviews', [
+            'shop_id' => $shop->id,
+            'rating' => 3,
+            'repeat_intention' => 'maybe',
+            'visited_at' => '2024-03-01',
+            'memo' => 'Third visit - not as good this time',
+        ]);
+
+        $response3->assertStatus(201);
+
+        // Verify all three reviews exist in database
+        $this->assertDatabaseCount('reviews', 3);
+
+        // Verify each review has correct data
+        $this->assertDatabaseHas('reviews', [
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'rating' => 4,
+            'visited_at' => '2024-01-01 00:00:00',
+            'memo' => 'First visit',
+        ]);
+
+        $this->assertDatabaseHas('reviews', [
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'rating' => 5,
+            'visited_at' => '2024-02-01 00:00:00',
+            'memo' => 'Second visit - even better!',
+        ]);
+
+        $this->assertDatabaseHas('reviews', [
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'rating' => 3,
+            'visited_at' => '2024-03-01 00:00:00',
+            'memo' => 'Third visit - not as good this time',
+        ]);
+    }
+
+    public function test_multiple_reviews_appear_in_shop_review_list()
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Create multiple reviews for the same shop
+        $review1 = Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'rating' => 4,
+            'visited_at' => '2024-01-01 00:00:00',
+            'memo' => 'First review',
+        ]);
+
+        $review2 = Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'rating' => 5,
+            'visited_at' => '2024-02-01 00:00:00',
+            'memo' => 'Second review',
+        ]);
+
+        // Get reviews for the shop
+        $response = $this->getJson("/api/reviews?shop_id={$shop->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.memo', 'Second review') // Most recent first
+            ->assertJsonPath('data.1.memo', 'First review');
+    }
+
+    public function test_multiple_reviews_appear_in_user_review_list()
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Create multiple reviews for the same shop by the same user
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'rating' => 4,
+            'visited_at' => '2024-01-01 00:00:00',
+            'memo' => 'First review',
+        ]);
+
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'rating' => 5,
+            'visited_at' => '2024-02-01 00:00:00',
+            'memo' => 'Second review',
+        ]);
+
+        // Get user's reviews
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/my-reviews');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.memo', 'Second review') // Most recent first
+            ->assertJsonPath('data.1.memo', 'First review');
+    }
+
     public function test_user_can_update_own_review()
     {
         $user = User::factory()->create();
