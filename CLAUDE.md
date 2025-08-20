@@ -477,6 +477,9 @@ Claude に「hooksは機能していますか？」または「<user-prompt-subm
 - 実装前確認の注意事項
 - セキュリティ制限（フルパス禁止、深い遡り禁止、設定ファイル禁止、末尾改行なし禁止）
 
+**ユーザー側でhook動作を可視化したい場合**:
+`.claude/prompt-hook.sh` 内のコメントアウトされたecho文をコメント解除すると、Claude が毎回回答の前にhook内容を表示するようになります。（ただし毎回表示されるため通常は不要）
+
 **設定ファイル**:
 - `.claude/settings.json` - 共有可能なhooks設定
 - `.claude/prompt-hook.sh` - 実行されるスクリプト
