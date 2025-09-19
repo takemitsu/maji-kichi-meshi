@@ -117,7 +117,7 @@
                                         class="relative group cursor-pointer"
                                         @click="openImageModal(image)">
                                         <img
-                                            :src="image.urls.large"
+                                            :src="image.urls.original"
                                             :alt="shop.name"
                                             class="w-full h-64 object-cover rounded-lg transition-transform duration-200 group-hover:scale-105 shadow-md" />
                                         <div
@@ -315,7 +315,7 @@
                 @click="closeImageModal">
                 <div class="relative max-w-4xl max-h-[90vh] p-4">
                     <img
-                        :src="selectedImage.urls.large"
+                        :src="selectedImage.urls.original"
                         :alt="shop?.name"
                         class="max-w-full max-h-full object-contain rounded-lg"
                         @click.stop />

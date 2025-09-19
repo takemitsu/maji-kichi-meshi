@@ -215,7 +215,7 @@
             @click="closeImageModal">
             <div class="relative max-w-4xl max-h-full">
                 <img
-                    :src="selectedImage.urls.large"
+                    :src="selectedImage.urls.original"
                     :alt="`レビュー画像 ${selectedImage.id}`"
                     class="max-w-full max-h-full object-contain rounded-lg"
                     @click.stop />

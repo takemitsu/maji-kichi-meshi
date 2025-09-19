@@ -24,6 +24,12 @@ class ReviewImage extends Model
         'mime_type',
         'moderation_status',
         'moderation_notes',
+        'sizes_generated',
+        'original_path',
+    ];
+
+    protected $casts = [
+        'sizes_generated' => 'array',
     ];
 
     /**
@@ -74,7 +80,7 @@ class ReviewImage extends Model
     }
 
     /**
-     * Get full URL for large image
+     * Get full URL for large image (legacy)
      */
     public function getLargeUrlAttribute()
     {
@@ -87,15 +93,29 @@ class ReviewImage extends Model
     }
 
     /**
+     * Get full URL for original image
+     */
+    public function getOriginalUrlAttribute()
+    {
+        $appUrl = config('app.url');
+
+        return "{$appUrl}/api/images/reviews/{$this->id}/original";
+    }
+
+    /**
      * Get all image URLs as array
      */
     public function getUrlsAttribute()
     {
+        $appUrl = config('app.url');
+
         return [
-            'thumbnail' => $this->thumbnail_url,
-            'small' => $this->small_url,
-            'medium' => $this->medium_url,
-            'large' => $this->large_url,
+            'thumbnail' => "{$appUrl}/api/images/reviews/{$this->id}/thumbnail",
+            'small' => "{$appUrl}/api/images/reviews/{$this->id}/small",
+            'medium' => "{$appUrl}/api/images/reviews/{$this->id}/medium",
+            'original' => "{$appUrl}/api/images/reviews/{$this->id}/original",
+            // 後方互換性のためlargeも提供（originalと同じ）
+            'large' => "{$appUrl}/api/images/reviews/{$this->id}/original",
         ];
     }
 
@@ -126,9 +146,11 @@ class ReviewImage extends Model
             'thumbnail_path' => $uploadResult['paths']['thumbnail'],
             'small_path' => $uploadResult['paths']['small'],
             'medium_path' => $uploadResult['paths']['medium'],
-            'large_path' => $uploadResult['paths']['large'],
+            'large_path' => null, // largeサイズは廃止
             'file_size' => $uploadResult['size'],
             'mime_type' => $uploadResult['mime_type'],
+            'original_path' => $uploadResult['original_path'],
+            'sizes_generated' => $uploadResult['sizes_generated'],
         ]);
     }
 
@@ -142,11 +164,32 @@ class ReviewImage extends Model
             $this->small_path,
             $this->medium_path,
             $this->large_path,
+            $this->original_path,
         ]);
 
         $imageService = new ImageService;
 
         return $imageService->deleteImages($paths);
+    }
+
+    /**
+     * Check if specific size is generated
+     */
+    public function isSizeGenerated(string $size): bool
+    {
+        $sizesGenerated = $this->sizes_generated ?? [];
+
+        return isset($sizesGenerated[$size]) && $sizesGenerated[$size] === true;
+    }
+
+    /**
+     * Mark specific size as generated
+     */
+    public function markSizeAsGenerated(string $size): void
+    {
+        $sizesGenerated = $this->sizes_generated ?? [];
+        $sizesGenerated[$size] = true;
+        $this->update(['sizes_generated' => $sizesGenerated]);
     }
 
     /**

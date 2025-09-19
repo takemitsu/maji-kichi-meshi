@@ -53,13 +53,19 @@ class ImageUploadTest extends TestCase
             $this->assertNotNull($image->thumbnail_path);
             $this->assertNotNull($image->small_path);
             $this->assertNotNull($image->medium_path);
-            $this->assertNotNull($image->large_path);
+            $this->assertNotNull($image->original_path);
+            $this->assertNotNull($image->sizes_generated);
 
-            // Check files exist in storage
+            // Check thumbnail is generated immediately, others are not
+            $this->assertTrue($image->isSizeGenerated('thumbnail'));
+            $this->assertFalse($image->isSizeGenerated('small'));
+            $this->assertFalse($image->isSizeGenerated('medium'));
+
+            // Check only thumbnail and original files exist in storage
             Storage::disk('public')->assertExists($image->thumbnail_path);
-            Storage::disk('public')->assertExists($image->small_path);
-            Storage::disk('public')->assertExists($image->medium_path);
-            Storage::disk('public')->assertExists($image->large_path);
+            Storage::disk('public')->assertExists($image->original_path);
+            Storage::disk('public')->assertMissing($image->small_path);
+            Storage::disk('public')->assertMissing($image->medium_path);
         }
     }
 
@@ -133,7 +139,8 @@ class ImageUploadTest extends TestCase
             'thumbnail_path' => $uploadResult['paths']['thumbnail'],
             'small_path' => $uploadResult['paths']['small'],
             'medium_path' => $uploadResult['paths']['medium'],
-            'large_path' => $uploadResult['paths']['large'],
+            'original_path' => $uploadResult['original_path'],
+            'sizes_generated' => $uploadResult['sizes_generated'],
             'file_size' => $uploadResult['size'],
             'mime_type' => $uploadResult['mime_type'],
         ]);
@@ -151,7 +158,14 @@ class ImageUploadTest extends TestCase
         Storage::disk('public')->assertMissing($image->thumbnail_path);
         Storage::disk('public')->assertMissing($image->small_path);
         Storage::disk('public')->assertMissing($image->medium_path);
-        Storage::disk('public')->assertMissing($image->large_path);
+        Storage::disk('public')->assertMissing($image->original_path);
+        // small and medium may not exist if they were never generated
+        if ($image->isSizeGenerated('small')) {
+            Storage::disk('public')->assertMissing($image->small_path);
+        }
+        if ($image->isSizeGenerated('medium')) {
+            Storage::disk('public')->assertMissing($image->medium_path);
+        }
     }
 
     public function test_test_unauthorized_user_cannot_upload_images()
@@ -232,12 +246,19 @@ class ImageUploadTest extends TestCase
         $this->assertArrayHasKey('thumbnail', $result['paths']);
         $this->assertArrayHasKey('small', $result['paths']);
         $this->assertArrayHasKey('medium', $result['paths']);
-        $this->assertArrayHasKey('large', $result['paths']);
+        $this->assertArrayHasKey('original_path', $result);
+        $this->assertArrayHasKey('sizes_generated', $result);
 
-        // Check that all files were created
-        foreach ($result['paths'] as $path) {
-            Storage::disk('public')->assertExists($path);
-        }
+        // Check that only thumbnail and original files were created
+        Storage::disk('public')->assertExists($result['paths']['thumbnail']);
+        Storage::disk('public')->assertExists($result['original_path']);
+        Storage::disk('public')->assertMissing($result['paths']['small']);
+        Storage::disk('public')->assertMissing($result['paths']['medium']);
+
+        // Check that only thumbnail is marked as generated
+        $this->assertTrue($result['sizes_generated']['thumbnail']);
+        $this->assertFalse($result['sizes_generated']['small'] ?? true);
+        $this->assertFalse($result['sizes_generated']['medium'] ?? true);
     }
 
     public function test_test_review_images_deleted_when_review_deleted()
@@ -257,7 +278,8 @@ class ImageUploadTest extends TestCase
             'thumbnail_path' => $uploadResult['paths']['thumbnail'],
             'small_path' => $uploadResult['paths']['small'],
             'medium_path' => $uploadResult['paths']['medium'],
-            'large_path' => $uploadResult['paths']['large'],
+            'original_path' => $uploadResult['original_path'],
+            'sizes_generated' => $uploadResult['sizes_generated'],
             'file_size' => $uploadResult['size'],
             'mime_type' => $uploadResult['mime_type'],
         ]);
@@ -274,7 +296,14 @@ class ImageUploadTest extends TestCase
         Storage::disk('public')->assertMissing($image->thumbnail_path);
         Storage::disk('public')->assertMissing($image->small_path);
         Storage::disk('public')->assertMissing($image->medium_path);
-        Storage::disk('public')->assertMissing($image->large_path);
+        Storage::disk('public')->assertMissing($image->original_path);
+        // small and medium may not exist if they were never generated
+        if ($image->isSizeGenerated('small')) {
+            Storage::disk('public')->assertMissing($image->small_path);
+        }
+        if ($image->isSizeGenerated('medium')) {
+            Storage::disk('public')->assertMissing($image->medium_path);
+        }
     }
 
     public function test_multiple_reviews_with_images_for_same_shop()

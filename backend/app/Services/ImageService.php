@@ -16,7 +16,7 @@ class ImageService
         'thumbnail' => ['width' => 150, 'height' => 150],
         'small' => ['width' => 400, 'height' => 300],
         'medium' => ['width' => 800, 'height' => 600],
-        'large' => ['width' => 1200, 'height' => 900],
+        // largeサイズを削除（originalを使用）
     ];
 
     public function __construct()
@@ -25,7 +25,7 @@ class ImageService
     }
 
     /**
-     * 画像をアップロードして複数サイズを生成
+     * 画像をアップロードしてthumbnailのみ生成（遅延生成対応）
      */
     public function uploadAndResize(UploadedFile $file, string $directory = 'reviews'): array
     {
@@ -35,39 +35,32 @@ class ImageService
 
         // 保存先ディレクトリ
         $basePath = "images/{$directory}";
+        $originalPath = "{$basePath}/original/{$filename}";
 
-        // 元画像を読み込み
+        // オリジナル画像を保存
+        $originalDir = "{$basePath}/original";
+        if (!Storage::disk('public')->exists($originalDir)) {
+            Storage::disk('public')->makeDirectory($originalDir);
+        }
+
+        $file->storeAs("{$basePath}/original", $filename, 'public');
+
+        // thumbnailのみ即座に生成
         $image = $this->manager->read($file->getPathname());
+        $thumbnailPath = $this->generateSingleSize($image, $basePath, $filename, 'thumbnail');
 
         $paths = [];
-
-        // 各サイズで画像を生成・保存
-        foreach ($this->sizes as $size => $dimensions) {
-            $resizedImage = clone $image;
-
-            // アスペクト比を保持してリサイズ
-            $resizedImage->scaleDown(
-                width: $dimensions['width'],
-                height: $dimensions['height']
-            );
-
-            // ファイルパス
-            $sizePath = "{$basePath}/{$size}";
-            $fullPath = "{$sizePath}/{$filename}";
-
-            // ディレクトリが存在しない場合は作成
-            if (!Storage::disk('public')->exists($sizePath)) {
-                Storage::disk('public')->makeDirectory($sizePath);
-            }
-
-            // 画像を保存
-            Storage::disk('public')->put(
-                $fullPath,
-                $resizedImage->toJpeg(quality: 85)->toString()
-            );
-
-            $paths[$size] = $fullPath;
+        if ($thumbnailPath) {
+            $paths['thumbnail'] = $thumbnailPath;
         }
+
+        // 他のサイズ用のパスを予約（実際の生成は遅延）
+        foreach (['small', 'medium'] as $size) {
+            $paths[$size] = "{$basePath}/{$size}/{$filename}";
+        }
+
+        // originalパスも追加
+        $paths['original'] = $originalPath;
 
         return [
             'filename' => $filename,
@@ -75,7 +68,45 @@ class ImageService
             'paths' => $paths,
             'size' => $file->getSize(),
             'mime_type' => $file->getMimeType(),
+            'original_path' => $originalPath,
+            'sizes_generated' => ['thumbnail' => true, 'small' => false, 'medium' => false],
         ];
+    }
+
+    /**
+     * 特定サイズの画像を生成
+     */
+    public function generateSingleSize($image, string $basePath, string $filename, string $size): ?string
+    {
+        if (!isset($this->sizes[$size])) {
+            return null;
+        }
+
+        $dimensions = $this->sizes[$size];
+        $resizedImage = clone $image;
+
+        // アスペクト比を保持してリサイズ
+        $resizedImage->scaleDown(
+            width: $dimensions['width'],
+            height: $dimensions['height']
+        );
+
+        // ファイルパス
+        $sizePath = "{$basePath}/{$size}";
+        $fullPath = "{$sizePath}/{$filename}";
+
+        // ディレクトリが存在しない場合は作成
+        if (!Storage::disk('public')->exists($sizePath)) {
+            Storage::disk('public')->makeDirectory($sizePath);
+        }
+
+        // 画像を保存
+        Storage::disk('public')->put(
+            $fullPath,
+            $resizedImage->toJpeg(quality: 85)->toString()
+        );
+
+        return $fullPath;
     }
 
     /**

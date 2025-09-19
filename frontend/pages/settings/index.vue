@@ -101,7 +101,7 @@ const updateDisplayName = async () => {
 
 // プロフィール画像アップロード時の処理
 const handleImageUploaded = (imageUrls: Record<string, string>) => {
-    currentProfileImageUrl.value = imageUrls.medium || imageUrls.large || null
+    currentProfileImageUrl.value = imageUrls.medium || imageUrls.original || null
 
     // 認証ストアのユーザー情報を更新
     authStore.updateUser({

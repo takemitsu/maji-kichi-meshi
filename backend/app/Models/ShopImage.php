@@ -25,11 +25,14 @@ class ShopImage extends Model
         'moderated_by',
         'moderated_at',
         'sort_order',
+        'sizes_generated',
+        'original_path',
     ];
 
     protected $casts = [
         'image_sizes' => 'array',
         'moderated_at' => 'datetime',
+        'sizes_generated' => 'array',
     ];
 
     protected $hidden = [
@@ -102,7 +105,16 @@ class ShopImage extends Model
 
     public function getUrlsAttribute(): array
     {
-        return $this->image_sizes ?? [];
+        $appUrl = config('app.url');
+
+        return [
+            'thumbnail' => "{$appUrl}/api/images/shops/{$this->id}/thumbnail",
+            'small' => "{$appUrl}/api/images/shops/{$this->id}/small",
+            'medium' => "{$appUrl}/api/images/shops/{$this->id}/medium",
+            'original' => "{$appUrl}/api/images/shops/{$this->id}/original",
+            // 後方互換性のためlargeも提供（originalと同じ）
+            'large' => "{$appUrl}/api/images/shops/{$this->id}/original",
+        ];
     }
 
     public function getThumbnailUrlAttribute(): ?string
@@ -222,6 +234,26 @@ class ShopImage extends Model
 
             return false;
         }
+    }
+
+    /**
+     * Check if specific size is generated
+     */
+    public function isSizeGenerated(string $size): bool
+    {
+        $sizesGenerated = $this->sizes_generated ?? [];
+
+        return isset($sizesGenerated[$size]) && $sizesGenerated[$size] === true;
+    }
+
+    /**
+     * Mark specific size as generated
+     */
+    public function markSizeAsGenerated(string $size): void
+    {
+        $sizesGenerated = $this->sizes_generated ?? [];
+        $sizesGenerated[$size] = true;
+        $this->update(['sizes_generated' => $sizesGenerated]);
     }
 
     protected static function boot()

@@ -49,6 +49,13 @@ Route::get('/users/{user}/info', [UserController::class, 'info']);
 Route::get('/images/{size}/{filename}', [ImageController::class, 'serve'])
     ->middleware('throttle:image-serving');
 
+// 遅延生成対応の画像配信エンドポイント
+Route::get('/images/{type}/{id}/{size}', [ImageController::class, 'lazyServe'])
+    ->where('type', 'reviews|shops')
+    ->where('id', '[0-9]+')
+    ->where('size', 'thumbnail|small|medium|original')
+    ->middleware('throttle:image-serving');
+
 // Protected routes (authentication required)
 Route::middleware('auth:api')->group(function () {
     // Shop management (authenticated users can create/update shops)
