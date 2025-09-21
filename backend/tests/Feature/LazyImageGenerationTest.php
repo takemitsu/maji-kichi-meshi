@@ -10,6 +10,8 @@ use App\Services\LazyImageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\ImageManager;
 use Tests\TestCase;
 
 class LazyImageGenerationTest extends TestCase
@@ -31,7 +33,12 @@ class LazyImageGenerationTest extends TestCase
         // テスト用のストレージ設定
         Storage::fake('public');
 
-        $this->lazyImageService = new LazyImageService;
+        // ImageManagerをDIコンテナに登録（テスト環境用）
+        $this->app->singleton(ImageManager::class, function () {
+            return new ImageManager(new Driver);
+        });
+
+        $this->lazyImageService = app(LazyImageService::class);
 
         // テストデータ作成
         $this->user = User::factory()->create();
@@ -172,17 +179,17 @@ class LazyImageGenerationTest extends TestCase
         $reviewImage = ReviewImage::createFromUpload($this->review->id, $testImage);
 
         // thumbnailはすでに生成済み
-        $response = $this->get("/api/images/reviews/{$reviewImage->id}/thumbnail");
+        $response = $this->get("/api/images/reviews/thumbnail/{$reviewImage->filename}");
         $response->assertOk();
         $response->assertHeader('Content-Type', 'image/jpeg');
 
         // originalも取得できる
-        $response = $this->get("/api/images/reviews/{$reviewImage->id}/original");
+        $response = $this->get("/api/images/reviews/original/{$reviewImage->filename}");
         $response->assertOk();
         $response->assertHeader('Content-Type', 'image/jpeg');
 
         // smallは初回アクセス時に生成される
-        $response = $this->get("/api/images/reviews/{$reviewImage->id}/small");
+        $response = $this->get("/api/images/reviews/small/{$reviewImage->filename}");
         $response->assertOk();
         $response->assertHeader('Content-Type', 'image/jpeg');
 
@@ -194,7 +201,7 @@ class LazyImageGenerationTest extends TestCase
     /** @test */
     public function it_returns_404_for_non_existent_images()
     {
-        $response = $this->get('/api/images/reviews/99999/thumbnail');
+        $response = $this->get('/api/images/reviews/thumbnail/nonexistent.jpg');
         $response->assertNotFound();
     }
 
@@ -208,7 +215,7 @@ class LazyImageGenerationTest extends TestCase
         $reviewImage = ReviewImage::createFromUpload($this->review->id, $testImage);
 
         // 無効なサイズパラメータ（ルートパターンに合わないため404）
-        $response = $this->get("/api/images/reviews/{$reviewImage->id}/invalid");
+        $response = $this->get("/api/images/reviews/invalid/{$reviewImage->filename}");
         $response->assertNotFound();
     }
 
@@ -225,7 +232,7 @@ class LazyImageGenerationTest extends TestCase
         $reviewImage->update(['moderation_status' => 'rejected']);
 
         // アクセスが拒否されるか確認
-        $response = $this->get("/api/images/reviews/{$reviewImage->id}/thumbnail");
+        $response = $this->get("/api/images/reviews/thumbnail/{$reviewImage->filename}");
         $response->assertStatus(403);
     }
 }

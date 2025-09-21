@@ -6,7 +6,6 @@ use App\Models\ReviewImage;
 use App\Models\ShopImage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
 class LazyImageService
@@ -14,14 +13,14 @@ class LazyImageService
     private ImageManager $manager;
 
     private array $sizes = [
-        'thumbnail' => ['width' => 150, 'height' => 150],
+        'thumbnail' => ['width' => 100, 'height' => 100],
         'small' => ['width' => 400, 'height' => 300],
         'medium' => ['width' => 800, 'height' => 600],
     ];
 
-    public function __construct()
+    public function __construct(ImageManager $manager)
     {
-        $this->manager = new ImageManager(new Driver);
+        $this->manager = $manager;
     }
 
     /**
@@ -98,8 +97,8 @@ class LazyImageService
                 return null;
             }
 
-            // ファイルロック
-            $lockFile = storage_path("app/locks/image_generation_{$model->id}_{$size}.lock");
+            // ファイルロック（ファイル名ベース）
+            $lockFile = storage_path("app/locks/image_generation_{$model->filename}_{$size}.lock");
             $lockHandle = fopen($lockFile, 'w');
 
             if (!flock($lockHandle, LOCK_EX | LOCK_NB)) {

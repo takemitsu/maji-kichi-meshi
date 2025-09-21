@@ -70,8 +70,8 @@ const showSuccess = ref(false)
 const fetchProfileImageUrl = async () => {
     try {
         const profile = await $api.profile.get()
-        if (profile.data.profile_image?.urls?.medium) {
-            currentProfileImageUrl.value = profile.data.profile_image.urls.medium
+        if (profile.data.profile_image?.urls?.small) {
+            currentProfileImageUrl.value = profile.data.profile_image.urls.small
         }
     } catch (error) {
         console.error('プロフィール画像取得エラー:', error)
@@ -101,7 +101,7 @@ const updateDisplayName = async () => {
 
 // プロフィール画像アップロード時の処理
 const handleImageUploaded = (imageUrls: Record<string, string>) => {
-    currentProfileImageUrl.value = imageUrls.medium || imageUrls.original || null
+    currentProfileImageUrl.value = imageUrls.small || imageUrls.original || null
 
     // 認証ストアのユーザー情報を更新
     authStore.updateUser({

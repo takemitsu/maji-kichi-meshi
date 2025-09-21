@@ -36,7 +36,7 @@
 - **ImageController拡張**: 新しい配信エンドポイント
 
 #### 3. **API設計**
-- `/api/images/{type}/{id}/{size}` エンドポイント追加
+- `/api/images/{type}/{size}/{filename}` エンドポイント追加（セキュリティ修正済み）
 - originalサイズ配信対応
 - モデレーション状態チェック統合
 
@@ -71,6 +71,21 @@
 **問題**: `performImageGeneration()`の戻り値型不整合
 **対応**: `?string`から`string`に変更（nullは返さない実装）
 **結果**: 解決済み ✅
+
+### 🔒 セキュリティ修正: ID露出問題
+**問題**: 初期実装でURL内にデータベースIDを露出（`/api/images/reviews/123/thumbnail`）
+**リスク**:
+- データベース構造の推測可能
+- 順次アクセスによる全画像取得可能
+- セキュリティベストプラクティス違反
+
+**修正内容**: ファイル名ベースURL（`/api/images/reviews/thumbnail/abc123.jpg`）
+**対応完了**:
+- APIルート修正（routes/api.php）
+- ImageController改修（getImageModelByFilename追加）
+- LazyImageService修正（ファイルロック処理も含む）
+- 全テストケース修正・合格
+**結果**: セキュリティリスク完全解決 ✅
 
 ## 📈 パフォーマンス改善効果
 
@@ -146,3 +161,135 @@
 **後方互換性**: 完全保持
 
 遅延画像生成機能の実装により、アップロード処理のパフォーマンスが大幅に改善され、サーバーリソースの効率的な利用が可能になりました。
+
+## 🗑️ 将来的なクリーンアップタスク
+
+### レガシーカラムの削除計画
+**対象**: shop_imagesテーブル
+**削除予定カラム**:
+- `status` - moderation_statusへ移行済み ✅ 削除完了 (2025-09-20)
+- `image_sizes` - path系カラムへ移行済み（2025年10月削除予定）
+
+**削除時期**: 2025年10月頃（本番環境でのデータ移行確認後）
+
+**理由**:
+- 両カラムともデータはすでに新カラムへ移行済み
+- ロールバック用に一時的に保持
+- 十分な運用実績確認後に削除
+
+**削除手順**:
+1. 本番環境でのデータ移行完了確認
+2. 1ヶ月程度の運用実績確認
+3. バックアップ取得
+4. マイグレーションで削除実行
+
+**注意**:
+- `status`カラムとインデックス削除済み（2025-09-20）
+- `image_sizes`は2025年10月削除予定
+
+## 📅 2025-09-20 UUID統一実装
+
+### 実装内容
+**目的**: ShopImage/ReviewImageでUUIDとファイル名を統一
+
+**変更点**:
+1. **ReviewImageテーブル**: uuidカラム追加
+2. **ImageService**: UUIDパラメータ受け取り対応（オプショナル）
+3. **モデル改修**: UUID生成してImageServiceに渡す実装
+4. **FixImageUuidAndFilesコマンド**: 既存データ移行用（冪等性・ロールバック対応）
+
+**結果**:
+- uuid = filename（拡張子除く）が保証される
+- ファイル名からデータを検索可能
+- 無駄なUUID重複生成を排除
+
+**マイグレーション**:
+- `2025_09_20_143715_drop_status_column_from_shop_images_table.php` - statusカラム削除
+- `2025_09_20_154503_add_uuid_to_review_images_table.php` - ReviewImageにuuidカラム追加
+
+**コマンド**:
+- `app/Console/Commands/FixImageUuidAndFiles.php` - UUID統一化コマンド
+
+**注意事項**:
+- `image_sizes`カラムは2025年10月削除予定のため保持
+- 新規アップロードは統一されたUUID使用
+- 既存データは`php artisan images:fix-uuid`で移行可能
+
+## 📅 2025-09-21 モデル処理統一実装
+
+### 実装内容
+**目的**: ReviewImageとShopImageのビジネスロジック統一
+
+**変更点**:
+1. **モデレーション機能統一**:
+   - ReviewImageにapprove/reject/requireReviewメソッド追加
+   - ShopImageの既存メソッドと同じインターフェース実装
+   - updateModerationStatusプライベートメソッドで共通処理
+
+2. **URL処理の簡素化**:
+   - 個別URLゲッターメソッド削除（getThumbnailUrl等）
+   - getUrlsAttributeで配列として一括取得
+   - filenameをhidden配列から削除（APIレスポンスに含める）
+
+3. **Filamentリソース修正**:
+   - ReviewImageResourceを`$record->urls['medium']`使用に変更
+   - モデルメソッド（approve/reject）を直接呼び出す実装
+
+4. **テスト追加**:
+   - `FilamentImageModerationTest.php` - 管理画面の検閲機能テスト（10件）
+   - 承認/拒否アクション、一括操作、表示制御のテスト
+
+**結果**:
+- ReviewImageとShopImageが同じビジネスロジックを共有
+- コードの一貫性向上
+- 管理画面での検閲操作が両モデルで統一された動作
+
+**修正ファイル**:
+- `app/Models/ReviewImage.php` - モデレーションメソッド追加、URL処理修正
+- `app/Models/ShopImage.php` - UUID処理修正、自動承認実装
+- `app/Filament/Resources/ReviewImageResource.php` - urls配列使用
+- `tests/Feature/FilamentImageModerationTest.php` - 新規テスト作成
+
+**テスト結果**: 全10テスト成功 ✅
+
+## 📅 2025-09-21 ImageMagickドライバー移行
+
+### 実装内容
+**目的**: GDからImageMagickへの移行でメモリ効率改善
+
+**変更点**:
+1. **PHP環境整備**:
+   - PEAR/PECLインストール（phpenv環境対応）
+   - imagick拡張インストール（pecl install imagick）
+   - php.ini設定追加（extension=imagick.so）
+
+2. **設定変更**:
+   - config/image.php: ImageMagickドライバーに変更
+   - Intervention\Image\Drivers\Imagick\Driver::class使用
+
+3. **テストファイル修正**:
+   - 5つのテストファイルでGD→ImageMagickドライバー変更
+     - ImageUploadTest.php
+     - ShopImageTest.php
+     - ProfileApiTest.php
+     - LazyImageGenerationTest.php
+     - FilamentImageModerationTest.php
+   - DIコンテナでのドライバー注入統一
+
+**結果**:
+- 全175テスト成功
+- PHPStan/Pintエラーなし
+- 画像処理の品質向上見込み
+- メモリ使用量削減（本番環境で測定予定）
+
+**注意事項**:
+- ローカルPHP: upload_max_filesize=2M（要調整）
+- アプリ側: max:10240（10MB）設定済み
+- 本番環境: PHPの設定を10MB対応に変更必要
+
+**実装手順**:
+1. phpenvでPEAR/PECLインストール
+2. imagick拡張インストール
+3. config/image.php変更
+4. テストファイルのインポート変更
+5. 動作確認（テスト実行）

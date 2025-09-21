@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('review_images', function (Blueprint $table) {
-            $table->string('large_path')->nullable()->change();
+            $table->uuid('uuid')->after('review_id');
+            $table->index('uuid');
         });
     }
 
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('review_images', function (Blueprint $table) {
-            $table->string('large_path')->nullable(false)->change();
+            $table->dropIndex(['uuid']);
+            $table->dropColumn('uuid');
         });
     }
 };

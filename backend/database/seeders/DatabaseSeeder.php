@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ShopSeeder::class,
             ReviewSeeder::class,
             RankingSeeder::class,
+            ImageSeeder::class,
         ]);
 
         // 既存のテストユーザーとTakemitsuユーザーを維持

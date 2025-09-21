@@ -16,9 +16,11 @@ class ReviewImageFactory extends Factory
      */
     public function definition(): array
     {
-        $filename = $this->faker->uuid() . '.jpg';
+        $uuid = $this->faker->uuid();
+        $filename = $uuid . '.jpg';
 
         return [
+            'uuid' => $uuid,
             'filename' => $filename,
             'original_name' => $this->faker->word() . '.jpg',
             'thumbnail_path' => "images/reviews/thumbnail/{$filename}",

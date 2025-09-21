@@ -11,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // intervention/image-laravelは'image'として登録するが、
+        // ImageManager::classでも解決できるようにエイリアスを追加
+        $this->app->alias('image', \Intervention\Image\ImageManager::class);
     }
 
     /**

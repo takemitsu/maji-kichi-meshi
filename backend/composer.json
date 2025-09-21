@@ -10,6 +10,7 @@
         "bacon/bacon-qr-code": "^3.0",
         "filament/filament": "^3.0",
         "intervention/image": "^3.11",
+        "intervention/image-laravel": "^1.5",
         "laravel/framework": "^12.0",
         "laravel/socialite": "^5.21",
         "laravel/tinker": "^2.10.1",

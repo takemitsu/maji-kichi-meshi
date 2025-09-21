@@ -128,7 +128,7 @@ class ReviewImageResource extends Resource
                 Tables\Actions\Action::make('view_image')
                     ->label('画像表示')
                     ->icon('heroicon-o-eye')
-                    ->url(fn (ReviewImage $record): string => $record->medium_url)
+                    ->url(fn (ReviewImage $record): string => $record->urls['medium'])
                     ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('approve')
@@ -137,11 +137,7 @@ class ReviewImageResource extends Resource
                     ->color('success')
                     ->requiresConfirmation()
                     ->action(function (ReviewImage $record) {
-                        $record->update([
-                            'moderation_status' => 'published',
-                            'moderated_by' => auth()->id(),
-                            'moderated_at' => now(),
-                        ]);
+                        $record->approve(auth()->id());
                     })
                     ->visible(fn (ReviewImage $record): bool => $record->moderation_status !== 'published'),
                 Tables\Actions\Action::make('reject')
@@ -150,11 +146,7 @@ class ReviewImageResource extends Resource
                     ->color('danger')
                     ->requiresConfirmation()
                     ->action(function (ReviewImage $record) {
-                        $record->update([
-                            'moderation_status' => 'rejected',
-                            'moderated_by' => auth()->id(),
-                            'moderated_at' => now(),
-                        ]);
+                        $record->reject(auth()->id());
                     })
                     ->visible(fn (ReviewImage $record): bool => $record->moderation_status !== 'rejected'),
             ])
@@ -167,11 +159,7 @@ class ReviewImageResource extends Resource
                         ->requiresConfirmation()
                         ->action(function ($records) {
                             $records->each(function ($record) {
-                                $record->update([
-                                    'moderation_status' => 'published',
-                                    'moderated_by' => auth()->id(),
-                                    'moderated_at' => now(),
-                                ]);
+                                $record->approve(auth()->id());
                             });
                         }),
                     Tables\Actions\BulkAction::make('reject')
@@ -181,11 +169,7 @@ class ReviewImageResource extends Resource
                         ->requiresConfirmation()
                         ->action(function ($records) {
                             $records->each(function ($record) {
-                                $record->update([
-                                    'moderation_status' => 'rejected',
-                                    'moderated_by' => auth()->id(),
-                                    'moderated_at' => now(),
-                                ]);
+                                $record->reject(auth()->id());
                             });
                         }),
                 ]),

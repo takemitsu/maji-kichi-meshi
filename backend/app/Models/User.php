@@ -313,45 +313,6 @@ class User extends Authenticatable implements FilamentUser, JWTSubject
     // =============================================================================
 
     /**
-     * Check if user has a profile image
-     */
-    public function hasProfileImage(): bool
-    {
-        return !is_null($this->profile_image_filename);
-    }
-
-    /**
-     * Get profile image URLs
-     */
-    public function getProfileImageUrls(): array
-    {
-        if (!$this->hasProfileImage()) {
-            return [];
-        }
-
-        return [
-            'thumbnail' => $this->profile_image_thumbnail_path ? url(Storage::url($this->profile_image_thumbnail_path)) : null,
-            'small' => $this->profile_image_small_path ? url(Storage::url($this->profile_image_small_path)) : null,
-            'medium' => $this->profile_image_medium_path ? url(Storage::url($this->profile_image_medium_path)) : null,
-            'large' => $this->profile_image_large_path ? url(Storage::url($this->profile_image_large_path)) : null,
-        ];
-    }
-
-    /**
-     * Get profile image URL for specific size
-     */
-    public function getProfileImageUrl(string $size = 'medium'): ?string
-    {
-        if (!$this->hasProfileImage()) {
-            return null;
-        }
-
-        $urls = $this->getProfileImageUrls();
-
-        return $urls[$size] ?? null;
-    }
-
-    /**
      * Delete profile image files
      */
     public function deleteProfileImage(): void
@@ -360,18 +321,9 @@ class User extends Authenticatable implements FilamentUser, JWTSubject
             return;
         }
 
-        // Delete physical files
-        $paths = [
-            $this->profile_image_thumbnail_path,
-            $this->profile_image_small_path,
-            $this->profile_image_medium_path,
-            $this->profile_image_large_path,
-        ];
-
-        foreach ($paths as $path) {
-            if ($path && Storage::exists($path)) {
-                Storage::delete($path);
-            }
+        // Delete physical files (smallサイズのみ)
+        if ($this->profile_image_small_path && Storage::exists($this->profile_image_small_path)) {
+            Storage::delete($this->profile_image_small_path);
         }
 
         // Clear database fields
@@ -385,5 +337,44 @@ class User extends Authenticatable implements FilamentUser, JWTSubject
         $this->profile_image_mime_type = null;
         $this->profile_image_uploaded_at = null;
         $this->save();
+    }
+
+    // =============================================================================
+    // Profile Image Methods
+    // =============================================================================
+
+    /**
+     * Check if user has a profile image
+     */
+    public function hasProfileImage(): bool
+    {
+        return !empty($this->profile_image_filename) && !empty($this->profile_image_small_path);
+    }
+
+    /**
+     * Get profile image URLs for all sizes
+     */
+    public function getProfileImageUrls(): array
+    {
+        $appUrl = config('app.url');
+
+        return [
+            'small' => $this->profile_image_small_path
+                ? "{$appUrl}/storage/{$this->profile_image_small_path}"
+                : null,
+            'original' => $this->profile_image_small_path
+                ? "{$appUrl}/storage/{$this->profile_image_small_path}"
+                : null,
+        ];
+    }
+
+    /**
+     * Get profile image URL for specific size
+     */
+    public function getProfileImageUrl(string $size = 'small'): ?string
+    {
+        $urls = $this->getProfileImageUrls();
+
+        return $urls[$size] ?? $urls['small'];
     }
 }

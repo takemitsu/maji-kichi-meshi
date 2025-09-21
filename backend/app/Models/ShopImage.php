@@ -18,21 +18,25 @@ class ShopImage extends Model
         'uuid',
         'filename',
         'original_name',
-        'mime_type',
+        'thumbnail_path',
+        'small_path',
+        'medium_path',
+        'large_path',
+        'original_path',
         'file_size',
-        'image_sizes',
-        'status',
+        'mime_type',
+        'moderation_status',
+        'moderation_notes',
         'moderated_by',
         'moderated_at',
-        'sort_order',
         'sizes_generated',
-        'original_path',
+        'image_sizes',
+        'sort_order',
     ];
 
     protected $casts = [
-        'image_sizes' => 'array',
-        'moderated_at' => 'datetime',
         'sizes_generated' => 'array',
+        'moderated_at' => 'datetime',
     ];
 
     protected $hidden = [
@@ -61,17 +65,17 @@ class ShopImage extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('moderation_status', 'published');
     }
 
     public function scopeUnderReview($query)
     {
-        return $query->where('status', 'under_review');
+        return $query->where('moderation_status', 'under_review');
     }
 
     public function scopeRejected($query)
     {
-        return $query->where('status', 'rejected');
+        return $query->where('moderation_status', 'rejected');
     }
 
     public function scopeByShop($query, $shopId)
@@ -90,51 +94,32 @@ class ShopImage extends Model
 
     public function isPublished(): bool
     {
-        return $this->status === 'published';
+        return $this->moderation_status === 'published';
     }
 
     public function isUnderReview(): bool
     {
-        return $this->status === 'under_review';
+        return $this->moderation_status === 'under_review';
     }
 
     public function isRejected(): bool
     {
-        return $this->status === 'rejected';
+        return $this->moderation_status === 'rejected';
     }
 
     public function getUrlsAttribute(): array
     {
         $appUrl = config('app.url');
+        $filename = $this->filename;
 
         return [
-            'thumbnail' => "{$appUrl}/api/images/shops/{$this->id}/thumbnail",
-            'small' => "{$appUrl}/api/images/shops/{$this->id}/small",
-            'medium' => "{$appUrl}/api/images/shops/{$this->id}/medium",
-            'original' => "{$appUrl}/api/images/shops/{$this->id}/original",
+            'thumbnail' => "{$appUrl}/api/images/shops/thumbnail/{$filename}",
+            'small' => "{$appUrl}/api/images/shops/small/{$filename}",
+            'medium' => "{$appUrl}/api/images/shops/medium/{$filename}",
+            'original' => "{$appUrl}/api/images/shops/original/{$filename}",
             // 後方互換性のためlargeも提供（originalと同じ）
-            'large' => "{$appUrl}/api/images/shops/{$this->id}/original",
+            'large' => "{$appUrl}/api/images/shops/original/{$filename}",
         ];
-    }
-
-    public function getThumbnailUrlAttribute(): ?string
-    {
-        return $this->image_sizes['thumbnail'] ?? null;
-    }
-
-    public function getSmallUrlAttribute(): ?string
-    {
-        return $this->image_sizes['small'] ?? null;
-    }
-
-    public function getMediumUrlAttribute(): ?string
-    {
-        return $this->image_sizes['medium'] ?? null;
-    }
-
-    public function getLargeUrlAttribute(): ?string
-    {
-        return $this->image_sizes['large'] ?? null;
     }
 
     // =============================================================================
@@ -158,7 +143,7 @@ class ShopImage extends Model
 
     private function updateModerationStatus(string $status, $moderatorId = null): bool
     {
-        $this->status = $status;
+        $this->moderation_status = $status;
         $this->moderated_by = $moderatorId;
         $this->moderated_at = now();
 
@@ -173,27 +158,33 @@ class ShopImage extends Model
     {
         DB::beginTransaction();
         try {
-            $uuid = Str::uuid();
-            $imageService = new ImageService;
+            $uuid = Str::uuid()->toString();
+            $imageService = app(ImageService::class);
 
             // Process and save images using existing uploadAndResize method
-            $imageData = $imageService->uploadAndResize($file, 'shops');
-
-            // Transform paths to URLs for frontend
-            $imageUrls = [];
-            foreach ($imageData['paths'] as $size => $path) {
-                $imageUrls[$size] = $imageService->getImageUrl($path);
-            }
+            // UUIDを渡してファイル名と統一
+            $imageData = $imageService->uploadAndResize($file, 'shops', $uuid);
 
             $shopImage = self::create([
                 'shop_id' => $shopId,
                 'uuid' => $uuid,
                 'filename' => $imageData['filename'],
                 'original_name' => $imageData['original_name'],
-                'mime_type' => $imageData['mime_type'],
+                'thumbnail_path' => $imageData['paths']['thumbnail'],
+                'small_path' => $imageData['paths']['small'],
+                'medium_path' => $imageData['paths']['medium'],
+                'large_path' => null, // largeサイズは廃止
+                'original_path' => $imageData['original_path'],
                 'file_size' => $imageData['size'],
-                'image_sizes' => $imageUrls,
-                'status' => 'published', // Auto-approve for now
+                'mime_type' => $imageData['mime_type'],
+                'moderation_status' => 'published', // Auto-approve for now
+                'sizes_generated' => $imageData['sizes_generated'],
+                'image_sizes' => json_encode([
+                    'thumbnail' => "/storage/images/shops/thumbnail/{$imageData['filename']}",
+                    'small' => "/storage/images/shops/small/{$imageData['filename']}",
+                    'medium' => "/storage/images/shops/medium/{$imageData['filename']}",
+                    'large' => "/storage/images/shops/large/{$imageData['filename']}",
+                ]),
                 'sort_order' => $sortOrder,
             ]);
 
@@ -213,19 +204,17 @@ class ShopImage extends Model
     public function deleteFiles(): bool
     {
         try {
-            $imageService = new ImageService;
+            $paths = array_filter([
+                $this->thumbnail_path,
+                $this->small_path,
+                $this->medium_path,
+                $this->large_path,
+                $this->original_path,
+            ]);
 
-            // Get all image paths from the stored URLs
-            $paths = [];
-            foreach ($this->image_sizes as $size => $url) {
-                // Convert URL back to path
-                $path = str_replace('/storage/', '', parse_url($url, PHP_URL_PATH));
-                $paths[] = $path;
-            }
+            $imageService = app(ImageService::class);
 
-            $imageService->deleteImages($paths);
-
-            return true;
+            return $imageService->deleteImages($paths);
         } catch (\Exception $e) {
             \Log::error('Failed to delete shop image files: ' . $e->getMessage(), [
                 'shop_image_id' => $this->id,

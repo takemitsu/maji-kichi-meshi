@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\ImageManager;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -24,6 +26,11 @@ class ShopImageTest extends TestCase
 
         // Seed categories
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
+
+        // ImageManagerをDIコンテナに登録（テスト環境用）
+        $this->app->singleton(ImageManager::class, function () {
+            return new ImageManager(new Driver);
+        });
     }
 
     public function test_test_authenticated_user_can_upload_shop_images()
@@ -63,7 +70,7 @@ class ShopImageTest extends TestCase
         $this->assertDatabaseCount('shop_images', 2);
         $this->assertDatabaseHas('shop_images', [
             'shop_id' => $shop->id,
-            'status' => 'published',
+            'moderation_status' => 'published',
         ]);
     }
 

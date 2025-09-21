@@ -5,7 +5,6 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
 class ImageService
@@ -13,25 +12,30 @@ class ImageService
     private ImageManager $manager;
 
     private array $sizes = [
-        'thumbnail' => ['width' => 150, 'height' => 150],
+        'thumbnail' => ['width' => 100, 'height' => 100],
         'small' => ['width' => 400, 'height' => 300],
         'medium' => ['width' => 800, 'height' => 600],
         // largeサイズを削除（originalを使用）
     ];
 
-    public function __construct()
+    public function __construct(ImageManager $manager)
     {
-        $this->manager = new ImageManager(new Driver);
+        $this->manager = $manager;
     }
 
     /**
      * 画像をアップロードしてthumbnailのみ生成（遅延生成対応）
+     *
+     * @param  UploadedFile  $file  アップロードファイル
+     * @param  string  $directory  保存先ディレクトリ
+     * @param  string|null  $uuid  使用するUUID（nullの場合は自動生成）
      */
-    public function uploadAndResize(UploadedFile $file, string $directory = 'reviews'): array
+    public function uploadAndResize(UploadedFile $file, string $directory = 'reviews', ?string $uuid = null): array
     {
-        // ファイル名生成（ユニークID + 元の拡張子）
+        // ファイル名生成（指定されたUUID または 新規UUID + 元の拡張子）
         $extension = $file->getClientOriginalExtension();
-        $filename = Str::uuid() . '.' . $extension;
+        $uuid = $uuid ?: Str::uuid()->toString();
+        $filename = $uuid . '.' . $extension;
 
         // 保存先ディレクトリ
         $basePath = "images/{$directory}";
@@ -63,6 +67,7 @@ class ImageService
         $paths['original'] = $originalPath;
 
         return [
+            'uuid' => $uuid,
             'filename' => $filename,
             'original_name' => $file->getClientOriginalName(),
             'paths' => $paths,
@@ -83,10 +88,9 @@ class ImageService
         }
 
         $dimensions = $this->sizes[$size];
-        $resizedImage = clone $image;
 
-        // アスペクト比を保持してリサイズ
-        $resizedImage->scaleDown(
+        // アスペクト比を保持してリサイズ（cloneせず直接処理）
+        $image->scaleDown(
             width: $dimensions['width'],
             height: $dimensions['height']
         );
@@ -103,7 +107,7 @@ class ImageService
         // 画像を保存
         Storage::disk('public')->put(
             $fullPath,
-            $resizedImage->toJpeg(quality: 85)->toString()
+            $image->toJpeg(quality: 85)->toString()
         );
 
         return $fullPath;

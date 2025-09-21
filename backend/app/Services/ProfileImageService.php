@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
 class ProfileImageService
@@ -14,15 +13,12 @@ class ProfileImageService
     private ImageManager $manager;
 
     private array $sizes = [
-        'thumbnail' => ['width' => 100, 'height' => 100],
         'small' => ['width' => 200, 'height' => 200],
-        'medium' => ['width' => 400, 'height' => 400],
-        'large' => ['width' => 800, 'height' => 800],
     ];
 
-    public function __construct()
+    public function __construct(ImageManager $manager)
     {
-        $this->manager = new ImageManager(new Driver);
+        $this->manager = $manager;
     }
 
     /**
@@ -48,7 +44,8 @@ class ProfileImageService
 
             // 各サイズで画像を生成・保存
             foreach ($this->sizes as $size => $dimensions) {
-                $resizedImage = clone $image;
+                // 毎回元画像から読み込み直し（clone使用せず）
+                $resizedImage = $this->manager->read($file->getPathname());
 
                 // 正方形にクロップしてリサイズ（プロフィール画像は正方形が一般的）
                 $resizedImage->cover(
@@ -74,17 +71,18 @@ class ProfileImageService
                 $paths[$size] = $fullPath;
             }
 
-            // ユーザーモデルを更新
+            // ユーザーモデルを更新（smallサイズのみ）
             $user->update([
                 'profile_image_filename' => $filename,
                 'profile_image_original_name' => $file->getClientOriginalName(),
-                'profile_image_thumbnail_path' => $paths['thumbnail'],
                 'profile_image_small_path' => $paths['small'],
-                'profile_image_medium_path' => $paths['medium'],
-                'profile_image_large_path' => $paths['large'],
                 'profile_image_file_size' => $file->getSize(),
                 'profile_image_mime_type' => $file->getMimeType(),
                 'profile_image_uploaded_at' => now(),
+                // 不要なカラムはnullに設定
+                'profile_image_thumbnail_path' => null,
+                'profile_image_medium_path' => null,
+                'profile_image_large_path' => null,
             ]);
 
             return true;
@@ -108,18 +106,9 @@ class ProfileImageService
         }
 
         try {
-            // 物理ファイルを削除
-            $paths = [
-                $user->profile_image_thumbnail_path,
-                $user->profile_image_small_path,
-                $user->profile_image_medium_path,
-                $user->profile_image_large_path,
-            ];
-
-            foreach ($paths as $path) {
-                if ($path && Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
-                }
+            // 物理ファイルを削除（smallサイズのみ）
+            if ($user->profile_image_small_path && Storage::disk('public')->exists($user->profile_image_small_path)) {
+                Storage::disk('public')->delete($user->profile_image_small_path);
             }
 
             // ユーザーのプロフィール画像情報をクリア
@@ -149,7 +138,7 @@ class ProfileImageService
     /**
      * プロフィール画像のURLを取得
      */
-    public function getProfileImageUrl(User $user, string $size = 'medium'): ?string
+    public function getProfileImageUrl(User $user, string $size = 'small'): ?string
     {
         return $user->getProfileImageUrl($size);
     }

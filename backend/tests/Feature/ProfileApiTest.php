@@ -6,11 +6,23 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\ImageManager;
 use Tests\TestCase;
 
 class ProfileApiTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // ImageManagerをDIコンテナに登録（テスト環境用）
+        $this->app->singleton(ImageManager::class, function () {
+            return new ImageManager(new Driver);
+        });
+    }
 
     public function test_test_profile_show_requires_authentication()
     {
@@ -105,10 +117,8 @@ class ProfileApiTest extends TestCase
                 'data' => [
                     'profile_image' => [
                         'urls' => [
-                            'thumbnail',
                             'small',
-                            'medium',
-                            'large',
+                            'original',
                         ],
                         'uploaded_at',
                     ],

@@ -59,7 +59,7 @@ class ShopImageResource extends Resource
                     ->label('ファイルサイズ（バイト）')
                     ->disabled(),
 
-                Select::make('status')
+                Select::make('moderation_status')
                     ->label('ステータス')
                     ->options([
                         'published' => '公開',
@@ -79,7 +79,7 @@ class ShopImageResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('thumbnail_url')
+                ImageColumn::make('urls.thumbnail')
                     ->label('サムネイル')
                     ->circular(),
 
@@ -93,7 +93,7 @@ class ShopImageResource extends Resource
                     ->searchable()
                     ->limit(30),
 
-                BadgeColumn::make('status')
+                BadgeColumn::make('moderation_status')
                     ->label('ステータス')
                     ->colors([
                         'success' => 'published',
@@ -130,7 +130,7 @@ class ShopImageResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('status')
+                SelectFilter::make('moderation_status')
                     ->label('ステータス')
                     ->options([
                         'published' => '公開',
@@ -148,7 +148,7 @@ class ShopImageResource extends Resource
                     ->label('承認')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (ShopImage $record) => $record->status !== 'published')
+                    ->visible(fn (ShopImage $record) => $record->moderation_status !== 'published')
                     ->action(function (ShopImage $record) {
                         $record->approve(auth()->id());
                         Notification::make()
@@ -161,7 +161,7 @@ class ShopImageResource extends Resource
                     ->label('却下')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn (ShopImage $record) => $record->status !== 'rejected')
+                    ->visible(fn (ShopImage $record) => $record->moderation_status !== 'rejected')
                     ->action(function (ShopImage $record) {
                         $record->reject(auth()->id());
                         Notification::make()

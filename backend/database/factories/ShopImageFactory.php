@@ -19,13 +19,26 @@ class ShopImageFactory extends Factory
             'original_name' => $this->faker->word . '.jpg',
             'mime_type' => 'image/jpeg',
             'file_size' => $this->faker->numberBetween(100000, 5000000),
-            'image_sizes' => [
+            // path系カラム（新構造）
+            'thumbnail_path' => 'images/shops/thumbnail/test.jpg',
+            'small_path' => 'images/shops/small/test.jpg',
+            'medium_path' => 'images/shops/medium/test.jpg',
+            'large_path' => null, // largeは廃止
+            'original_path' => 'images/shops/original/test.jpg',
+            'sizes_generated' => json_encode([
+                'thumbnail' => true,
+                'small' => false,
+                'medium' => false,
+            ]),
+            // レガシーカラム（ロールバック用に保持）
+            'image_sizes' => json_encode([
                 'thumbnail' => 'http://localhost/storage/images/shops/thumbnail/test.jpg',
                 'small' => 'http://localhost/storage/images/shops/small/test.jpg',
                 'medium' => 'http://localhost/storage/images/shops/medium/test.jpg',
                 'large' => 'http://localhost/storage/images/shops/large/test.jpg',
-            ],
-            'status' => $this->faker->randomElement(['published', 'under_review', 'rejected']),
+            ]),
+            // 新しい検閲カラム
+            'moderation_status' => $this->faker->randomElement(['published', 'under_review', 'rejected']),
             'sort_order' => $this->faker->numberBetween(0, 10),
         ];
     }
@@ -34,7 +47,7 @@ class ShopImageFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'status' => 'published',
+                'moderation_status' => 'published',
             ];
         });
     }
@@ -43,7 +56,7 @@ class ShopImageFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'status' => 'under_review',
+                'moderation_status' => 'under_review',
             ];
         });
     }
@@ -52,7 +65,7 @@ class ShopImageFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'status' => 'rejected',
+                'moderation_status' => 'rejected',
             ];
         });
     }

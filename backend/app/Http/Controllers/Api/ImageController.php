@@ -19,17 +19,17 @@ class ImageController extends Controller
     }
 
     /**
-     * 遅延生成対応の画像配信エンドポイント
+     * 遅延生成対応の画像配信エンドポイント（ファイル名ベース）
      */
-    public function lazyServe(Request $request, string $type, int $id, string $size)
+    public function lazyServe(Request $request, string $type, string $size, string $filename)
     {
         // サイズの妥当性チェック
         if (!$this->lazyImageService->isSupportedSize($size)) {
             abort(400, 'Invalid image size');
         }
 
-        // 画像モデルを取得
-        $model = $this->getImageModel($type, $id);
+        // ファイル名から画像モデルを取得
+        $model = $this->getImageModelByFilename($type, $filename);
         if (!$model) {
             abort(404, 'Image not found');
         }
@@ -131,15 +131,15 @@ class ImageController extends Controller
     }
 
     /**
-     * 画像モデルを取得
+     * ファイル名から画像モデルを取得
      */
-    private function getImageModel(string $type, int $id)
+    private function getImageModelByFilename(string $type, string $filename)
     {
         switch ($type) {
             case 'reviews':
-                return ReviewImage::find($id);
+                return ReviewImage::where('filename', $filename)->first();
             case 'shops':
-                return ShopImage::find($id);
+                return ShopImage::where('filename', $filename)->first();
             default:
                 return;
         }

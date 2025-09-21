@@ -194,7 +194,7 @@ const uploadImage = async (file: File) => {
         success.value = 'プロフィール画像をアップロードしました。'
 
         // 現在の画像URLを更新
-        currentImageUrl.value = response.data.profile_image.urls.medium || response.data.profile_image.urls.original || null
+        currentImageUrl.value = response.data.profile_image.urls.small || response.data.profile_image.urls.original || null
 
         emit('uploaded', response.data.profile_image.urls)
 

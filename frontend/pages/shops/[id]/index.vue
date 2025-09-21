@@ -117,7 +117,7 @@
                                         class="relative group cursor-pointer"
                                         @click="openImageModal(image)">
                                         <img
-                                            :src="image.urls.original"
+                                            :src="image.urls.medium"
                                             :alt="shop.name"
                                             class="w-full h-64 object-cover rounded-lg transition-transform duration-200 group-hover:scale-105 shadow-md" />
                                         <div

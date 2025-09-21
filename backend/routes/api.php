@@ -49,11 +49,11 @@ Route::get('/users/{user}/info', [UserController::class, 'info']);
 Route::get('/images/{size}/{filename}', [ImageController::class, 'serve'])
     ->middleware('throttle:image-serving');
 
-// 遅延生成対応の画像配信エンドポイント
-Route::get('/images/{type}/{id}/{size}', [ImageController::class, 'lazyServe'])
+// 遅延生成対応の画像配信エンドポイント（ファイル名ベース）
+Route::get('/images/{type}/{size}/{filename}', [ImageController::class, 'lazyServe'])
     ->where('type', 'reviews|shops')
-    ->where('id', '[0-9]+')
     ->where('size', 'thumbnail|small|medium|original')
+    ->where('filename', '[a-f0-9\-]+\.(jpg|jpeg|png|gif)')
     ->middleware('throttle:image-serving');
 
 // Protected routes (authentication required)

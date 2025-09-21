@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ReviewImage extends Model
 {
@@ -14,22 +15,33 @@ class ReviewImage extends Model
 
     protected $fillable = [
         'review_id',
+        'uuid',
         'filename',
         'original_name',
         'thumbnail_path',
         'small_path',
         'medium_path',
         'large_path',
+        'original_path',
         'file_size',
         'mime_type',
         'moderation_status',
         'moderation_notes',
+        'moderated_by',
+        'moderated_at',
         'sizes_generated',
-        'original_path',
     ];
 
     protected $casts = [
         'sizes_generated' => 'array',
+        'moderated_at' => 'datetime',
+    ];
+
+    protected $hidden = [
+        'moderated_by',
+        'moderated_at',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -41,65 +53,11 @@ class ReviewImage extends Model
     }
 
     /**
-     * Get full URL for thumbnail image
+     * Moderator relationship
      */
-    public function getThumbnailUrlAttribute()
+    public function moderator()
     {
-        if (!$this->thumbnail_path) {
-            return;
-        }
-        $imageService = new ImageService;
-
-        return $imageService->getImageUrl($this->thumbnail_path);
-    }
-
-    /**
-     * Get full URL for small image
-     */
-    public function getSmallUrlAttribute()
-    {
-        if (!$this->small_path) {
-            return;
-        }
-        $imageService = new ImageService;
-
-        return $imageService->getImageUrl($this->small_path);
-    }
-
-    /**
-     * Get full URL for medium image
-     */
-    public function getMediumUrlAttribute()
-    {
-        if (!$this->medium_path) {
-            return;
-        }
-        $imageService = new ImageService;
-
-        return $imageService->getImageUrl($this->medium_path);
-    }
-
-    /**
-     * Get full URL for large image (legacy)
-     */
-    public function getLargeUrlAttribute()
-    {
-        if (!$this->large_path) {
-            return;
-        }
-        $imageService = new ImageService;
-
-        return $imageService->getImageUrl($this->large_path);
-    }
-
-    /**
-     * Get full URL for original image
-     */
-    public function getOriginalUrlAttribute()
-    {
-        $appUrl = config('app.url');
-
-        return "{$appUrl}/api/images/reviews/{$this->id}/original";
+        return $this->belongsTo(User::class, 'moderated_by');
     }
 
     /**
@@ -108,14 +66,15 @@ class ReviewImage extends Model
     public function getUrlsAttribute()
     {
         $appUrl = config('app.url');
+        $filename = $this->filename;
 
         return [
-            'thumbnail' => "{$appUrl}/api/images/reviews/{$this->id}/thumbnail",
-            'small' => "{$appUrl}/api/images/reviews/{$this->id}/small",
-            'medium' => "{$appUrl}/api/images/reviews/{$this->id}/medium",
-            'original' => "{$appUrl}/api/images/reviews/{$this->id}/original",
+            'thumbnail' => "{$appUrl}/api/images/reviews/thumbnail/{$filename}",
+            'small' => "{$appUrl}/api/images/reviews/small/{$filename}",
+            'medium' => "{$appUrl}/api/images/reviews/medium/{$filename}",
+            'original' => "{$appUrl}/api/images/reviews/original/{$filename}",
             // 後方互換性のためlargeも提供（originalと同じ）
-            'large' => "{$appUrl}/api/images/reviews/{$this->id}/original",
+            'large' => "{$appUrl}/api/images/reviews/original/{$filename}",
         ];
     }
 
@@ -124,7 +83,7 @@ class ReviewImage extends Model
      */
     public static function createFromUpload(int $reviewId, UploadedFile $file): self
     {
-        $imageService = new ImageService;
+        $imageService = app(ImageService::class);
 
         // 画像ファイルのバリデーション
         if (!$imageService->isSupportedImageType($file->getMimeType())) {
@@ -135,12 +94,16 @@ class ReviewImage extends Model
             throw new \InvalidArgumentException('Image file size too large');
         }
 
-        // 画像をアップロード・リサイズ
-        $uploadResult = $imageService->uploadAndResize($file, 'reviews');
+        // UUIDを生成
+        $uuid = Str::uuid()->toString();
+
+        // 画像をアップロード・リサイズ（UUIDを渡してファイル名と統一）
+        $uploadResult = $imageService->uploadAndResize($file, 'reviews', $uuid);
 
         // ReviewImageを作成
         return self::create([
             'review_id' => $reviewId,
+            'uuid' => $uuid,
             'filename' => $uploadResult['filename'],
             'original_name' => $uploadResult['original_name'],
             'thumbnail_path' => $uploadResult['paths']['thumbnail'],
@@ -167,7 +130,7 @@ class ReviewImage extends Model
             $this->original_path,
         ]);
 
-        $imageService = new ImageService;
+        $imageService = app(ImageService::class);
 
         return $imageService->deleteImages($paths);
     }
@@ -190,14 +153,6 @@ class ReviewImage extends Model
         $sizesGenerated = $this->sizes_generated ?? [];
         $sizesGenerated[$size] = true;
         $this->update(['sizes_generated' => $sizesGenerated]);
-    }
-
-    /**
-     * Relationship with moderator
-     */
-    public function moderator()
-    {
-        return $this->belongsTo(User::class, 'moderated_by');
     }
 
     /**
@@ -246,6 +201,46 @@ class ReviewImage extends Model
     public function scopeRejected($query)
     {
         return $query->where('moderation_status', 'rejected');
+    }
+
+    // =============================================================================
+    // Moderation Methods
+    // =============================================================================
+
+    /**
+     * Approve the image
+     */
+    public function approve($moderatorId = null): bool
+    {
+        return $this->updateModerationStatus('published', $moderatorId);
+    }
+
+    /**
+     * Reject the image
+     */
+    public function reject($moderatorId = null): bool
+    {
+        return $this->updateModerationStatus('rejected', $moderatorId);
+    }
+
+    /**
+     * Mark for review
+     */
+    public function requireReview($moderatorId = null): bool
+    {
+        return $this->updateModerationStatus('under_review', $moderatorId);
+    }
+
+    /**
+     * Update moderation status
+     */
+    private function updateModerationStatus(string $status, $moderatorId = null): bool
+    {
+        $this->moderation_status = $status;
+        $this->moderated_by = $moderatorId;
+        $this->moderated_at = now();
+
+        return $this->save();
     }
 
     /**

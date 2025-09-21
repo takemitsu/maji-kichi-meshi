@@ -10,6 +10,8 @@ use App\Services\ImageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\ImageManager;
 use Tests\TestCase;
 
 class ImageUploadTest extends TestCase
@@ -20,6 +22,11 @@ class ImageUploadTest extends TestCase
     {
         parent::setUp();
         Storage::fake('public');
+
+        // ImageManagerをDIコンテナに登録（テスト環境用）
+        $this->app->singleton(ImageManager::class, function () {
+            return new ImageManager(new Driver);
+        });
     }
 
     public function test_test_can_create_review_with_images()
@@ -128,12 +135,13 @@ class ImageUploadTest extends TestCase
         $review = Review::factory()->for($user)->create();
 
         // Create an image with file paths
-        $imageService = new ImageService;
+        $imageService = app(ImageService::class);
         $testFile = UploadedFile::fake()->image('test.jpg', 800, 600);
         $uploadResult = $imageService->uploadAndResize($testFile, 'reviews');
 
         $image = ReviewImage::create([
             'review_id' => $review->id,
+            'uuid' => $uploadResult['uuid'],
             'filename' => $uploadResult['filename'],
             'original_name' => $uploadResult['original_name'],
             'thumbnail_path' => $uploadResult['paths']['thumbnail'],
@@ -235,7 +243,7 @@ class ImageUploadTest extends TestCase
 
     public function test_test_image_service_generates_correct_sizes()
     {
-        $imageService = new ImageService;
+        $imageService = app(ImageService::class);
         $testFile = UploadedFile::fake()->image('test.jpg', 1600, 1200);
 
         $result = $imageService->uploadAndResize($testFile, 'test');
@@ -267,12 +275,13 @@ class ImageUploadTest extends TestCase
         $review = Review::factory()->for($user)->create();
 
         // Create images with actual files
-        $imageService = new ImageService;
+        $imageService = app(ImageService::class);
         $testFile = UploadedFile::fake()->image('test.jpg', 800, 600);
         $uploadResult = $imageService->uploadAndResize($testFile, 'reviews');
 
         $image = ReviewImage::create([
             'review_id' => $review->id,
+            'uuid' => $uploadResult['uuid'],
             'filename' => $uploadResult['filename'],
             'original_name' => $uploadResult['original_name'],
             'thumbnail_path' => $uploadResult['paths']['thumbnail'],

@@ -8,7 +8,7 @@
         <div ref="imageContainer" class="relative h-48 bg-gray-200 overflow-hidden">
             <template v-if="firstImage && shouldLoadImage">
                 <img
-                    :src="firstImage.urls.original"
+                    :src="firstImage.urls.small"
                     :alt="shop.name"
                     class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     @error="handleImageError"
