@@ -73,7 +73,8 @@ return new class extends Migration
         // review_imagesテーブルの変更を元に戻す
         Schema::table('review_images', function (Blueprint $table) {
             $table->dropColumn(['sizes_generated', 'original_path']);
-            $table->string('large_path')->nullable(false)->change();
+            // large_pathはnullableのまま保持（既存のNULL値がある可能性があるため）
+            // $table->string('large_path')->nullable(false)->change();
         });
     }
 };

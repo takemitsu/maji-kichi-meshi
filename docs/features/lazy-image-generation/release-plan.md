@@ -30,6 +30,14 @@ mysqldump -u maji_kichi_user -p maji_kichi_meshi > ~/backup_db_$(date +%Y%m%d_%H
 # 画像ファイルバックアップ（fix-uuidコマンドがファイルをリネームするため必須）
 tar -czf ~/backup_images_$(date +%Y%m%d_%H%M%S).tar.gz /var/www/maji-kichi-backend/storage/app/public/images/
 
+# ⚠️ 重要: largeディレクトリをoriginalにリネーム（必須）
+# 既存環境にはoriginalが存在しないため、largeをoriginalとして使用
+cd /var/www/maji-kichi-backend/storage/app/public/images/
+sudo mv shops/large shops/original
+sudo mv reviews/large reviews/original
+# 権限確認
+sudo chown -R www-data:www-data shops/original reviews/original
+
 # デプロイディレクトリへ移動
 cd ~/deployment/maji-kichi-meshi/
 
@@ -68,5 +76,7 @@ mysql -u maji_kichi_user -p maji_kichi_meshi < ~/backup_db_[timestamp].sql
 ```
 
 ## ⚠️ 注意事項
+- **必須**: `large`ディレクトリを`original`にリネームしないと遅延生成が機能しません
 - データ移行コマンドは冪等性保証（何度実行しても安全）
 - 既存ファイルは保護される
+- originalディレクトリがないと新サイズ生成ができません

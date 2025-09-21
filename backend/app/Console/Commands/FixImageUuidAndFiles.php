@@ -23,6 +23,32 @@ class FixImageUuidAndFiles extends Command
             $this->info('🔍 DRY RUN mode - no changes will be made');
         }
 
+        // 必要なカラムの存在確認
+        $reviewColumns = ['uuid', 'thumbnail_path', 'small_path', 'medium_path', 'original_path'];
+        $shopColumns = ['thumbnail_path', 'small_path', 'medium_path', 'original_path'];
+        $missingColumns = [];
+
+        foreach ($reviewColumns as $column) {
+            if (!\Schema::hasColumn('review_images', $column)) {
+                $missingColumns[] = "review_images.{$column}";
+            }
+        }
+
+        foreach ($shopColumns as $column) {
+            if (!\Schema::hasColumn('shop_images', $column)) {
+                $missingColumns[] = "shop_images.{$column}";
+            }
+        }
+
+        if (!empty($missingColumns)) {
+            $this->error('❌ Required columns are missing:');
+            foreach ($missingColumns as $column) {
+                $this->error("  - {$column}");
+            }
+            $this->error('Please run migrations first: php artisan migrate');
+            return Command::FAILURE;
+        }
+
         $this->info('Starting UUID fix for ShopImage and ReviewImage...');
 
         // Fix ShopImages

@@ -14,18 +14,33 @@ return new class extends Migration
     {
         Schema::table('shop_images', function (Blueprint $table) {
             // 1. shop_id単独のインデックスを作成（外部キー制約のため）
-            $table->index('shop_id', 'shop_images_shop_id_index');
+            // 既にインデックスが存在する場合はスキップ
+            $indexName = 'shop_images_shop_id_index';
+            $indexExists = Schema::hasIndex('shop_images', $indexName);
+            if (!$indexExists) {
+                $table->index('shop_id', $indexName);
+            }
 
-            // 2. 複合インデックスを削除
-            $table->dropIndex('shop_images_shop_id_status_index');
-            $table->dropIndex('shop_images_status_created_at_index');
+            // 2. 複合インデックスを削除（存在する場合のみ）
+            if (Schema::hasIndex('shop_images', 'shop_images_shop_id_status_index')) {
+                $table->dropIndex('shop_images_shop_id_status_index');
+            }
+            if (Schema::hasIndex('shop_images', 'shop_images_status_created_at_index')) {
+                $table->dropIndex('shop_images_status_created_at_index');
+            }
 
-            // 3. statusカラムを削除
-            $table->dropColumn('status');
+            // 3. statusカラムを削除（存在する場合のみ）
+            if (Schema::hasColumn('shop_images', 'status')) {
+                $table->dropColumn('status');
+            }
 
-            // 4. 新しい複合インデックスを作成
-            $table->index(['shop_id', 'moderation_status'], 'shop_images_shop_id_moderation_status_index');
-            $table->index(['moderation_status', 'created_at'], 'shop_images_moderation_status_created_at_index');
+            // 4. 新しい複合インデックスを作成（存在しない場合のみ）
+            if (!Schema::hasIndex('shop_images', 'shop_images_shop_id_moderation_status_index')) {
+                $table->index(['shop_id', 'moderation_status'], 'shop_images_shop_id_moderation_status_index');
+            }
+            if (!Schema::hasIndex('shop_images', 'shop_images_moderation_status_created_at_index')) {
+                $table->index(['moderation_status', 'created_at'], 'shop_images_moderation_status_created_at_index');
+            }
         });
     }
 

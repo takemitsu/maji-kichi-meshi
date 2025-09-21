@@ -33,6 +33,25 @@ class MigrateShopImageData extends Command
             $this->info('🔍 Running in DRY RUN mode - no changes will be made');
         }
 
+        // 必要なカラムの存在確認
+        $requiredColumns = ['thumbnail_path', 'small_path', 'medium_path', 'large_path', 'original_path', 'sizes_generated'];
+        $missingColumns = [];
+
+        foreach ($requiredColumns as $column) {
+            if (!\Schema::hasColumn('shop_images', $column)) {
+                $missingColumns[] = $column;
+            }
+        }
+
+        if (!empty($missingColumns)) {
+            $this->error('❌ Required columns are missing in shop_images table:');
+            foreach ($missingColumns as $column) {
+                $this->error("  - {$column}");
+            }
+            $this->error('Please run migrations first: php artisan migrate');
+            return Command::FAILURE;
+        }
+
         $totalCount = ShopImage::count();
 
         if ($totalCount === 0) {
