@@ -33,6 +33,9 @@ export default defineNuxtConfig({
     // App設定
     app: {
         head: {
+            htmlAttrs: {
+                lang: 'ja',
+            },
             title: 'マジキチメシ - 吉祥寺の個人的な店舗ランキング',
             meta: [
                 { charset: 'utf-8' },
@@ -43,6 +46,7 @@ export default defineNuxtConfig({
                         '吉祥寺エリアの店舗について、客観的なレビューとは独立した個人的で主観的なランキングを作成・共有するアプリ',
                 },
                 { name: 'theme-color', content: '#FF6B35' },
+                { name: 'google', content: 'notranslate' },
             ],
             link: [
                 { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
