@@ -93,6 +93,7 @@ export interface ReviewImage {
         small: string
         medium: string
         large: string
+        original: string
     }
     file_size: number
     mime_type: string
@@ -109,6 +110,7 @@ export interface ShopImage {
         small: string
         medium: string
         large: string
+        original: string
     }
     file_size: number
     mime_type: string
@@ -128,6 +130,7 @@ export interface User {
             small: string
             medium: string
             large: string
+            original: string
         }
     }
     created_at: string

@@ -119,8 +119,13 @@
                                     </p>
                                     <div class="mt-2 flex items-center space-x-2 text-sm text-gray-700">
                                         <span>{{ formatDate(review.visited_at) }}</span>
-                                        <span v-if="review.user" class="text-gray-500">
+                                        <span v-if="review.user" class="flex items-center text-gray-500">
                                             by
+                                            <UserAvatar
+                                                :user-name="review.user.name || 'ユーザー'"
+                                                :profile-image-url="review.user.profile_image?.urls?.small"
+                                                size="xs"
+                                                class="mx-1" />
                                             <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
                                         </span>
                                     </div>

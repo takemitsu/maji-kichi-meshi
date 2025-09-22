@@ -46,7 +46,7 @@
                                 <div class="flex items-center text-sm text-gray-700">
                                     <UserAvatar
                                         :user-name="ranking.user?.name || 'ユーザー'"
-                                        :profile-image-url="ranking.user?.profile_image?.urls?.thumbnail"
+                                        :profile-image-url="ranking.user?.profile_image?.urls?.small"
                                         size="xs"
                                         class="mr-2" />
                                     <UserLink :user="ranking.user" page-type="rankings" custom-class="text-sm mr-2" />

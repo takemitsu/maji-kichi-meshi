@@ -11,12 +11,12 @@
             <div v-if="review && !loading">
                 <!-- ブレッドクラム -->
                 <nav class="flex mb-6" aria-label="Breadcrumb">
-                    <ol class="flex items-center space-x-4">
+                    <ol class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                         <li>
                             <NuxtLink to="/reviews" class="text-gray-700 hover:text-gray-700">レビュー一覧</NuxtLink>
                         </li>
                         <li>
-                            <svg class="flex-shrink-0 h-5 w-5 text-gray-400 fill-current" viewBox="0 0 20 20">
+                            <svg class="flex-shrink-0 h-5 w-5 text-gray-400 fill-current relative top-1" viewBox="0 0 20 20">
                                 <path
                                     fill-rule="evenodd"
                                     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -28,7 +28,7 @@
                 </nav>
 
                 <!-- ヘッダー -->
-                <div class="mb-8">
+                <div class="mb-4">
                     <div class="md:flex md:items-start md:justify-between">
                         <div class="min-w-0 flex-1">
                             <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
@@ -36,7 +36,8 @@
                                     {{ review.shop?.name }}
                                 </NuxtLink>
                             </h1>
-                            <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
+                            <p v-if="review.shop?.address" class="mt-1 text-sm text-gray-700">{{ review.shop?.address }}</p>
+                            <div class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">
                                 <div class="flex items-center text-sm text-gray-700">
                                     <svg
                                         class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400 fill-none"
@@ -46,28 +47,22 @@
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
                                             stroke-width="2"
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
-                                    {{ review.shop?.address }}
+                                    <span>{{ formatDate(review.visited_at) }} 訪問</span>
                                 </div>
-                                <div class="flex items-center text-sm text-gray-700">
-                                    <svg
-                                        class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400 fill-none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M8 7V3a4 4 0 118 0v4m-4 6a3 3 0 100-6 3 3 0 000 6zm-7 10V3a4 4 0 118 0v14a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    訪問日: {{ formatDate(review.visited_at) }}
+                                <div v-if="review.user" class="flex items-center text-sm text-gray-700">
+                                    <span class="text-gray-500 mr-1">by</span>
+                                    <UserAvatar
+                                        :user-name="review.user.name || 'ユーザー'"
+                                        :profile-image-url="review.user.profile_image?.urls?.small"
+                                        size="xs"
+                                        class="mr-1" />
+                                    <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
                                 </div>
+                            </div>
+                            <div v-if="review.updated_at !== review.created_at" class="mt-2 text-xs text-gray-500">
+                                最終更新: {{ formatDate(review.updated_at) }}
                             </div>
                         </div>
                         <div
@@ -154,26 +149,6 @@
                                     :alt="`レビュー画像 ${image.id}`"
                                     class="w-full h-full object-cover"
                                     @error="handleImageError(image)" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- メタデータセクション -->
-                    <div class="px-4 md:px-6 py-4 text-sm text-gray-600">
-                        <div class="flex flex-col space-y-2">
-                            <div>投稿日: {{ formatDateTime(review.created_at) }}</div>
-                            <div v-if="review.updated_at !== review.created_at">
-                                最終更新: {{ formatDateTime(review.updated_at) }}
-                            </div>
-                            <div>
-                                投稿者:
-                                <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
-                            </div>
-                            <div>
-                                店舗:
-                                <NuxtLink :to="`/shops/${review.shop?.id}`" class="text-blue-600 hover:text-blue-800">
-                                    {{ review.shop?.name }}
-                                </NuxtLink>
                             </div>
                         </div>
                     </div>
@@ -303,10 +278,6 @@ const handleImageError = (image: ReviewImage) => {
 // ユーティリティ関数
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP')
-}
-
-const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString('ja-JP')
 }
 
 const getRepeatIntentionText = (intention: string) => {

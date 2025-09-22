@@ -264,7 +264,7 @@
                             <div class="flex items-start space-x-3">
                                 <UserAvatar
                                     :user-name="review.user?.name || 'ユーザー'"
-                                    :profile-image-url="review.user?.profile_image?.urls?.thumbnail"
+                                    :profile-image-url="review.user?.profile_image?.urls?.small"
                                     size="sm"
                                     class="flex-shrink-0" />
                                 <div class="flex-1 min-w-0">
