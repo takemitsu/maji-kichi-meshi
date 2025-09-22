@@ -32,7 +32,7 @@ class ReviewController extends Controller
             'per_page' => 'sometimes|integer|min:1|max:50',
         ]);
 
-        $query = Review::with(['user', 'shop', 'publishedImages']);
+        $query = Review::with(['user', 'shop.publishedImages', 'publishedImages']);
 
         // Filter by user
         if ($request->has('user_id')) {
@@ -129,7 +129,7 @@ class ReviewController extends Controller
                 }
             }
 
-            $review->load(['user', 'shop', 'publishedImages']);
+            $review->load(['user', 'shop.publishedImages', 'publishedImages']);
 
             DB::commit();
 
@@ -149,7 +149,7 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        $review->load(['user', 'shop', 'publishedImages']);
+        $review->load(['user', 'shop.publishedImages', 'publishedImages']);
 
         return new ReviewResource($review);
     }
@@ -179,7 +179,7 @@ class ReviewController extends Controller
         }
 
         $review->update($validator->validated());
-        $review->load(['user', 'shop', 'publishedImages']);
+        $review->load(['user', 'shop.publishedImages', 'publishedImages']);
 
         return new ReviewResource($review);
     }

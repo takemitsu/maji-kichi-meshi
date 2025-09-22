@@ -79,6 +79,7 @@ export interface Review {
         name: string
         address?: string
         image_url?: string
+        images?: ShopImage[]
     }
     created_at: string
     updated_at: string

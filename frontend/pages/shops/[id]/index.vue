@@ -68,6 +68,21 @@
                                     </svg>
                                     {{ shop.phone }}
                                 </div>
+                                <!-- Google Maps リンク -->
+                                <a
+                                    :href="googleMapsUrl"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors">
+                                    <svg
+                                        class="flex-shrink-0 mr-1.5 h-4 w-4"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
+                                    </svg>
+                                    Google Mapsで探す
+                                </a>
                             </div>
                         </div>
                         <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
@@ -349,6 +364,13 @@ const error = ref('')
 const selectedImage = ref<ShopImage | null>(null)
 
 const shopId = computed(() => parseInt(route.params.id as string))
+
+// Google Maps URL生成
+const googleMapsUrl = computed(() => {
+    if (!shop.value) return ''
+    const query = encodeURIComponent(`${shop.value.name} 吉祥寺`)
+    return `https://www.google.co.jp/maps/search/?api=1&query=${query}`
+})
 
 // 店舗データ取得
 const loadShop = async () => {

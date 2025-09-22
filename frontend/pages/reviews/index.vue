@@ -87,25 +87,28 @@
                             <div class="flex items-start space-x-4">
                                 <!-- 店舗画像 -->
                                 <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                                    <template v-if="review.shop?.image_url">
+                                    <template v-if="review.shop?.images && review.shop.images.length > 0">
                                         <img
-                                            :src="review.shop.image_url"
+                                            :src="review.shop.images[0].urls.thumbnail"
                                             :alt="review.shop.name"
                                             class="w-full h-full object-cover"
                                             @error="handleShopImageError" />
                                     </template>
                                     <template v-else>
-                                        <div class="w-full h-full flex items-center justify-center">
-                                            <svg
-                                                class="w-8 h-8 text-gray-400 fill-none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H7m-2 0h2m0 0h4"></path>
-                                            </svg>
+                                        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                            <div class="text-center">
+                                                <svg
+                                                    class="w-8 h-8 text-gray-400 fill-none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                                <p class="mt-1 text-xs text-gray-700">画像なし</p>
+                                            </div>
                                         </div>
                                     </template>
                                 </div>

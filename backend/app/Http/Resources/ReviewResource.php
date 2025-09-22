@@ -28,10 +28,20 @@ class ReviewResource extends JsonResource
             'has_images' => $this->hasImages(),
             'images' => ReviewImageResource::collection($this->whenLoaded('publishedImages')),
             'user' => new UserResource($this->whenLoaded('user')),
-            'shop' => [
-                'id' => $this->shop_id,
-                'name' => $this->whenLoaded('shop', fn () => $this->shop->name),
-            ],
+            'shop' => $this->whenLoaded('shop', function () {
+                return [
+                    'id' => $this->shop->id,
+                    'name' => $this->shop->name,
+                    'address' => $this->shop->address,
+                    'images' => $this->shop->publishedImages->map(function ($image) {
+                        return [
+                            'id' => $image->id,
+                            'urls' => $image->urls,
+                            'sort_order' => $image->sort_order,
+                        ];
+                    }),
+                ];
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
