@@ -40,10 +40,12 @@ Future: Mobile Apps → Same API
 - **マイグレーション**: Laravel標準 (19ファイル)
 
 ### 外部サービス
-- **OAuth**: Google専用
-- **地図・店舗**: Google Places API, Google Maps API
-- **画像処理**: Intervention Image (4サイズ自動生成)
-- **管理機能**: Laravel Filament (完全実装済み)
+- **OAuth**: Google OAuth 2.0（実装済み）
+- **地図連携**: Google Maps リンク（実装済み: 店名での検索リンク生成）
+- **店舗情報**: Google Places API（将来実装予定）
+- **画像処理**: Intervention Image（実装済み: 遅延生成対応）
+- **管理機能**: Laravel Filament（実装済み）
+- **キャッシュ**: Redis（実装済み: Rate Limiter用）
 
 ## 認証システム
 
@@ -390,6 +392,8 @@ frontend/
 - [x] 管理者システム (Laravel Filament - 全管理機能)
 - [x] 統計ダッシュボード (StatsController + フロントエンド統合)
 - [x] プロフィール画像機能 (ProfileImageService)
+- [x] 画像遅延生成機能（LazyImageService - 2025-09-22デプロイ済み）
+- [x] Google Maps リンク連携（店舗詳細から検索リンク生成）
 - [ ] Google Places API 連携 (将来実装予定)
 
 ### Phase 3: Frontend Integration ✅ 完了

@@ -38,9 +38,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Web/Mobile共通認証
 - ハイブリッド認証: 一般ユーザー(JWT) + 管理者(セッション) - ✅ 実装完了
 
-### External APIs
-- Google Places API (店舗情報)
-- Google Maps API (地図表示)
+### External Services
+- Google Maps リンク連携（実装済み: 店名検索リンク）
+- Google Places API（将来実装予定: 店舗情報取得）
+- Google OAuth 2.0（実装済み: ユーザー認証）
 
 ## Architecture
 
@@ -192,7 +193,8 @@ maji-kichi-meshi/
 - 「俺の吉祥寺○○ランキング」公開
 
 ### 外部連携
-- Google Places/Maps API（店舗情報、地図）
+- Google Maps リンク（店舗詳細から「Google Mapsで探す」リンク）
+- Google Places API（将来実装予定: 店舗情報自動取得）
 
 ## Database Design
 
