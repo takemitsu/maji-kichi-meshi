@@ -32,6 +32,7 @@ Future: Mobile Apps → Same API
 - **認証**: JWT (tymon/jwt-auth) + OAuth (Laravel Socialite)
 - **管理画面**: Laravel Filament
 - **サーバー**: Sakura VPS + nginx + PHP-FPM
+- **キャッシュ**: Redis (Rate Limiter専用, DB1使用)
 
 ### データベース
 - **本番環境**: MySQL

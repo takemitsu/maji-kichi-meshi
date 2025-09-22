@@ -26,6 +26,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - MySQL (本番環境)
 - SQLite (開発環境)
 
+### Cache System
+- **Redis** (2025-09-22〜)
+  - Rate Limiter専用
+  - Database 1を使用
+  - デッドロック問題解消のためdatabaseキャッシュから移行
+
 ### Authentication
 - OAuth: Google (専用) ※将来的に要望があれば他プロバイダー追加可能
 - Laravel Socialite → JWTトークン発行
