@@ -30,14 +30,14 @@
                 </nav>
 
                 <!-- ヘッダー -->
-                <div class="mb-8">
+                <div class="mb-4">
                     <div class="md:flex md:items-center md:justify-between">
                         <div class="min-w-0 flex-1">
                             <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                                 {{ shop.name }}
                             </h1>
                             <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
-                                <div class="flex items-center text-sm text-gray-700">
+                                <div v-if="shop.address" class="flex items-center text-sm text-gray-700">
                                     <svg
                                         class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400 fill-none"
                                         stroke="currentColor"
@@ -124,7 +124,6 @@
 
                             <!-- 店舗画像ギャラリー -->
                             <div v-if="shop.images && shop.images.length > 0" class="mb-6">
-                                <h4 class="text-sm font-medium text-gray-700 mb-3">店舗画像</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div
                                         v-for="image in shop.images"
@@ -153,7 +152,6 @@
                             </div>
                             <!-- 画像なしプレースホルダー -->
                             <div v-else class="mb-6">
-                                <h4 class="text-sm font-medium text-gray-700 mb-3">店舗画像</h4>
                                 <div class="h-32 bg-gray-200 rounded-lg flex items-center justify-center">
                                     <div class="text-center">
                                         <svg

@@ -253,9 +253,9 @@ const submitForm = async () => {
 
         const updateData = {
             name: form.value.name?.trim() || '',
-            address: form.value.address?.trim() || '',
-            phone: form.value.phone?.trim() || undefined,
-            description: form.value.description?.trim() || undefined,
+            address: form.value.address?.trim() || null,
+            phone: form.value.phone?.trim() || null,
+            description: form.value.description?.trim() || null,
             category_ids: form.value.category_ids || [],
         }
 
