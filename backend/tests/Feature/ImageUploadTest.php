@@ -125,7 +125,7 @@ class ImageUploadTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJson([
-            'error' => 'Maximum 5 images allowed per review',
+            'error' => 'Maximum 5 images allowed',
         ]);
     }
 

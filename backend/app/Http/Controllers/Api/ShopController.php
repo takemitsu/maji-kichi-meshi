@@ -9,11 +9,15 @@ use App\Http\Requests\ShopUploadImagesRequest;
 use App\Http\Resources\ShopResource;
 use App\Models\Shop;
 use App\Models\ShopImage;
+use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller
 {
+    public function __construct(
+        protected ImageUploadService $imageUploadService
+    ) {}
+
     /**
      * Display a listing of shops.
      */
@@ -116,28 +120,12 @@ class ShopController extends Controller
      */
     public function uploadImages(ShopUploadImagesRequest $request, Shop $shop)
     {
-        // Check current image count
-        $currentImageCount = $shop->images()->count();
-        $newImageCount = count($request->file('images'));
-
-        if ($currentImageCount + $newImageCount > 10) {
-            return response()->json([
-                'error' => 'Maximum 10 images allowed per shop',
-            ], 422);
-        }
-
-        DB::beginTransaction();
         try {
-            $uploadedImages = [];
-            $sortOrder = $currentImageCount;
-
-            foreach ($request->file('images') as $imageFile) {
-                $shopImage = ShopImage::createFromUpload($shop->id, $imageFile, $sortOrder);
-                $uploadedImages[] = $shopImage;
-                $sortOrder++;
-            }
-
-            DB::commit();
+            $uploadedImages = $this->imageUploadService->uploadImages(
+                $shop,
+                $request->file('images'),
+                maxImages: 10
+            );
 
             return response()->json([
                 'message' => 'Images uploaded successfully',
@@ -153,12 +141,9 @@ class ShopController extends Controller
                 ],
             ], 201);
         } catch (\Exception $e) {
-            DB::rollBack();
-
             return response()->json([
-                'error' => 'Failed to upload images',
-                'message' => $e->getMessage(),
-            ], 500);
+                'error' => $e->getMessage(),
+            ], 422);
         }
     }
 
@@ -172,7 +157,7 @@ class ShopController extends Controller
             return response()->json(['error' => 'Image does not belong to this shop'], 403);
         }
 
-        $image->delete();
+        $this->imageUploadService->deleteImage($image);
 
         return response()->json(['message' => 'Image deleted successfully']);
     }
@@ -187,20 +172,11 @@ class ShopController extends Controller
             'image_ids.*' => 'exists:shop_images,id',
         ]);
 
-        DB::beginTransaction();
         try {
-            foreach ($request->image_ids as $index => $imageId) {
-                ShopImage::where('id', $imageId)
-                    ->where('shop_id', $shop->id)
-                    ->update(['sort_order' => $index]);
-            }
-
-            DB::commit();
+            $this->imageUploadService->reorderImages($shop, $request->image_ids);
 
             return response()->json(['message' => 'Images reordered successfully']);
         } catch (\Exception $e) {
-            DB::rollBack();
-
             return response()->json([
                 'error' => 'Failed to reorder images',
                 'message' => $e->getMessage(),

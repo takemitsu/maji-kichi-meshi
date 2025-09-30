@@ -7,12 +7,16 @@ use App\Http\Requests\RankingStoreRequest;
 use App\Http\Requests\RankingUpdateRequest;
 use App\Http\Resources\RankingResource;
 use App\Models\Ranking;
+use App\Services\RankingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class RankingController extends Controller
 {
+    public function __construct(
+        protected RankingService $rankingService
+    ) {}
+
     public function index(Request $request)
     {
         // バリデーション
@@ -69,78 +73,31 @@ class RankingController extends Controller
 
     public function store(RankingStoreRequest $request)
     {
-        DB::beginTransaction();
-
         try {
-            $userId = Auth::id();
-
-            // Create ranking record
-            $ranking = Ranking::create([
-                'user_id' => $userId,
-                'category_id' => $request->category_id,
-                'title' => $request->title,
-                'description' => $request->description,
-                'is_public' => $request->boolean('is_public', false),
-            ]);
-
-            // Create ranking items
-            foreach ($request->shops as $shopData) {
-                $ranking->items()->create([
-                    'shop_id' => $shopData['shop_id'],
-                    'rank_position' => $shopData['position'],
-                ]);
-            }
-
-            DB::commit();
-
-            // Load relationships for response
-            $ranking->load(['user', 'category', 'items.shop.publishedImages', 'items.shop.categories']);
+            $ranking = $this->rankingService->create(
+                $request->validated(),
+                Auth::id()
+            );
 
             return response()->json([
                 'data' => new RankingResource($ranking),
                 'message' => 'Ranking created successfully',
             ], 201);
         } catch (\Exception $e) {
-            DB::rollback();
-
             return response()->json(['error' => 'Failed to create ranking'], 500);
         }
     }
 
     public function update(RankingUpdateRequest $request, Ranking $ranking)
     {
-        DB::beginTransaction();
-
         try {
-            // Update ranking basic info
-            $ranking->update([
-                'category_id' => $request->category_id ?? $ranking->category_id,
-                'title' => $request->title,
-                'description' => $request->description,
-                'is_public' => $request->boolean('is_public', $ranking->is_public),
-            ]);
-
-            // Delete existing items and create new ones
-            $ranking->items()->delete();
-
-            foreach ($request->shops as $shopData) {
-                $ranking->items()->create([
-                    'shop_id' => $shopData['shop_id'],
-                    'rank_position' => $shopData['position'],
-                ]);
-            }
-
-            DB::commit();
-
-            // Load relationships for response
-            $ranking->load(['user', 'category', 'items.shop.publishedImages', 'items.shop.categories']);
+            $ranking = $this->rankingService->update($ranking, $request->validated());
 
             return response()->json([
                 'data' => new RankingResource($ranking),
                 'message' => 'Ranking updated successfully',
             ], 200);
         } catch (\Exception $e) {
-            DB::rollback();
             \Log::error('Ranking update failed', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
@@ -159,16 +116,10 @@ class RankingController extends Controller
         }
 
         try {
-            $ranking->delete(); // Cascade delete handles ranking_items
+            $this->rankingService->delete($ranking);
 
             return response()->json(['message' => 'Ranking deleted successfully']);
         } catch (\Exception $e) {
-            \Log::error('Ranking deletion failed', [
-                'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
-                'ranking_id' => $ranking->id,
-            ]);
-
             return response()->json(['error' => 'Failed to delete ranking'], 500);
         }
     }

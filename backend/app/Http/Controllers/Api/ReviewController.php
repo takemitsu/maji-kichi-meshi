@@ -9,12 +9,17 @@ use App\Http\Requests\ReviewUploadImagesRequest;
 use App\Http\Resources\ReviewResource;
 use App\Models\Review;
 use App\Models\ReviewImage;
+use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ReviewController extends Controller
 {
+    public function __construct(
+        protected ImageUploadService $imageUploadService
+    ) {}
+
     /**
      * Display a listing of reviews.
      */
@@ -181,26 +186,12 @@ class ReviewController extends Controller
      */
     public function uploadImages(ReviewUploadImagesRequest $request, Review $review)
     {
-        // Check current image count
-        $currentImageCount = $review->images()->count();
-        $newImageCount = count($request->file('images'));
-
-        if ($currentImageCount + $newImageCount > 5) {
-            return response()->json([
-                'error' => 'Maximum 5 images allowed per review',
-            ], 422);
-        }
-
-        DB::beginTransaction();
         try {
-            $uploadedImages = [];
-
-            foreach ($request->file('images') as $imageFile) {
-                $reviewImage = ReviewImage::createFromUpload($review->id, $imageFile);
-                $uploadedImages[] = $reviewImage;
-            }
-
-            DB::commit();
+            $uploadedImages = $this->imageUploadService->uploadImages(
+                $review,
+                $request->file('images'),
+                maxImages: 5
+            );
 
             return response()->json([
                 'message' => 'Images uploaded successfully',
@@ -215,8 +206,6 @@ class ReviewController extends Controller
                 ],
             ], 201);
         } catch (\Exception $e) {
-            DB::rollBack();
-
             \Log::error('Image upload failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -224,9 +213,8 @@ class ReviewController extends Controller
             ]);
 
             return response()->json([
-                'error' => 'Failed to upload images',
-                'message' => $e->getMessage(),
-            ], 500);
+                'error' => $e->getMessage(),
+            ], 422);
         }
     }
 
@@ -245,7 +233,7 @@ class ReviewController extends Controller
             return response()->json(['error' => 'Image does not belong to this review'], 404);
         }
 
-        $image->delete();
+        $this->imageUploadService->deleteImage($image);
 
         return response()->json(['message' => 'Image deleted successfully'], 200);
     }

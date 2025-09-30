@@ -154,7 +154,7 @@ class ShopImageTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonFragment(['error' => 'Maximum 10 images allowed per shop']);
+            ->assertJsonFragment(['error' => 'Maximum 10 images allowed']);
     }
 
     public function test_test_authenticated_user_can_delete_shop_image()
