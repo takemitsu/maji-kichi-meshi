@@ -1,8 +1,10 @@
 <?php
+
 // テスト画像を作成するスクリプト
 
 // ダミー画像を作成（100x100の画像）
-function createTestImage($filename, $text) {
+function createTestImage($filename, $text)
+{
     $image = imagecreatetruecolor(100, 100);
     $bgColor = imagecolorallocate($image, rand(100, 255), rand(100, 255), rand(100, 255));
     $textColor = imagecolorallocate($image, 0, 0, 0);
@@ -36,7 +38,7 @@ foreach ($dirs as $dir) {
 
 // ShopImage用のテスト画像を作成（3件）
 for ($i = 1; $i <= 3; $i++) {
-    $filename = "shop-test-$i-" . time() . ".jpg";
+    $filename = "shop-test-$i-" . time() . '.jpg';
 
     // 各サイズの画像を作成
     createTestImage("storage/app/public/images/shops/thumbnail/$filename", "Shop$i-T");
@@ -49,7 +51,7 @@ for ($i = 1; $i <= 3; $i++) {
 
 // ReviewImage用のテスト画像を作成（3件）
 for ($i = 1; $i <= 3; $i++) {
-    $filename = "review-test-$i-" . time() . ".jpg";
+    $filename = "review-test-$i-" . time() . '.jpg';
 
     // 各サイズの画像を作成
     createTestImage("storage/app/public/images/reviews/thumbnail/$filename", "Rev$i-T");

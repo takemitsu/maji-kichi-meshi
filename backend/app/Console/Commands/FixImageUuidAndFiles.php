@@ -46,6 +46,7 @@ class FixImageUuidAndFiles extends Command
                 $this->error("  - {$column}");
             }
             $this->error('Please run migrations first: php artisan migrate');
+
             return Command::FAILURE;
         }
 
