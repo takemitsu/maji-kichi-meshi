@@ -19,11 +19,11 @@ class ReviewImageResource extends Resource
 
     protected static ?string $navigationGroup = 'コンテンツ管理';
 
-    protected static ?string $navigationLabel = '画像検閲';
+    protected static ?string $navigationLabel = 'レビュー画像検閲';
 
     protected static ?string $modelLabel = 'レビュー画像';
 
-    protected static ?string $pluralModelLabel = 'レビュー画像一覧';
+    protected static ?string $pluralModelLabel = 'レビュー画像検閲';
 
     public static function form(Form $form): Form
     {
@@ -61,14 +61,17 @@ class ReviewImageResource extends Resource
                 Tables\Columns\ImageColumn::make('thumbnail_path')
                     ->label('サムネイル')
                     ->disk('public')
-                    ->height(50),
+                    ->height(50)
+                    ->grow(false),
                 Tables\Columns\TextColumn::make('review.user.name')
                     ->label('投稿者')
-                    ->sortable(),
+                    ->sortable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('review.shop.name')
                     ->label('店舗')
                     ->sortable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('moderation_status')
                     ->label('検閲ステータス')
                     ->badge()
@@ -84,15 +87,8 @@ class ReviewImageResource extends Resource
                         'rejected' => '拒否',
                         default => '不明',
                     })
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('original_name')
-                    ->label('ファイル名')
-                    ->limit(30)
-                    ->tooltip(fn (ReviewImage $record): string => $record->original_name),
-                Tables\Columns\TextColumn::make('file_size')
-                    ->label('サイズ')
-                    ->formatStateUsing(fn (int $state): string => number_format($state / 1024, 1) . 'KB')
-                    ->sortable(),
+                    ->sortable()
+                    ->width('1%'),
                 Tables\Columns\TextColumn::make('moderator.name')
                     ->label('モデレーター')
                     ->sortable()

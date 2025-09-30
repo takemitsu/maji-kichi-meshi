@@ -4,18 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ShopImageResource\Pages;
 use App\Models\ShopImage;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -27,11 +23,11 @@ class ShopImageResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-photo';
 
-    protected static ?string $navigationLabel = '店舗画像';
+    protected static ?string $navigationLabel = '店舗画像検閲';
 
     protected static ?string $modelLabel = '店舗画像';
 
-    protected static ?string $pluralModelLabel = '店舗画像';
+    protected static ?string $pluralModelLabel = '店舗画像検閲';
 
     protected static ?string $navigationGroup = 'コンテンツ管理';
 
@@ -39,35 +35,28 @@ class ShopImageResource extends Resource
     {
         return $form
             ->schema([
-                Hidden::make('id'),
-
-                Select::make('shop_id')
-                    ->relationship('shop', 'name')
-                    ->searchable()
-                    ->required()
-                    ->disabled(),
-
+                Select::make('moderation_status')
+                    ->label('検閲ステータス')
+                    ->options([
+                        'published' => '公開',
+                        'under_review' => '検閲中',
+                        'rejected' => '拒否',
+                    ])
+                    ->required(),
+                \Filament\Forms\Components\Textarea::make('moderation_notes')
+                    ->label('検閲メモ')
+                    ->columnSpanFull(),
                 TextInput::make('original_name')
-                    ->label('元のファイル名')
+                    ->label('オリジナルファイル名')
                     ->disabled(),
-
+                TextInput::make('file_size')
+                    ->label('ファイルサイズ')
+                    ->numeric()
+                    ->suffix('bytes')
+                    ->disabled(),
                 TextInput::make('mime_type')
                     ->label('MIMEタイプ')
                     ->disabled(),
-
-                TextInput::make('file_size')
-                    ->label('ファイルサイズ（バイト）')
-                    ->disabled(),
-
-                Select::make('moderation_status')
-                    ->label('ステータス')
-                    ->options([
-                        'published' => '公開',
-                        'under_review' => '審査中',
-                        'rejected' => '却下',
-                    ])
-                    ->required(),
-
                 TextInput::make('sort_order')
                     ->label('並び順')
                     ->numeric()
@@ -79,106 +68,131 @@ class ShopImageResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('urls.thumbnail')
+                ImageColumn::make('thumbnail_path')
                     ->label('サムネイル')
-                    ->circular(),
+                    ->disk('public')
+                    ->height(50)
+                    ->grow(false),
 
                 TextColumn::make('shop.name')
                     ->label('店舗名')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->wrap(),
 
-                TextColumn::make('original_name')
-                    ->label('ファイル名')
-                    ->searchable()
-                    ->limit(30),
-
-                BadgeColumn::make('moderation_status')
-                    ->label('ステータス')
-                    ->colors([
-                        'success' => 'published',
-                        'warning' => 'under_review',
-                        'danger' => 'rejected',
-                    ])
-                    ->formatStateUsing(function ($state) {
-                        return match ($state) {
-                            'published' => '公開',
-                            'under_review' => '審査中',
-                            'rejected' => '却下',
-                            default => $state,
-                        };
-                    }),
+                TextColumn::make('moderation_status')
+                    ->label('検閲ステータス')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'published' => 'success',
+                        'under_review' => 'warning',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'published' => '公開',
+                        'under_review' => '検閲中',
+                        'rejected' => '拒否',
+                        default => '不明',
+                    })
+                    ->sortable()
+                    ->width('1%'),
 
                 TextColumn::make('sort_order')
                     ->label('並び順')
-                    ->sortable(),
+                    ->sortable()
+                    ->width('1%'),
 
-                TextColumn::make('file_size')
-                    ->label('サイズ')
-                    ->formatStateUsing(function ($state) {
-                        return $state ? number_format($state / 1024, 2) . ' KB' : '';
-                    }),
-
-                TextColumn::make('created_at')
-                    ->label('作成日')
-                    ->dateTime('Y-m-d H:i')
-                    ->sortable(),
+                TextColumn::make('moderator.name')
+                    ->label('モデレーター')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('moderated_at')
-                    ->label('審査日')
+                    ->label('検閲日時')
+                    ->dateTime('Y-m-d H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('created_at')
+                    ->label('投稿日時')
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('moderation_status')
-                    ->label('ステータス')
+                    ->label('検閲ステータス')
                     ->options([
                         'published' => '公開',
-                        'under_review' => '審査中',
-                        'rejected' => '却下',
+                        'under_review' => '検閲中',
+                        'rejected' => '拒否',
                     ]),
-
+                SelectFilter::make('mime_type')
+                    ->label('ファイル形式')
+                    ->options([
+                        'image/jpeg' => 'JPEG',
+                        'image/png' => 'PNG',
+                        'image/gif' => 'GIF',
+                        'image/webp' => 'WebP',
+                    ]),
                 SelectFilter::make('shop_id')
                     ->label('店舗')
                     ->relationship('shop', 'name')
                     ->searchable(),
             ])
             ->actions([
+                Action::make('view_image')
+                    ->label('画像表示')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (ShopImage $record): string => $record->getAttribute('urls')['medium'])
+                    ->openUrlInNewTab(),
+                EditAction::make(),
                 Action::make('approve')
                     ->label('承認')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (ShopImage $record) => $record->moderation_status !== 'published')
+                    ->requiresConfirmation()
                     ->action(function (ShopImage $record) {
                         $record->approve(auth()->id());
-                        Notification::make()
-                            ->title('画像を承認しました')
-                            ->success()
-                            ->send();
-                    }),
-
+                    })
+                    ->visible(fn (ShopImage $record): bool => $record->moderation_status !== 'published'),
                 Action::make('reject')
-                    ->label('却下')
+                    ->label('拒否')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn (ShopImage $record) => $record->moderation_status !== 'rejected')
+                    ->requiresConfirmation()
                     ->action(function (ShopImage $record) {
                         $record->reject(auth()->id());
-                        Notification::make()
-                            ->title('画像を却下しました')
-                            ->success()
-                            ->send();
-                    }),
-
-                EditAction::make(),
-                DeleteAction::make(),
+                    })
+                    ->visible(fn (ShopImage $record): bool => $record->moderation_status !== 'rejected'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    \Filament\Tables\Actions\BulkAction::make('approve')
+                        ->label('一括承認')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function ($records) {
+                            $records->each(function ($record) {
+                                $record->approve(auth()->id());
+                            });
+                        }),
+                    \Filament\Tables\Actions\BulkAction::make('reject')
+                        ->label('一括拒否')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(function ($records) {
+                            $records->each(function ($record) {
+                                $record->reject(auth()->id());
+                            });
+                        }),
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('created_at', 'desc')
+            ->poll('30s');
     }
 
     public static function getRelations(): array
