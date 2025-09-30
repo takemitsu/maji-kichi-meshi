@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ShopIndexRequest;
 use App\Http\Requests\ShopStoreRequest;
 use App\Http\Requests\ShopUpdateRequest;
 use App\Http\Requests\ShopUploadImagesRequest;
@@ -21,7 +22,7 @@ class ShopController extends Controller
     /**
      * Display a listing of shops.
      */
-    public function index(Request $request)
+    public function index(ShopIndexRequest $request)
     {
         $query = Shop::with(['categories', 'publishedImages']);
 

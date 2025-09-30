@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RankingIndexRequest;
 use App\Http\Requests\RankingStoreRequest;
 use App\Http\Requests\RankingUpdateRequest;
 use App\Http\Resources\RankingResource;
@@ -17,17 +18,8 @@ class RankingController extends Controller
         protected RankingService $rankingService
     ) {}
 
-    public function index(Request $request)
+    public function index(RankingIndexRequest $request)
     {
-        // バリデーション
-        $request->validate([
-            'search' => 'sometimes|string|max:255',
-            'category_id' => 'sometimes|exists:categories,id',
-            'user_id' => 'sometimes|exists:users,id',
-            'is_public' => 'sometimes|boolean',
-            'per_page' => 'sometimes|integer|min:1|max:50',
-        ]);
-
         $query = Ranking::with(['user', 'category', 'items.shop.publishedImages', 'items.shop.categories']);
 
         // Search by title

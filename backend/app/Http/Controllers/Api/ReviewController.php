@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ReviewIndexRequest;
 use App\Http\Requests\ReviewStoreRequest;
 use App\Http\Requests\ReviewUpdateRequest;
 use App\Http\Requests\ReviewUploadImagesRequest;
@@ -23,21 +24,8 @@ class ReviewController extends Controller
     /**
      * Display a listing of reviews.
      */
-    public function index(Request $request)
+    public function index(ReviewIndexRequest $request)
     {
-        // バリデーション
-        $request->validate([
-            'user_id' => 'sometimes|exists:users,id',
-            'shop_id' => 'sometimes|exists:shops,id',
-            'rating' => 'sometimes|integer|min:1|max:5',
-            'repeat_intention' => 'sometimes|in:yes,maybe,no',
-            'start_date' => 'sometimes|date',
-            'end_date' => 'sometimes|date|after_or_equal:start_date',
-            'recent_only' => 'sometimes|boolean',
-            'recent_days' => 'sometimes|integer|min:1|max:365',
-            'per_page' => 'sometimes|integer|min:1|max:50',
-        ]);
-
         $query = Review::with(['user', 'shop.publishedImages', 'publishedImages']);
 
         // Filter by user
