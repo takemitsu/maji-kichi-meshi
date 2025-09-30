@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\ImageService;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -107,19 +108,18 @@ class ShopImage extends Model
         return $this->moderation_status === 'rejected';
     }
 
-    public function getUrlsAttribute(): array
+    protected function urls(): Attribute
     {
-        $appUrl = config('app.url');
-        $filename = $this->filename;
-
-        return [
-            'thumbnail' => "{$appUrl}/api/images/shops/thumbnail/{$filename}",
-            'small' => "{$appUrl}/api/images/shops/small/{$filename}",
-            'medium' => "{$appUrl}/api/images/shops/medium/{$filename}",
-            'original' => "{$appUrl}/api/images/shops/original/{$filename}",
-            // 後方互換性のためlargeも提供（originalと同じ）
-            'large' => "{$appUrl}/api/images/shops/original/{$filename}",
-        ];
+        return Attribute::make(
+            get: fn () => [
+                'thumbnail' => config('app.url') . "/api/images/shops/thumbnail/{$this->filename}",
+                'small' => config('app.url') . "/api/images/shops/small/{$this->filename}",
+                'medium' => config('app.url') . "/api/images/shops/medium/{$this->filename}",
+                'original' => config('app.url') . "/api/images/shops/original/{$this->filename}",
+                // 後方互換性のためlargeも提供（originalと同じ）
+                'large' => config('app.url') . "/api/images/shops/original/{$this->filename}",
+            ],
+        );
     }
 
     // =============================================================================

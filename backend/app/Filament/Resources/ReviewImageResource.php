@@ -128,7 +128,7 @@ class ReviewImageResource extends Resource
                 Tables\Actions\Action::make('view_image')
                     ->label('画像表示')
                     ->icon('heroicon-o-eye')
-                    ->url(fn (ReviewImage $record): string => $record->urls['medium'])
+                    ->url(fn (ReviewImage $record): string => $record->getAttribute('urls')['medium'])
                     ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('approve')

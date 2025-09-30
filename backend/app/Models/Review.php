@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -113,15 +114,15 @@ class Review extends Model
     /**
      * Get formatted repeat intention text
      */
-    public function getRepeatIntentionTextAttribute()
+    protected function repeatIntentionText(): Attribute
     {
-        $intentions = [
-            'yes' => 'また行く',
-            'maybe' => 'わからん',
-            'no' => '行かない',
-        ];
-
-        return $intentions[$this->repeat_intention];
+        return Attribute::make(
+            get: fn () => [
+                'yes' => 'また行く',
+                'maybe' => 'わからん',
+                'no' => '行かない',
+            ][$this->repeat_intention],
+        );
     }
 
     /**

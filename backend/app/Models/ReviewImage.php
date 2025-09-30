@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\ImageService;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -63,19 +64,18 @@ class ReviewImage extends Model
     /**
      * Get all image URLs as array
      */
-    public function getUrlsAttribute()
+    protected function urls(): Attribute
     {
-        $appUrl = config('app.url');
-        $filename = $this->filename;
-
-        return [
-            'thumbnail' => "{$appUrl}/api/images/reviews/thumbnail/{$filename}",
-            'small' => "{$appUrl}/api/images/reviews/small/{$filename}",
-            'medium' => "{$appUrl}/api/images/reviews/medium/{$filename}",
-            'original' => "{$appUrl}/api/images/reviews/original/{$filename}",
-            // 後方互換性のためlargeも提供（originalと同じ）
-            'large' => "{$appUrl}/api/images/reviews/original/{$filename}",
-        ];
+        return Attribute::make(
+            get: fn () => [
+                'thumbnail' => config('app.url') . "/api/images/reviews/thumbnail/{$this->filename}",
+                'small' => config('app.url') . "/api/images/reviews/small/{$this->filename}",
+                'medium' => config('app.url') . "/api/images/reviews/medium/{$this->filename}",
+                'original' => config('app.url') . "/api/images/reviews/original/{$this->filename}",
+                // 後方互換性のためlargeも提供（originalと同じ）
+                'large' => config('app.url') . "/api/images/reviews/original/{$this->filename}",
+            ],
+        );
     }
 
     /**

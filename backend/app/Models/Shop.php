@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,17 +56,21 @@ class Shop extends Model
     /**
      * Get average rating from reviews
      */
-    public function getAverageRatingAttribute()
+    protected function averageRating(): Attribute
     {
-        return $this->reviews()->avg('rating') ?: 0;
+        return Attribute::make(
+            get: fn () => $this->reviews()->avg('rating') ?: 0,
+        );
     }
 
     /**
      * Get review count
      */
-    public function getReviewCountAttribute()
+    protected function reviewCount(): Attribute
     {
-        return $this->reviews()->count();
+        return Attribute::make(
+            get: fn () => $this->reviews()->count(),
+        );
     }
 
     /**
