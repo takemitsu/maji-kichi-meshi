@@ -73,18 +73,18 @@
             const codes = @json($recoveryCodes);
             const printContent = `
                 <h2>Two-Factor Authentication Recovery Codes</h2>
-                <p>Date: ${new Date().toLocaleDateString('ja-JP')}</p>
+                <p>Date: @${new Date().toLocaleDateString('ja-JP')}</p>
                 <ul>
-                    ${codes.map(code => `<li style="font-family: monospace; padding: 5px;">${code}</li>`).join('')}
+                    @${codes.map(code => `<li style="font-family: monospace; padding: 5px;">@${code}</li>`).join('')}
                 </ul>
                 <p><strong>Warning:</strong> Keep these codes safe. Each code can only be used once.</p>
             `;
-            
+
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html>
                     <head><title>Recovery Codes</title></head>
-                    <body>${printContent}</body>
+                    <body>@${printContent}</body>
                 </html>
             `);
             printWindow.document.close();
@@ -94,12 +94,12 @@
         function downloadCodes() {
             const codes = @json($recoveryCodes);
             const content = `Two-Factor Authentication Recovery Codes
-Generated: ${new Date().toLocaleDateString('ja-JP')}
+Generated: @${new Date().toLocaleDateString('ja-JP')}
 
-${codes.join('\n')}
+@${codes.join('\n')}
 
 Warning: Keep these codes safe. Each code can only be used once.`;
-            
+
             const blob = new Blob([content], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
