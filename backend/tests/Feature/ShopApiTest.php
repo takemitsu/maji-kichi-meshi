@@ -152,7 +152,7 @@ class ShopApiTest extends TestCase
         $response->assertStatus(422);
 
         // Debug: check actual validation errors
-        $errors = $response->json('messages');
+        $errors = $response->json('errors');
         $this->assertArrayHasKey('name', $errors);
         // address, latitude, longitude are now nullable, so only name is required
     }

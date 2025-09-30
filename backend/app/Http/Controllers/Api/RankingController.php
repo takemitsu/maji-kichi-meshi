@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RankingStoreRequest;
+use App\Http\Requests\RankingUpdateRequest;
 use App\Http\Resources\RankingResource;
 use App\Models\Ranking;
 use Illuminate\Http\Request;
@@ -65,19 +67,8 @@ class RankingController extends Controller
         return new RankingResource($ranking);
     }
 
-    public function store(Request $request)
+    public function store(RankingStoreRequest $request)
     {
-        try {
-            $this->validateShopsRequest($request);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::warning('Ranking creation validation failed', [
-                'errors' => $e->errors(),
-                'request_data' => $request->all(),
-                'user_id' => auth('api')->id(),
-            ]);
-            throw $e;
-        }
-
         DB::beginTransaction();
 
         try {
@@ -116,11 +107,8 @@ class RankingController extends Controller
         }
     }
 
-    public function update(Request $request, Ranking $ranking)
+    public function update(RankingUpdateRequest $request, Ranking $ranking)
     {
-        $this->validateOwnership($ranking);
-        $this->validateShopsRequest($request);
-
         DB::beginTransaction();
 
         try {
@@ -165,7 +153,10 @@ class RankingController extends Controller
 
     public function destroy(Ranking $ranking)
     {
-        $this->validateOwnership($ranking);
+        // Check ownership
+        if ($ranking->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
 
         try {
             $ranking->delete(); // Cascade delete handles ranking_items
@@ -242,33 +233,5 @@ class RankingController extends Controller
         $rankings = $query->paginate($perPage);
 
         return RankingResource::collection($rankings);
-    }
-
-    /**
-     * ランキングのバリデーション
-     */
-    private function validateShopsRequest(Request $request)
-    {
-        return $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'nullable|exists:categories,id',
-            'is_public' => 'boolean',
-            'shops' => 'required|array|min:1|max:10',
-            'shops.*.shop_id' => 'required|exists:shops,id',
-            'shops.*.position' => 'required|integer|min:1',
-        ]);
-    }
-
-    /**
-     * 所有者チェック
-     */
-    private function validateOwnership(Ranking $ranking)
-    {
-        if (Auth::id() !== $ranking->user_id) {
-            throw new \Illuminate\Http\Exceptions\HttpResponseException(
-                response()->json(['error' => 'Unauthorized'], 403)
-            );
-        }
     }
 }

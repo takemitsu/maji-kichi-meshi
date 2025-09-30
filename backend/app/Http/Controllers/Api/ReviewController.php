@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ReviewStoreRequest;
+use App\Http\Requests\ReviewUpdateRequest;
+use App\Http\Requests\ReviewUploadImagesRequest;
 use App\Http\Resources\ReviewResource;
 use App\Models\Review;
 use App\Models\ReviewImage;
-use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
 {
@@ -79,42 +80,9 @@ class ReviewController extends Controller
     /**
      * Store a newly created review.
      */
-    public function store(Request $request)
+    public function store(ReviewStoreRequest $request)
     {
-        // フロントエンドからのcommentをmemoに変換
-        $requestData = $request->all();
-        if (isset($requestData['comment'])) {
-            $requestData['memo'] = $requestData['comment'];
-            unset($requestData['comment']);
-        }
-
-        $validator = Validator::make($requestData, [
-            'shop_id' => 'required|exists:shops,id',
-            'rating' => 'required|integer|min:1|max:5',
-            'repeat_intention' => 'required|in:yes,maybe,no',
-            'memo' => 'nullable|string|max:1000',
-            'visited_at' => 'required|date|before_or_equal:today',
-            'images' => 'nullable|array|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
-        ]);
-
-        if ($validator->fails()) {
-            \Log::warning('Review creation validation failed', [
-                'errors' => $validator->errors(),
-                'request_data' => $requestData, // 変換後のデータをログに出力
-                'original_request' => $request->all(), // 元のリクエストも記録
-                'user_id' => auth('api')->id(),
-            ]);
-
-            return response()->json([
-                'error' => 'Validation failed',
-                'messages' => $validator->errors(),
-            ], 422);
-        }
-
-        // Multiple reviews per shop are allowed - no duplicate check needed
-
-        $data = $validator->validated();
+        $data = $request->validated();
         $data['user_id'] = Auth::id();
 
         DB::beginTransaction();
@@ -157,28 +125,9 @@ class ReviewController extends Controller
     /**
      * Update the specified review.
      */
-    public function update(Request $request, Review $review)
+    public function update(ReviewUpdateRequest $request, Review $review)
     {
-        // Check if user owns the review
-        if ($review->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'rating' => 'sometimes|required|integer|min:1|max:5',
-            'repeat_intention' => 'sometimes|required|in:yes,maybe,no',
-            'memo' => 'nullable|string|max:1000',
-            'visited_at' => 'sometimes|required|date|before_or_equal:today',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => 'Validation failed',
-                'messages' => $validator->errors(),
-            ], 422);
-        }
-
-        $review->update($validator->validated());
+        $review->update($request->validated());
         $review->load(['user', 'shop.publishedImages', 'publishedImages']);
 
         return new ReviewResource($review);
@@ -230,48 +179,8 @@ class ReviewController extends Controller
     /**
      * Upload additional images to an existing review
      */
-    public function uploadImages(Request $request, Review $review)
+    public function uploadImages(ReviewUploadImagesRequest $request, Review $review)
     {
-        // Check if user owns the review
-        if ($review->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'images' => 'required|array|min:1|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB（現在のPHP制限に合わせる）
-        ]);
-
-        if ($validator->fails()) {
-            \Log::warning('Review image upload validation failed', [
-                'errors' => $validator->errors(),
-                'request_data' => $request->all(),
-                'files_info' => collect($request->file('images') ?? [])->map(function ($file) {
-                    if (!$file || !$file->isValid()) {
-                        return [
-                            'error' => 'Invalid file',
-                            'is_valid' => false,
-                        ];
-                    }
-
-                    return [
-                        'original_name' => $file->getClientOriginalName(),
-                        'mime_type' => $file->getMimeType(),
-                        'size' => $file->getSize(),
-                        'extension' => $file->getClientOriginalExtension(),
-                        'is_valid' => $file->isValid(),
-                    ];
-                }),
-                'user_id' => auth('api')->id(),
-                'review_id' => $review->id,
-            ]);
-
-            return response()->json([
-                'error' => 'Validation failed',
-                'messages' => $validator->errors(),
-            ], 422);
-        }
-
         // Check current image count
         $currentImageCount = $review->images()->count();
         $newImageCount = count($request->file('images'));

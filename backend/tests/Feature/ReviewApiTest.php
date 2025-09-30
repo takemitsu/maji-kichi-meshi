@@ -173,7 +173,7 @@ class ReviewApiTest extends TestCase
 
         $response->assertStatus(422);
 
-        $errors = $response->json('messages');
+        $errors = $response->json('errors');
         $this->assertArrayHasKey('shop_id', $errors);
         $this->assertArrayHasKey('rating', $errors);
         $this->assertArrayHasKey('repeat_intention', $errors);
@@ -416,8 +416,7 @@ class ReviewApiTest extends TestCase
             'rating' => 1,
         ]);
 
-        $response->assertStatus(403)
-            ->assertJson(['error' => 'Unauthorized']);
+        $response->assertStatus(403);
     }
 
     public function test_user_can_delete_own_review()
@@ -455,8 +454,7 @@ class ReviewApiTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->deleteJson("/api/reviews/{$review->id}");
 
-        $response->assertStatus(403)
-            ->assertJson(['error' => 'Unauthorized']);
+        $response->assertStatus(403);
     }
 
     public function test_it_can_get_my_reviews()

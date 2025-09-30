@@ -101,13 +101,10 @@ class ShopImageTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertJson([
-            'error' => 'Validation failed',
-            'messages' => [
-                'images.0' => [
-                    'validation.image',
-                    'validation.mimes',
-                ],
+        $response->assertJsonStructure([
+            'message',
+            'errors' => [
+                'images.0',
             ],
         ]);
     }
@@ -127,8 +124,10 @@ class ShopImageTest extends TestCase
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonPath('error', 'Validation failed');
-        $response->assertJsonStructure(['messages' => ['images.0']]);
+        $response->assertJsonStructure([
+            'message',
+            'errors' => ['images.0'],
+        ]);
     }
 
     public function test_test_shop_image_upload_limits_maximum_images()

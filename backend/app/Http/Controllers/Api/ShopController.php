@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ShopStoreRequest;
+use App\Http\Requests\ShopUpdateRequest;
+use App\Http\Requests\ShopUploadImagesRequest;
 use App\Http\Resources\ShopResource;
 use App\Models\Shop;
 use App\Models\ShopImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class ShopController extends Controller
 {
@@ -58,44 +60,9 @@ class ShopController extends Controller
     /**
      * Store a newly created shop.
      */
-    public function store(Request $request)
+    public function store(ShopStoreRequest $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'address' => 'nullable|string|max:500',
-                'latitude' => 'nullable|numeric|between:-90,90',
-                'longitude' => 'nullable|numeric|between:-180,180',
-                'phone' => 'nullable|string|max:20',
-                'website' => 'nullable|url|max:500',
-                'google_place_id' => 'nullable|string|unique:shops,google_place_id',
-                'category_ids' => 'nullable|array',
-                'category_ids.*' => 'exists:categories,id',
-            ]);
-
-            if ($validator->fails()) {
-                \Log::warning('Shop creation validation failed', [
-                    'errors' => $validator->errors(),
-                    'request_data' => $request->all(),
-                    'user_id' => auth('api')->id(),
-                ]);
-
-                return response()->json([
-                    'error' => 'Validation failed',
-                    'messages' => $validator->errors(),
-                ], 422);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Shop creation validation error', [
-                'error' => $e->getMessage(),
-                'request_data' => $request->all(),
-                'user_id' => auth('api')->id(),
-            ]);
-            throw $e;
-        }
-
-        $shop = Shop::create($validator->validated());
+        $shop = Shop::create($request->validated());
 
         // Attach categories if provided
         if ($request->has('category_ids')) {
@@ -120,47 +87,9 @@ class ShopController extends Controller
     /**
      * Update the specified shop.
      */
-    public function update(Request $request, Shop $shop)
+    public function update(ShopUpdateRequest $request, Shop $shop)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'sometimes|required|string|max:255',
-                'description' => 'nullable|string',
-                'address' => 'nullable|string|max:500',
-                'latitude' => 'nullable|numeric|between:-90,90',
-                'longitude' => 'nullable|numeric|between:-180,180',
-                'phone' => 'nullable|string|max:20',
-                'website' => 'nullable|url|max:500',
-                'google_place_id' => 'nullable|string|unique:shops,google_place_id,' . $shop->id,
-                'is_closed' => 'sometimes|boolean',
-                'category_ids' => 'nullable|array',
-                'category_ids.*' => 'exists:categories,id',
-            ]);
-
-            if ($validator->fails()) {
-                \Log::warning('Shop update validation failed', [
-                    'errors' => $validator->errors(),
-                    'request_data' => $request->all(),
-                    'shop_id' => $shop->id,
-                    'user_id' => auth('api')->id(),
-                ]);
-
-                return response()->json([
-                    'error' => 'Validation failed',
-                    'messages' => $validator->errors(),
-                ], 422);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Shop update validation error', [
-                'error' => $e->getMessage(),
-                'request_data' => $request->all(),
-                'shop_id' => $shop->id,
-                'user_id' => auth('api')->id(),
-            ]);
-            throw $e;
-        }
-
-        $shop->update($validator->validated());
+        $shop->update($request->validated());
 
         // Update categories if provided
         if ($request->has('category_ids')) {
@@ -185,35 +114,8 @@ class ShopController extends Controller
     /**
      * Upload images to a shop
      */
-    public function uploadImages(Request $request, Shop $shop)
+    public function uploadImages(ShopUploadImagesRequest $request, Shop $shop)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'images' => 'required|array|min:1|max:10',
-                'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB
-            ]);
-
-            if ($validator->fails()) {
-                \Log::warning('Shop image upload validation failed', [
-                    'errors' => $validator->errors(),
-                    'shop_id' => $shop->id,
-                    'user_id' => auth('api')->id(),
-                ]);
-
-                return response()->json([
-                    'error' => 'Validation failed',
-                    'messages' => $validator->errors(),
-                ], 422);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Shop image upload error', [
-                'error' => $e->getMessage(),
-                'shop_id' => $shop->id,
-                'user_id' => auth('api')->id(),
-            ]);
-            throw $e;
-        }
-
         // Check current image count
         $currentImageCount = $shop->images()->count();
         $newImageCount = count($request->file('images'));
@@ -280,17 +182,10 @@ class ShopController extends Controller
      */
     public function reorderImages(Request $request, Shop $shop)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'image_ids' => 'required|array',
             'image_ids.*' => 'exists:shop_images,id',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => 'Validation failed',
-                'messages' => $validator->errors(),
-            ], 422);
-        }
 
         DB::beginTransaction();
         try {

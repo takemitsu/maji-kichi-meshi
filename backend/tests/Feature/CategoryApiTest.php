@@ -123,7 +123,7 @@ class CategoryApiTest extends TestCase
         $response->assertStatus(422);
 
         // Check actual validation errors
-        $errors = $response->json('messages');
+        $errors = $response->json('errors');
         $this->assertArrayHasKey('name', $errors);
         $this->assertArrayHasKey('type', $errors);
     }

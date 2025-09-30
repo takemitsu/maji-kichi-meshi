@@ -169,7 +169,9 @@ export interface RankingUpdateRequest {
 }
 
 export interface ErrorResponse {
-    error: string
+    error?: string
     message?: string
+    errors?: Record<string, string[]>
+    // Legacy support (CategoryController still uses old format)
     messages?: Record<string, string[]>
 }
