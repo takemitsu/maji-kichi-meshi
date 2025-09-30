@@ -14,6 +14,7 @@ use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReviewController extends Controller
 {
@@ -120,6 +121,8 @@ class ReviewController extends Controller
      */
     public function update(ReviewUpdateRequest $request, Review $review)
     {
+        $this->authorize('update', $review);
+
         $review->update($request->validated());
         $review->load(['user', 'shop.publishedImages', 'publishedImages']);
 
@@ -131,10 +134,7 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
-        // Check if user owns the review
-        if ($review->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('delete', $review);
 
         $review->delete();
 
@@ -174,6 +174,8 @@ class ReviewController extends Controller
      */
     public function uploadImages(ReviewUploadImagesRequest $request, Review $review)
     {
+        $this->authorize('uploadImages', $review);
+
         try {
             $uploadedImages = $this->imageUploadService->uploadImages(
                 $review,
@@ -194,7 +196,7 @@ class ReviewController extends Controller
                 ],
             ], 201);
         } catch (\Exception $e) {
-            \Log::error('Image upload failed', [
+            Log::error('Image upload failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 'review_id' => $review->id,
@@ -211,10 +213,7 @@ class ReviewController extends Controller
      */
     public function deleteImage(Review $review, ReviewImage $image)
     {
-        // Check if user owns the review
-        if ($review->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('deleteImage', $review);
 
         // Check if image belongs to the review
         if ($image->review_id !== $review->id) {

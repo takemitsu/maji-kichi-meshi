@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ReorderShopImagesRequest;
 use App\Http\Requests\ShopIndexRequest;
 use App\Http\Requests\ShopStoreRequest;
 use App\Http\Requests\ShopUpdateRequest;
@@ -166,13 +167,8 @@ class ShopController extends Controller
     /**
      * Reorder shop images
      */
-    public function reorderImages(Request $request, Shop $shop)
+    public function reorderImages(ReorderShopImagesRequest $request, Shop $shop)
     {
-        $request->validate([
-            'image_ids' => 'required|array',
-            'image_ids.*' => 'exists:shop_images,id',
-        ]);
-
         try {
             $this->imageUploadService->reorderImages($shop, $request->image_ids);
 

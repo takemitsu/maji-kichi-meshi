@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\OAuthProvider;
 use App\Models\User;
 use App\Traits\ApiResponseTrait;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -23,7 +25,7 @@ class AuthController extends Controller
         try {
             return Socialite::driver($provider)->redirect();
         } catch (\Exception $e) {
-            \Log::error('OAuth redirect error: ' . $e->getMessage());
+            Log::error('OAuth redirect error: ' . $e->getMessage());
 
             return $this->errorResponse('Invalid OAuth provider: ' . $e->getMessage(), 400);
         }
@@ -117,7 +119,7 @@ class AuthController extends Controller
     /**
      * Update authenticated user profile
      */
-    public function updateProfile()
+    public function updateProfile(UpdateProfileRequest $request)
     {
         try {
             $user = auth('api')->user();
@@ -125,15 +127,9 @@ class AuthController extends Controller
                 return $this->unauthorizedResponse('User not authenticated');
             }
 
-            $validatedData = request()->validate([
-                'name' => 'required|string|max:255|min:1',
-            ]);
-
-            $user->update(['name' => $validatedData['name']]);
+            $user->update($request->validated());
 
             return $this->successResponse($user, 'Profile updated successfully');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return $this->validationErrorResponse($e->errors());
         } catch (\Exception $e) {
             return $this->serverErrorResponse('Failed to update profile');
         }

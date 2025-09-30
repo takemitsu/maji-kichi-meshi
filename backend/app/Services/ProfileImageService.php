@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
@@ -87,7 +88,7 @@ class ProfileImageService
 
             return true;
         } catch (\Exception $e) {
-            \Log::error('Profile image upload failed', [
+            Log::error('Profile image upload failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
@@ -126,7 +127,7 @@ class ProfileImageService
 
             return true;
         } catch (\Exception $e) {
-            \Log::error('Profile image deletion failed', [
+            Log::error('Profile image deletion failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ShopImage extends Model
@@ -216,7 +217,7 @@ class ShopImage extends Model
 
             return $imageService->deleteImages($paths);
         } catch (\Exception $e) {
-            \Log::error('Failed to delete shop image files: ' . $e->getMessage(), [
+            Log::error('Failed to delete shop image files: ' . $e->getMessage(), [
                 'shop_image_id' => $this->id,
                 'uuid' => $this->uuid,
             ]);
