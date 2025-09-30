@@ -192,12 +192,18 @@ const shop = ref<Shop | null>(null)
 const uploadedImages = ref<File[]>([])
 
 // フォームデータ
-const form = ref({
+const form = ref<{
+    name: string
+    address: string | null
+    phone: string | null
+    description: string | null
+    category_ids: number[]
+}>({
     name: '',
-    address: '',
-    phone: '',
-    description: '',
-    category_ids: [] as number[],
+    address: null,
+    phone: null,
+    description: null,
+    category_ids: [],
 })
 
 // バリデーション
@@ -214,9 +220,9 @@ const loadShop = async () => {
         // フォームに既存データを設定
         form.value = {
             name: shop.value.name,
-            address: shop.value.address,
-            phone: shop.value.phone || '',
-            description: shop.value.description || '',
+            address: shop.value.address ?? null,
+            phone: shop.value.phone ?? null,
+            description: shop.value.description ?? null,
             category_ids: shop.value.categories?.map((cat) => cat.id) || [],
         }
     } catch (err: unknown) {
@@ -253,9 +259,9 @@ const submitForm = async () => {
 
         const updateData = {
             name: form.value.name?.trim() || '',
-            address: form.value.address?.trim() || null,
-            phone: form.value.phone?.trim() || null,
-            description: form.value.description?.trim() || null,
+            address: form.value.address?.trim() ? form.value.address.trim() : null,
+            phone: form.value.phone?.trim() ? form.value.phone.trim() : null,
+            description: form.value.description?.trim() ? form.value.description.trim() : null,
             category_ids: form.value.category_ids || [],
         }
 

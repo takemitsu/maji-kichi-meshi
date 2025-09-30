@@ -74,10 +74,7 @@
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors">
-                                    <svg
-                                        class="flex-shrink-0 mr-1.5 h-4 w-4"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24">
+                                    <svg class="flex-shrink-0 mr-1.5 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                                         <path
                                             d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
                                     </svg>
@@ -281,13 +278,30 @@
                                     size="sm"
                                     class="flex-shrink-0" />
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-center space-x-2">
-                                        <UserLink :user="review.user" page-type="reviews" custom-class="text-sm font-medium" />
-                                        <div class="flex items-center">
-                                            <span class="text-sm text-yellow-400">★</span>
-                                            <span class="text-sm text-gray-600">{{ review.rating }}</span>
+                                    <div class="flex flex-col md:flex-row md:items-center md:space-x-2 mb-2">
+                                        <div class="flex items-center space-x-2 mb-2 md:mb-0">
+                                            <UserLink
+                                                :user="review.user"
+                                                page-type="reviews"
+                                                custom-class="text-sm font-medium" />
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-yellow-400">★</span>
+                                                <span class="text-sm text-gray-600">{{ review.rating }}</span>
+                                            </div>
+                                            <span class="text-sm text-gray-700">{{ formatDate(review.created_at) }}</span>
                                         </div>
-                                        <span class="text-sm text-gray-700">{{ formatDate(review.created_at) }}</span>
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium w-fit"
+                                            :class="{
+                                                'bg-green-100 text-green-800': review.repeat_intention === 'yes',
+                                                'bg-yellow-100 text-yellow-800': review.repeat_intention === 'maybe',
+                                                'bg-red-100 text-red-800': review.repeat_intention === 'no',
+                                                'bg-gray-100 text-gray-800': !['yes', 'maybe', 'no'].includes(
+                                                    review.repeat_intention,
+                                                ),
+                                            }">
+                                            {{ getRepeatIntentionText(review.repeat_intention) }}
+                                        </span>
                                     </div>
                                     <p v-if="review.memo" class="mt-1 text-sm text-gray-700 line-clamp-2">
                                         {{ review.memo }}
@@ -417,6 +431,19 @@ const addReview = () => {
 // ユーティリティ関数
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP')
+}
+
+const getRepeatIntentionText = (intention: string) => {
+    switch (intention) {
+        case 'yes':
+            return 'またいく'
+        case 'maybe':
+            return 'わからん'
+        case 'no':
+            return 'いかない'
+        default:
+            return '未設定'
+    }
 }
 
 // 画像モーダル管理

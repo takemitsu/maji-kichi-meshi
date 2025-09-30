@@ -32,11 +32,11 @@ export interface PaginatedResponse<T> {
 export interface Shop {
     id: number
     name: string
-    description?: string
-    address: string
+    description?: string | null
+    address: string | null
     latitude: string
     longitude: string
-    phone?: string
+    phone?: string | null
     website?: string
     google_place_id?: string
     is_closed: boolean

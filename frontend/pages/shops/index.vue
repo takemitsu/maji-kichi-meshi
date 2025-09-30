@@ -168,7 +168,7 @@ const enhanceShopForDisplay = (shop: Shop) => {
     return {
         ...shop,
         highlightedName: highlightText(shop.name, searchQuery.value),
-        highlightedAddress: highlightText(shop.address, searchQuery.value),
+        highlightedAddress: highlightText(shop.address || '', searchQuery.value),
     }
 }
 
