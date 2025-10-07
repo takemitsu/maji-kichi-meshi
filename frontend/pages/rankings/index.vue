@@ -142,7 +142,7 @@
                                     class="flex items-center space-x-3 py-2">
                                     <!-- 順位 -->
                                     <div
-                                        class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                        class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold"
                                         :class="{
                                             'bg-yellow-100 text-yellow-800': shop.rank_position === 1,
                                             'bg-gray-100 text-gray-800': shop.rank_position === 2,
