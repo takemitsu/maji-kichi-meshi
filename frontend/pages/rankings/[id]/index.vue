@@ -225,28 +225,19 @@
 
                 <!-- 関連アクション -->
                 <div class="mt-8 border-t border-gray-200 pt-6">
-                    <div class="flex items-center justify-between text-sm text-gray-600">
+                    <div class="flex flex-col gap-3 text-sm text-gray-600 md:flex-row md:items-center md:justify-between">
                         <NuxtLink
                             :to="ranking.is_public ? '/rankings/public' : '/rankings'"
                             class="flex items-center hover:text-gray-900 transition-colors">
                             ← {{ ranking.is_public ? '公開ランキング' : 'マイランキング' }}一覧に戻る
                         </NuxtLink>
 
-                        <div class="flex items-center space-x-6">
-                            <NuxtLink
-                                v-if="ranking.category"
-                                :to="`/rankings/public?category_id=${ranking.category.id}`"
-                                class="hover:text-gray-900 transition-colors">
-                                {{ ranking.category.name }}の他のランキングを見る →
-                            </NuxtLink>
-
-                            <NuxtLink
-                                v-if="!isOwner"
-                                to="/rankings/create"
-                                class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
-                                自分もランキングを作成
-                            </NuxtLink>
-                        </div>
+                        <NuxtLink
+                            v-if="ranking.category"
+                            :to="`/rankings/public?category_id=${ranking.category.id}`"
+                            class="flex items-center justify-end hover:text-gray-900 transition-colors md:justify-start">
+                            {{ ranking.category.name }}の他のランキングを見る →
+                        </NuxtLink>
                     </div>
                 </div>
             </div>
