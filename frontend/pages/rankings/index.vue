@@ -94,7 +94,7 @@
                                     </span>
                                 </div>
 
-                                <p v-if="ranking.description" class="text-sm text-gray-600 mt-2">
+                                <p v-if="ranking.description" class="text-sm text-gray-700 mt-2">
                                     {{ ranking.description }}
                                 </p>
 
@@ -155,6 +155,9 @@
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-gray-900 truncate">
                                             {{ shop.name }}
+                                        </p>
+                                        <p v-if="shop.comment" class="text-xs text-gray-700 mt-1">
+                                            {{ shop.comment }}
                                         </p>
                                     </div>
                                 </div>
