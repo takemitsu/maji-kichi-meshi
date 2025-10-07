@@ -89,6 +89,7 @@ class RankingService
             $ranking->items()->create([
                 'shop_id' => $shopData['shop_id'],
                 'rank_position' => $shopData['position'],
+                'comment' => $shopData['comment'] ?? null,
             ]);
         }
     }

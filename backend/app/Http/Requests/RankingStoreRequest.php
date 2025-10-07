@@ -29,6 +29,7 @@ class RankingStoreRequest extends FormRequest
             'shops' => 'required|array|min:1|max:10',
             'shops.*.shop_id' => 'required|exists:shops,id',
             'shops.*.position' => 'required|integer|min:1',
+            'shops.*.comment' => 'nullable|string|max:200',
         ];
     }
 
@@ -50,6 +51,7 @@ class RankingStoreRequest extends FormRequest
             'shops.*.shop_id.exists' => '無効な店舗IDです',
             'shops.*.position.required' => '順位は必須です',
             'shops.*.position.min' => '順位は1以上である必要があります',
+            'shops.*.comment.max' => 'コメントは200文字以内で入力してください',
         ];
     }
 }

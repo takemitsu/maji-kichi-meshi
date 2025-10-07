@@ -48,10 +48,11 @@ export interface Shop {
     distance?: number
     created_at: string
     updated_at: string
-    // 動的プロパティ（検索時のハイライト、画像URL等）
+    // 動的プロパティ（検索時のハイライト、画像URL、ランキングコメント等）
     image_url?: string
     highlightedName?: string
     highlightedAddress?: string
+    comment?: string
 }
 
 export interface Category {
@@ -145,7 +146,7 @@ export interface Ranking {
     is_public: boolean
     user: User
     category?: Category
-    shops?: (Shop & { rank_position: number })[]
+    shops?: (Shop & { rank_position: number; comment?: string })[]
     created_at: string
     updated_at: string
     // 集計プロパティ
@@ -157,7 +158,7 @@ export interface RankingCreateRequest {
     description?: string
     category_id: string
     is_public: boolean
-    shops: { shop_id: number; position: number }[]
+    shops: { shop_id: number; position: number; comment?: string }[]
 }
 
 export interface RankingUpdateRequest {
@@ -165,7 +166,7 @@ export interface RankingUpdateRequest {
     description?: string
     category_id: string
     is_public: boolean
-    shops: { shop_id: number; position: number }[]
+    shops: { shop_id: number; position: number; comment?: string }[]
 }
 
 export interface ErrorResponse {

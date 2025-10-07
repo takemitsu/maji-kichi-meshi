@@ -208,14 +208,23 @@
                                         </div>
 
                                         <!-- 店舗情報 -->
-                                        <div>
+                                        <div class="flex-1">
                                             <h4 class="font-medium text-gray-900">{{ shop.name }}</h4>
                                             <p class="text-sm text-gray-600">{{ shop.address }}</p>
+                                            <input
+                                                v-model="shop.comment"
+                                                type="text"
+                                                class="mt-2 input-field text-sm"
+                                                placeholder="一言コメント（任意・200文字まで）"
+                                                maxlength="200" />
+                                            <p v-if="shop.comment" class="mt-1 text-xs text-gray-700">
+                                                {{ shop.comment.length }}/200 文字
+                                            </p>
                                         </div>
                                     </div>
 
                                     <!-- 削除ボタン -->
-                                    <button @click="removeShop(index)" type="button" class="text-red-600 hover:text-red-800">
+                                    <button @click="removeShop(index)" type="button" class="text-red-600 hover:text-red-800 ml-2">
                                         <svg class="w-5 h-5 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 stroke-linecap="round"
@@ -346,6 +355,7 @@ const submitRanking = async () => {
         const shopsData = selectedShops.value.map((shop, index) => ({
             shop_id: shop.id,
             position: index + 1,
+            comment: shop.comment || undefined,
         }))
 
         const rankingData: RankingUpdateRequest = {

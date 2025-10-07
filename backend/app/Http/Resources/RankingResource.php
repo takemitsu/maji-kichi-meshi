@@ -29,7 +29,10 @@ class RankingResource extends JsonResource
                 return $this->items->map(function ($item) {
                     return array_merge(
                         (new ShopResource($item->shop))->resolve(),
-                        ['rank_position' => $item->rank_position]
+                        [
+                            'rank_position' => $item->rank_position,
+                            'comment' => $item->comment,
+                        ]
                     );
                 });
             }),

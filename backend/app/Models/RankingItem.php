@@ -14,6 +14,7 @@ class RankingItem extends Model
         'ranking_id',
         'shop_id',
         'rank_position',
+        'comment',
     ];
 
     public function ranking(): BelongsTo

@@ -177,8 +177,8 @@
                                                     {{ shop.name }}
                                                 </NuxtLink>
                                             </h4>
-                                            <p class="text-sm text-gray-600 mt-1">
-                                                {{ shop.address }}
+                                            <p v-if="shop.comment" class="text-sm text-gray-700 mt-1">
+                                                {{ shop.comment }}
                                             </p>
 
                                             <!-- カテゴリタグ -->

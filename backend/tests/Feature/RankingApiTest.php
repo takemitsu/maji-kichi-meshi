@@ -1072,4 +1072,91 @@ class RankingApiTest extends TestCase
             $this->assertEquals($user1->id, $ranking['user']['id']);
         }
     }
+
+    public function test_it_can_create_ranking_with_shop_comments()
+    {
+        $user = User::factory()->create();
+        $shop1 = Shop::factory()->create();
+        $shop2 = Shop::factory()->create();
+        $category = Category::first();
+        $token = JWTAuth::fromUser($user);
+
+        $data = [
+            'title' => 'Test Ranking with Comments',
+            'description' => 'Test ranking with shop comments',
+            'category_id' => $category->id,
+            'is_public' => true,
+            'shops' => [
+                ['shop_id' => $shop1->id, 'position' => 1, 'comment' => '最高のラーメン'],
+                ['shop_id' => $shop2->id, 'position' => 2, 'comment' => '雰囲気が良い'],
+            ],
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/rankings', $data);
+
+        $response->assertStatus(201);
+        $responseData = $response->json('data');
+
+        // コメントがレスポンスに含まれていることを確認
+        $this->assertEquals('最高のラーメン', $responseData['shops'][0]['comment']);
+        $this->assertEquals('雰囲気が良い', $responseData['shops'][1]['comment']);
+
+        // データベースにコメントが保存されていることを確認
+        $this->assertDatabaseHas('ranking_items', [
+            'shop_id' => $shop1->id,
+            'rank_position' => 1,
+            'comment' => '最高のラーメン',
+        ]);
+        $this->assertDatabaseHas('ranking_items', [
+            'shop_id' => $shop2->id,
+            'rank_position' => 2,
+            'comment' => '雰囲気が良い',
+        ]);
+    }
+
+    public function test_it_can_update_ranking_with_shop_comments()
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $category = Category::first();
+        $token = JWTAuth::fromUser($user);
+
+        // コメントなしでランキング作成
+        $ranking = Ranking::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+        $ranking->items()->create([
+            'shop_id' => $shop->id,
+            'rank_position' => 1,
+        ]);
+
+        // コメント付きで更新
+        $updateData = [
+            'title' => $ranking->title,
+            'category_id' => $category->id,
+            'is_public' => $ranking->is_public,
+            'shops' => [
+                ['shop_id' => $shop->id, 'position' => 1, 'comment' => '更新後のコメント'],
+            ],
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/rankings/{$ranking->id}", $updateData);
+
+        $response->assertStatus(200);
+        $responseData = $response->json('data');
+
+        // コメントが更新されていることを確認
+        $this->assertEquals('更新後のコメント', $responseData['shops'][0]['comment']);
+
+        $this->assertDatabaseHas('ranking_items', [
+            'shop_id' => $shop->id,
+            'rank_position' => 1,
+            'comment' => '更新後のコメント',
+        ]);
+    }
 }
