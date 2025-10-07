@@ -134,12 +134,12 @@
                         </div>
 
                         <!-- 上位店舗プレビュー -->
-                        <div v-if="ranking.shops && ranking.shops.length > 0" class="border-t border-gray-200 pt-4">
-                            <div class="grid grid-cols-1 gap-3">
+                        <div v-if="ranking.shops && ranking.shops.length > 0" class="mt-4">
+                            <div class="grid grid-cols-1 gap-2">
                                 <div
                                     v-for="shop in ranking.shops.slice(0, 3)"
                                     :key="shop.id"
-                                    class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                    class="flex items-center space-x-3 py-2">
                                     <!-- 順位 -->
                                     <div
                                         class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
@@ -153,10 +153,10 @@
 
                                     <!-- 店舗情報 -->
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate">
+                                        <p class="text-base md:text-sm font-medium text-gray-900 truncate">
                                             {{ shop.name }}
                                         </p>
-                                        <p v-if="shop.comment" class="text-xs text-gray-700 mt-1">
+                                        <p v-if="shop.comment" class="text-sm md:text-xs text-gray-700 mt-1">
                                             {{ shop.comment }}
                                         </p>
                                     </div>
