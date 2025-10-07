@@ -2,7 +2,7 @@
     <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
         <div class="px-4 py-6 sm:px-0">
             <!-- ヘッダー -->
-            <div class="mb-8">
+            <div class="mb-6">
                 <div class="md:flex md:items-center md:justify-between">
                     <div class="min-w-0 flex-1">
                         <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
@@ -28,7 +28,7 @@
             </div>
 
             <!-- ユーザー情報表示（user_id フィルタ時のみ） -->
-            <div v-if="userInfo" class="bg-blue-50 p-3 md:p-4 rounded-lg mb-4 -mt-4">
+            <div v-if="userInfo" class="bg-blue-50 p-3 md:p-4 rounded-lg mb-4 -mt-2">
                 <div class="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4">
                     <NuxtLink to="/rankings/public" class="text-blue-600 hover:text-blue-800 text-sm underline">
                         全ランキングを見る
