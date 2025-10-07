@@ -37,7 +37,7 @@
             </div>
 
             <!-- フィルター -->
-            <div class="mb-6">
+            <div class="mb-4">
                 <div class="max-w-xs">
                     <!-- カテゴリフィルター -->
                     <select v-model="selectedCategory" @change="handleFilter" class="input-field">
