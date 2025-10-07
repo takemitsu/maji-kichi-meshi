@@ -37,7 +37,7 @@
             </div>
 
             <!-- フィルター -->
-            <div class="mb-6">
+            <div class="mb-4">
                 <div class="grid grid-cols-2 gap-4 max-w-md">
                     <!-- カテゴリフィルター -->
                     <div>
