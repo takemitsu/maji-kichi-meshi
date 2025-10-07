@@ -152,9 +152,6 @@
                                                 <p class="text-sm font-medium text-gray-900">
                                                     {{ shop.name }}
                                                 </p>
-                                                <p class="text-xs text-gray-700">
-                                                    {{ shop.address }}
-                                                </p>
                                             </div>
 
                                             <!-- 評価情報（もしあれば） -->

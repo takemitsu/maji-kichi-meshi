@@ -156,9 +156,6 @@
                                         <p class="text-sm font-medium text-gray-900 truncate">
                                             {{ shop.name }}
                                         </p>
-                                        <p class="text-xs text-gray-700 truncate">
-                                            {{ shop.address }}
-                                        </p>
                                     </div>
                                 </div>
                             </div>
