@@ -25,7 +25,10 @@
                         </NuxtLink>
                     </div>
                     <div v-else class="mt-4 flex md:ml-4 md:mt-0">
-                        <NuxtLink to="/login" class="btn-primary">ログインして店舗を追加</NuxtLink>
+                        <span class="text-sm text-gray-700">
+                            <NuxtLink to="/login" class="text-blue-600 hover:text-blue-800 underline">ログイン</NuxtLink>
+                            して店舗を追加
+                        </span>
                     </div>
                 </div>
             </div>
