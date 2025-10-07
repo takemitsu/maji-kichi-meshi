@@ -22,7 +22,7 @@
                         </NuxtLink>
                     </div>
                     <div v-else class="mt-4 flex md:ml-4 md:mt-0">
-                        <span class="text-sm text-gray-700 px-3 py-2">ランキングを作成するにはログインが必要です</span>
+                        <span class="text-sm text-gray-700">ランキングを作成するにはログインが必要です</span>
                     </div>
                 </div>
             </div>
