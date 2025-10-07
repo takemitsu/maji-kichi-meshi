@@ -25,7 +25,7 @@
                         </div>
                         <div class="ml-5 w-0 flex-1">
                             <dl>
-                                <dt class="text-sm font-medium text-gray-700 truncate">レビュー数</dt>
+                                <dt class="text-sm font-medium text-gray-700 truncate">レビュー</dt>
                                 <dd class="text-lg font-medium text-gray-900">
                                     {{ stats.reviewsCount }}
                                 </dd>
