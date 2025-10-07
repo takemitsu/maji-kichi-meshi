@@ -158,7 +158,6 @@
                                 class="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 flex items-center justify-between">
                                 <div>
                                     <h4 class="font-medium text-gray-900">{{ shop.name }}</h4>
-                                    <p class="text-sm text-gray-600">{{ shop.address }}</p>
                                 </div>
                                 <button
                                     @click="addShop(shop)"
@@ -187,44 +186,41 @@
                                 <div
                                     v-for="(shop, index) in selectedShops"
                                     :key="shop.id"
-                                    class="flex items-center justify-between p-3 bg-gray-50 rounded-lg group"
+                                    class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg group"
                                     draggable="true"
                                     @dragstart="dragStart(index)"
                                     @dragover="dragOver"
                                     @drop="drop(index)">
-                                    <div class="flex items-center space-x-3">
-                                        <!-- ドラッグハンドル -->
-                                        <div class="cursor-move text-gray-400 group-hover:text-gray-600">
-                                            <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                                                <path
-                                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                                            </svg>
-                                        </div>
+                                    <!-- ドラッグハンドル -->
+                                    <div class="cursor-move text-gray-400 group-hover:text-gray-600">
+                                        <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                                            <path
+                                                d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                        </svg>
+                                    </div>
 
-                                        <!-- 順位 -->
-                                        <div
-                                            class="w-8 h-8 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-bold">
-                                            {{ index + 1 }}
-                                        </div>
+                                    <!-- 順位 -->
+                                    <div
+                                        class="w-8 h-8 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                                        {{ index + 1 }}
+                                    </div>
 
-                                        <!-- 店舗情報 -->
-                                        <div class="flex-1">
-                                            <h4 class="font-medium text-gray-900">{{ shop.name }}</h4>
-                                            <p class="text-sm text-gray-600">{{ shop.address }}</p>
-                                            <input
-                                                v-model="shop.comment"
-                                                type="text"
-                                                class="mt-2 input-field text-sm"
-                                                placeholder="一言コメント（任意・200文字まで）"
-                                                maxlength="200" />
-                                            <p v-if="shop.comment" class="mt-1 text-xs text-gray-700">
-                                                {{ shop.comment.length }}/200 文字
-                                            </p>
-                                        </div>
+                                    <!-- 店舗情報 -->
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-semibold text-gray-900 truncate mb-1">{{ shop.name }}</h4>
+                                        <input
+                                            v-model="shop.comment"
+                                            type="text"
+                                            class="w-full px-2 py-1 text-sm bg-white border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+                                            placeholder="コメント（任意）"
+                                            maxlength="200" />
                                     </div>
 
                                     <!-- 削除ボタン -->
-                                    <button @click="removeShop(index)" type="button" class="text-red-600 hover:text-red-800 ml-2">
+                                    <button
+                                        @click="removeShop(index)"
+                                        type="button"
+                                        class="text-red-600 hover:bg-red-50 p-2 rounded flex-shrink-0">
                                         <svg class="w-5 h-5 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 stroke-linecap="round"
