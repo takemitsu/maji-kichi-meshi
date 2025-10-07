@@ -135,11 +135,11 @@
 
                         <!-- 上位店舗プレビュー -->
                         <div v-if="ranking.shops && ranking.shops.length > 0" class="mt-4">
-                            <div class="grid grid-cols-1 gap-2">
+                            <div class="divide-y divide-gray-200">
                                 <div
                                     v-for="shop in ranking.shops.slice(0, 3)"
                                     :key="shop.id"
-                                    class="flex items-center space-x-3 py-2">
+                                    class="flex items-center space-x-3 py-3">
                                     <!-- 順位 -->
                                     <div
                                         class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
