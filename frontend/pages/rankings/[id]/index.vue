@@ -151,7 +151,7 @@
                 <div class="bg-white rounded-lg shadow">
                     <!-- 店舗ランキング -->
                     <div v-if="ranking.shops && ranking.shops.length > 0" class="divide-y divide-gray-200">
-                        <div v-for="shop in ranking.shops" :key="shop.id" class="p-4 md:p-6 hover:bg-gray-50 transition-colors">
+                        <div v-for="shop in ranking.shops" :key="shop.id" class="p-3 md:p-4 hover:bg-gray-50 transition-colors">
                             <div class="flex items-center space-x-4">
                                 <!-- 順位 -->
                                 <div
@@ -170,41 +170,36 @@
 
                                 <!-- 店舗情報 -->
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-start justify-between">
-                                        <div class="flex-1">
-                                            <h4 class="text-lg font-semibold text-gray-900">
-                                                <NuxtLink :to="`/shops/${shop.id}`" class="hover:text-blue-600 transition-colors">
-                                                    {{ shop.name }}
-                                                </NuxtLink>
-                                            </h4>
-                                            <p v-if="shop.comment" class="text-sm text-gray-700 mt-1">
-                                                {{ shop.comment }}
-                                            </p>
+                                    <h4 class="text-lg font-semibold text-gray-900">
+                                        <NuxtLink :to="`/shops/${shop.id}`" class="hover:text-blue-600 transition-colors">
+                                            {{ shop.name }}
+                                        </NuxtLink>
+                                    </h4>
+                                    <p v-if="shop.comment" class="text-sm text-gray-700 mt-1">
+                                        {{ shop.comment }}
+                                    </p>
 
-                                            <!-- カテゴリタグ -->
-                                            <div class="mt-2 flex flex-wrap gap-2">
-                                                <span
-                                                    v-for="category in shop.categories"
-                                                    :key="category.id"
-                                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                    {{ category.name }}
-                                                </span>
-                                            </div>
-                                        </div>
+                                    <!-- カテゴリタグ -->
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        <span
+                                            v-for="category in shop.categories"
+                                            :key="category.id"
+                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ category.name }}
+                                        </span>
+                                    </div>
 
-                                        <!-- 統計情報 -->
-                                        <div class="ml-4 text-right">
-                                            <div v-if="shop.average_rating" class="flex items-center justify-end mb-1">
-                                                <svg class="w-4 h-4 text-yellow-400 mr-1 fill-current" viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-                                                </svg>
-                                                <span class="text-sm font-medium text-gray-900">
-                                                    {{ shop.average_rating.toFixed(1) }}
-                                                </span>
-                                            </div>
-                                            <div class="text-xs text-gray-700">{{ shop.review_count || 0 }}件のレビュー</div>
+                                    <!-- 統計情報 -->
+                                    <div class="mt-2 flex items-center text-sm text-gray-700">
+                                        <div v-if="shop.average_rating" class="flex items-center">
+                                            <svg class="w-4 h-4 text-yellow-400 mr-1 fill-current" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">{{ shop.average_rating.toFixed(1) }}</span>
                                         </div>
+                                        <span v-if="shop.average_rating" class="mx-2">|</span>
+                                        <span>{{ shop.review_count || 0 }}件のレビュー</span>
                                     </div>
                                 </div>
                             </div>
