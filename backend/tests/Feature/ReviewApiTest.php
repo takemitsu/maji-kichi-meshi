@@ -511,4 +511,133 @@ class ReviewApiTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    // =============================================================================
+    // Advanced Filter Tests
+    // =============================================================================
+
+    public function test_it_can_filter_reviews_by_repeat_intention(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'repeat_intention' => 'yes',
+        ]);
+
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'repeat_intention' => 'no',
+        ]);
+
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'repeat_intention' => 'maybe',
+        ]);
+
+        // Filter by repeat_intention = yes
+        $response = $this->getJson('/api/reviews?repeat_intention=yes');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertEquals('yes', $data[0]['repeat_intention']);
+    }
+
+    public function test_it_can_filter_reviews_by_date_range(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        // Create reviews with different dates
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'visited_at' => '2024-01-15',
+        ]);
+
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'visited_at' => '2024-02-20',
+        ]);
+
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'visited_at' => '2024-03-10',
+        ]);
+
+        // Filter by date range (2024-02-01 to 2024-02-28)
+        $response = $this->getJson('/api/reviews?start_date=2024-02-01&end_date=2024-02-28');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertEquals('2024-02-20', $data[0]['visited_at']);
+    }
+
+    public function test_it_can_filter_recent_reviews_only(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        // Create old review (60 days ago)
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'visited_at' => now()->subDays(60)->format('Y-m-d'),
+        ]);
+
+        // Create recent review (15 days ago)
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'visited_at' => now()->subDays(15)->format('Y-m-d'),
+        ]);
+
+        // Create very recent review (5 days ago)
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'visited_at' => now()->subDays(5)->format('Y-m-d'),
+        ]);
+
+        // Filter recent only (default 30 days)
+        $response = $this->getJson('/api/reviews?recent_only=true');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(2, $data); // Should only return 15 and 5 days ago
+    }
+
+    public function test_it_can_filter_recent_reviews_with_custom_days(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        // Create reviews with different dates
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'visited_at' => now()->subDays(60)->format('Y-m-d'),
+        ]);
+
+        Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'visited_at' => now()->subDays(5)->format('Y-m-d'),
+        ]);
+
+        // Filter recent only with custom 7 days
+        $response = $this->getJson('/api/reviews?recent_only=true&recent_days=7');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data); // Should only return 5 days ago
+    }
 }

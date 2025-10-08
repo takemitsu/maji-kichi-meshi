@@ -24,7 +24,7 @@ class ShopIndexRequest extends FormRequest
         return [
             'search' => 'sometimes|string|max:255',
             'category' => 'sometimes|exists:categories,id',
-            'open_only' => 'sometimes|boolean',
+            'open_only' => 'sometimes|in:true,false,1,0',
             'latitude' => 'sometimes|numeric|min:-90|max:90',
             'longitude' => 'sometimes|numeric|min:-180|max:180',
             'radius' => 'sometimes|numeric|min:0.1|max:100',

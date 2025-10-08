@@ -28,7 +28,7 @@ class ReviewIndexRequest extends FormRequest
             'repeat_intention' => 'sometimes|in:yes,maybe,no',
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date|after_or_equal:start_date',
-            'recent_only' => 'sometimes|boolean',
+            'recent_only' => 'sometimes|in:true,false,1,0',
             'recent_days' => 'sometimes|integer|min:1|max:365',
             'per_page' => 'sometimes|integer|min:1|max:50',
         ];

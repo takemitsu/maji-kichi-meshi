@@ -199,4 +199,158 @@ class ShopApiTest extends TestCase
 
         $this->assertDatabaseMissing('shops', ['id' => $shop->id]);
     }
+
+    // =============================================================================
+    // Location-based Search Tests
+    // =============================================================================
+
+    public function test_it_can_search_shops_by_location(): void
+    {
+        // Create shops at very close locations to ensure they're within radius
+        $nearShop = Shop::factory()->create([
+            'name' => 'Near Shop',
+            'latitude' => 35.7022,
+            'longitude' => 139.7745,
+        ]);
+
+        // Search within 10km radius (larger to ensure we find shops in test)
+        $response = $this->getJson('/api/shops?latitude=35.7022&longitude=139.7745&radius=10');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // Should find the near shop
+        $this->assertGreaterThanOrEqual(1, count($data));
+        $shopNames = collect($data)->pluck('name')->toArray();
+        $this->assertContains('Near Shop', $shopNames);
+    }
+
+    public function test_it_uses_default_radius_for_location_search(): void
+    {
+        Shop::factory()->create([
+            'name' => 'Test Shop',
+            'latitude' => 35.7022,
+            'longitude' => 139.7745,
+        ]);
+
+        // Search without radius (should use default 5km)
+        $response = $this->getJson('/api/shops?latitude=35.7022&longitude=139.7745');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertGreaterThanOrEqual(1, count($data));
+    }
+
+    public function test_it_filters_open_shops_only(): void
+    {
+        $openShop = Shop::factory()->create([
+            'name' => 'Open Shop',
+            'is_closed' => false,
+        ]);
+
+        $closedShop = Shop::factory()->create([
+            'name' => 'Closed Shop',
+            'is_closed' => true,
+        ]);
+
+        $response = $this->getJson('/api/shops?open_only=true');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // Should only return open shops
+        $shopNames = collect($data)->pluck('name')->toArray();
+        $this->assertContains('Open Shop', $shopNames);
+        $this->assertNotContains('Closed Shop', $shopNames);
+    }
+
+    // =============================================================================
+    // Category Association Tests
+    // =============================================================================
+
+    public function test_it_can_create_shop_with_categories(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $category1 = Category::where('slug', 'ramen')->first();
+        $category2 = Category::where('slug', 'lunch')->first();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/shops', [
+            'name' => 'Ramen Shop',
+            'address' => 'Test Address',
+            'category_ids' => [$category1->id, $category2->id],
+        ]);
+
+        $response->assertStatus(201);
+
+        // Check categories were attached
+        $shop = Shop::where('name', 'Ramen Shop')->first();
+        $this->assertNotNull($shop);
+        $this->assertCount(2, $shop->categories);
+        $this->assertTrue($shop->categories->contains('id', $category1->id));
+        $this->assertTrue($shop->categories->contains('id', $category2->id));
+
+        // Check response includes categories
+        $response->assertJsonPath('data.categories.0.id', $category1->id);
+    }
+
+    public function test_it_can_update_shop_categories(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $category1 = Category::where('slug', 'ramen')->first();
+        $category2 = Category::where('slug', 'lunch')->first();
+        $category3 = Category::where('slug', 'cafe')->first();
+
+        // Create shop with initial categories
+        $shop = Shop::factory()->create(['name' => 'Test Shop']);
+        $shop->categories()->attach([$category1->id, $category2->id]);
+
+        // Update to different categories
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/shops/{$shop->id}", [
+            'name' => 'Test Shop',
+            'category_ids' => [$category2->id, $category3->id],
+        ]);
+
+        $response->assertStatus(200);
+
+        // Check categories were synced (replaced)
+        $shop->refresh();
+        $this->assertCount(2, $shop->categories);
+        $this->assertFalse($shop->categories->contains('id', $category1->id)); // Removed
+        $this->assertTrue($shop->categories->contains('id', $category2->id)); // Kept
+        $this->assertTrue($shop->categories->contains('id', $category3->id)); // Added
+    }
+
+    public function test_it_can_remove_all_categories_from_shop(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $category = Category::where('slug', 'ramen')->first();
+
+        // Create shop with category
+        $shop = Shop::factory()->create(['name' => 'Test Shop']);
+        $shop->categories()->attach($category->id);
+
+        // Update with empty category_ids array
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/shops/{$shop->id}", [
+            'name' => 'Test Shop',
+            'category_ids' => [],
+        ]);
+
+        $response->assertStatus(200);
+
+        // Check all categories were removed
+        $shop->refresh();
+        $this->assertCount(0, $shop->categories);
+    }
 }

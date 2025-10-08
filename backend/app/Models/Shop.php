@@ -75,6 +75,7 @@ class Shop extends Model
 
     /**
      * Scope for searching near coordinates
+     * SQLite-compatible version using whereRaw instead of having()
      */
     public function scopeNear($query, $latitude, $longitude, $radiusKm = 5)
     {
@@ -84,15 +85,25 @@ class Shop extends Model
             *,
             (
                 $earthRadius * acos(
-                    cos(radians(?)) 
-                    * cos(radians(latitude)) 
-                    * cos(radians(longitude) - radians(?)) 
-                    + sin(radians(?)) 
+                    cos(radians(?))
+                    * cos(radians(latitude))
+                    * cos(radians(longitude) - radians(?))
+                    + sin(radians(?))
                     * sin(radians(latitude))
                 )
             ) AS distance
         ", [$latitude, $longitude, $latitude])
-            ->having('distance', '<', $radiusKm)
+            ->whereRaw("
+                (
+                    $earthRadius * acos(
+                        cos(radians(?))
+                        * cos(radians(latitude))
+                        * cos(radians(longitude) - radians(?))
+                        + sin(radians(?))
+                        * sin(radians(latitude))
+                    )
+                ) < ?
+            ", [$latitude, $longitude, $latitude, $radiusKm])
             ->orderBy('distance');
     }
 
