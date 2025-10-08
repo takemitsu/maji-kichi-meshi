@@ -29,7 +29,7 @@ class ImageUploadTest extends TestCase
         });
     }
 
-    public function test_test_can_create_review_with_images()
+    public function test_test_can_create_review_with_images(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -76,7 +76,7 @@ class ImageUploadTest extends TestCase
         }
     }
 
-    public function test_test_can_upload_additional_images_to_review()
+    public function test_test_can_upload_additional_images_to_review(): void
     {
         $user = User::factory()->create();
         $review = Review::factory()->for($user)->create();
@@ -104,7 +104,7 @@ class ImageUploadTest extends TestCase
         $this->assertCount(2, $review->fresh()->images);
     }
 
-    public function test_test_cannot_upload_more_than_five_images()
+    public function test_test_cannot_upload_more_than_five_images(): void
     {
         $user = User::factory()->create();
         $review = Review::factory()->for($user)->create();
@@ -129,7 +129,7 @@ class ImageUploadTest extends TestCase
         ]);
     }
 
-    public function test_test_can_delete_image_from_review()
+    public function test_test_can_delete_image_from_review(): void
     {
         $user = User::factory()->create();
         $review = Review::factory()->for($user)->create();
@@ -176,7 +176,7 @@ class ImageUploadTest extends TestCase
         }
     }
 
-    public function test_test_unauthorized_user_cannot_upload_images()
+    public function test_test_unauthorized_user_cannot_upload_images(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -191,7 +191,7 @@ class ImageUploadTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_test_unauthorized_user_cannot_delete_images()
+    public function test_test_unauthorized_user_cannot_delete_images(): void
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
@@ -203,7 +203,7 @@ class ImageUploadTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_test_validates_image_file_types()
+    public function test_test_validates_image_file_types(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -222,7 +222,7 @@ class ImageUploadTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_test_validates_image_file_size()
+    public function test_test_validates_image_file_size(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -241,7 +241,7 @@ class ImageUploadTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_test_image_service_generates_correct_sizes()
+    public function test_test_image_service_generates_correct_sizes(): void
     {
         $imageService = app(ImageService::class);
         $testFile = UploadedFile::fake()->image('test.jpg', 1600, 1200);
@@ -269,7 +269,7 @@ class ImageUploadTest extends TestCase
         $this->assertFalse($result['sizes_generated']['medium'] ?? true);
     }
 
-    public function test_test_review_images_deleted_when_review_deleted()
+    public function test_test_review_images_deleted_when_review_deleted(): void
     {
         $user = User::factory()->create();
         $review = Review::factory()->for($user)->create();
@@ -315,7 +315,7 @@ class ImageUploadTest extends TestCase
         }
     }
 
-    public function test_multiple_reviews_with_images_for_same_shop()
+    public function test_multiple_reviews_with_images_for_same_shop(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();

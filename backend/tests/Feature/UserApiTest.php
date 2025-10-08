@@ -10,7 +10,7 @@ class UserApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_can_get_user_info()
+    public function test_can_get_user_info(): void
     {
         $user = User::factory()->create(['name' => 'Test User']);
 

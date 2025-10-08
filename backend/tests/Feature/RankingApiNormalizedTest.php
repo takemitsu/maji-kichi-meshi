@@ -23,7 +23,7 @@ class RankingApiNormalizedTest extends TestCase
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
     }
 
-    public function test_it_can_list_public_rankings()
+    public function test_it_can_list_public_rankings(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -88,7 +88,7 @@ class RankingApiNormalizedTest extends TestCase
         $this->assertCount(2, $data[0]['shops']);
     }
 
-    public function test_it_can_show_public_ranking()
+    public function test_it_can_show_public_ranking(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -134,7 +134,7 @@ class RankingApiNormalizedTest extends TestCase
         $this->assertEquals(2, $responseData['shops'][1]['rank_position']);
     }
 
-    public function test_authenticated_user_can_create_ranking()
+    public function test_authenticated_user_can_create_ranking(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -221,7 +221,7 @@ class RankingApiNormalizedTest extends TestCase
         $this->assertEquals('店舗は最大10店舗までです', $errors['shops'][0]);
     }
 
-    public function test_user_can_update_own_ranking()
+    public function test_user_can_update_own_ranking(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -296,7 +296,7 @@ class RankingApiNormalizedTest extends TestCase
         ]);
     }
 
-    public function test_user_can_delete_own_ranking()
+    public function test_user_can_delete_own_ranking(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -329,7 +329,7 @@ class RankingApiNormalizedTest extends TestCase
         $this->assertDatabaseMissing('ranking_items', ['ranking_id' => $ranking->id]);
     }
 
-    public function test_it_can_get_my_rankings()
+    public function test_it_can_get_my_rankings(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -371,7 +371,7 @@ class RankingApiNormalizedTest extends TestCase
         $this->assertEquals('User 1 Ranking', $data[0]['title']);
     }
 
-    public function test_it_can_get_public_rankings()
+    public function test_it_can_get_public_rankings(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();

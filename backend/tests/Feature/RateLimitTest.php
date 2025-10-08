@@ -188,7 +188,7 @@ class RateLimitTest extends TestCase
         $response->assertStatus(429); // Too Many Requests
     }
 
-    public function test_rate_limit_is_per_user_not_per_ip()
+    public function test_rate_limit_is_per_user_not_per_ip(): void
     {
         // 別のユーザーを作成
         $user2 = User::factory()->create([
@@ -265,7 +265,7 @@ class RateLimitTest extends TestCase
         $response->assertStatus(429);
     }
 
-    public function test_read_operations_have_higher_rate_limits()
+    public function test_read_operations_have_higher_rate_limits(): void
     {
         // 読み取り操作（my-reviews）は100回/時間まで可能
         for ($i = 0; $i < 50; $i++) {

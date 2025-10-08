@@ -22,7 +22,7 @@ class ReviewApiTest extends TestCase
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
     }
 
-    public function test_it_can_list_reviews()
+    public function test_it_can_list_reviews(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -55,7 +55,7 @@ class ReviewApiTest extends TestCase
             ]);
     }
 
-    public function test_it_can_show_single_review()
+    public function test_it_can_show_single_review(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -78,7 +78,7 @@ class ReviewApiTest extends TestCase
             ]);
     }
 
-    public function test_it_can_filter_reviews_by_shop()
+    public function test_it_can_filter_reviews_by_shop(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -95,7 +95,7 @@ class ReviewApiTest extends TestCase
         $this->assertEquals($shop1->id, $data[0]['shop']['id']);
     }
 
-    public function test_it_can_filter_reviews_by_rating()
+    public function test_it_can_filter_reviews_by_rating(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -111,7 +111,7 @@ class ReviewApiTest extends TestCase
         $this->assertEquals(5, $data[0]['rating']);
     }
 
-    public function test_it_requires_authentication_to_create_review()
+    public function test_it_requires_authentication_to_create_review(): void
     {
         $shop = Shop::factory()->create();
 
@@ -125,7 +125,7 @@ class ReviewApiTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function test_authenticated_user_can_create_review()
+    public function test_authenticated_user_can_create_review(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -157,7 +157,7 @@ class ReviewApiTest extends TestCase
         ]);
     }
 
-    public function test_it_validates_review_creation_data()
+    public function test_it_validates_review_creation_data(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -180,7 +180,7 @@ class ReviewApiTest extends TestCase
         $this->assertArrayHasKey('visited_at', $errors);
     }
 
-    public function test_it_allows_multiple_reviews_for_same_shop()
+    public function test_it_allows_multiple_reviews_for_same_shop(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -223,7 +223,7 @@ class ReviewApiTest extends TestCase
         ]);
     }
 
-    public function test_user_can_create_multiple_reviews_different_dates()
+    public function test_user_can_create_multiple_reviews_different_dates(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -297,7 +297,7 @@ class ReviewApiTest extends TestCase
         ]);
     }
 
-    public function test_multiple_reviews_appear_in_shop_review_list()
+    public function test_multiple_reviews_appear_in_shop_review_list(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -329,7 +329,7 @@ class ReviewApiTest extends TestCase
             ->assertJsonPath('data.1.memo', 'First review');
     }
 
-    public function test_multiple_reviews_appear_in_user_review_list()
+    public function test_multiple_reviews_appear_in_user_review_list(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -363,7 +363,7 @@ class ReviewApiTest extends TestCase
             ->assertJsonPath('data.1.memo', 'First review');
     }
 
-    public function test_user_can_update_own_review()
+    public function test_user_can_update_own_review(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -399,7 +399,7 @@ class ReviewApiTest extends TestCase
         ]);
     }
 
-    public function test_user_cannot_update_others_review()
+    public function test_user_cannot_update_others_review(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -419,7 +419,7 @@ class ReviewApiTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_user_can_delete_own_review()
+    public function test_user_can_delete_own_review(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -439,7 +439,7 @@ class ReviewApiTest extends TestCase
         $this->assertDatabaseMissing('reviews', ['id' => $review->id]);
     }
 
-    public function test_user_cannot_delete_others_review()
+    public function test_user_cannot_delete_others_review(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -457,7 +457,7 @@ class ReviewApiTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_it_can_get_my_reviews()
+    public function test_it_can_get_my_reviews(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -482,7 +482,7 @@ class ReviewApiTest extends TestCase
         $this->assertEquals($shop->id, $data[0]['shop']['id']);
     }
 
-    public function test_can_filter_reviews_by_user()
+    public function test_can_filter_reviews_by_user(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -505,7 +505,7 @@ class ReviewApiTest extends TestCase
         }
     }
 
-    public function test_returns_error_for_invalid_user_id()
+    public function test_returns_error_for_invalid_user_id(): void
     {
         $response = $this->getJson('/api/reviews?user_id=99999');
 

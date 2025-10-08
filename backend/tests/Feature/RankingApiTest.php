@@ -23,7 +23,7 @@ class RankingApiTest extends TestCase
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
     }
 
-    public function test_it_can_list_public_rankings()
+    public function test_it_can_list_public_rankings(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -79,7 +79,7 @@ class RankingApiTest extends TestCase
         $this->assertTrue($data[0]['is_public']);
     }
 
-    public function test_it_can_show_public_ranking()
+    public function test_it_can_show_public_ranking(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -118,7 +118,7 @@ class RankingApiTest extends TestCase
         $this->assertEquals(1, $responseData['shops'][0]['rank_position']);
     }
 
-    public function test_it_hides_private_ranking_from_unauthorized_users()
+    public function test_it_hides_private_ranking_from_unauthorized_users(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -138,7 +138,7 @@ class RankingApiTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_it_can_filter_rankings_by_category()
+    public function test_it_can_filter_rankings_by_category(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -173,7 +173,7 @@ class RankingApiTest extends TestCase
         $this->assertEquals($category1->id, $data[0]['category']['id']);
     }
 
-    public function test_it_can_filter_rankings_by_user()
+    public function test_it_can_filter_rankings_by_user(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -201,7 +201,7 @@ class RankingApiTest extends TestCase
         $this->assertEquals($user1->id, $data[0]['user']['id']);
     }
 
-    public function test_it_requires_authentication_to_create_ranking()
+    public function test_it_requires_authentication_to_create_ranking(): void
     {
         $shop = Shop::factory()->create();
         $category = Category::first();
@@ -221,7 +221,7 @@ class RankingApiTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function test_authenticated_user_can_create_ranking()
+    public function test_authenticated_user_can_create_ranking(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -260,7 +260,7 @@ class RankingApiTest extends TestCase
         ]);
     }
 
-    public function test_it_validates_ranking_creation_data()
+    public function test_it_validates_ranking_creation_data(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -319,7 +319,7 @@ class RankingApiTest extends TestCase
         $this->assertEquals('店舗は最大10店舗までです', $errors['shops'][0]);
     }
 
-    public function test_it_adjusts_positions_when_inserting_ranking()
+    public function test_it_adjusts_positions_when_inserting_ranking(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -377,7 +377,7 @@ class RankingApiTest extends TestCase
         ]);
     }
 
-    public function test_user_can_update_own_ranking()
+    public function test_user_can_update_own_ranking(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -427,7 +427,7 @@ class RankingApiTest extends TestCase
         ]);
     }
 
-    public function test_user_cannot_update_others_ranking()
+    public function test_user_cannot_update_others_ranking(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -452,7 +452,7 @@ class RankingApiTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_user_can_delete_own_ranking()
+    public function test_user_can_delete_own_ranking(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -491,7 +491,7 @@ class RankingApiTest extends TestCase
         $this->assertDatabaseHas('rankings', ['id' => $ranking2->id]);
     }
 
-    public function test_user_cannot_delete_others_ranking()
+    public function test_user_cannot_delete_others_ranking(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -514,7 +514,7 @@ class RankingApiTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_it_can_get_my_rankings()
+    public function test_it_can_get_my_rankings(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -553,7 +553,7 @@ class RankingApiTest extends TestCase
         $this->assertEquals($user1->id, $data[0]['user']['id']);
     }
 
-    public function test_it_can_get_public_rankings()
+    public function test_it_can_get_public_rankings(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -588,7 +588,7 @@ class RankingApiTest extends TestCase
         $this->assertTrue($data[0]['is_public']);
     }
 
-    public function test_owner_can_view_own_private_ranking()
+    public function test_owner_can_view_own_private_ranking(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -627,7 +627,7 @@ class RankingApiTest extends TestCase
         $this->assertFalse($responseData['is_public']);
     }
 
-    public function test_it_creates_multiple_shops_ranking_and_returns_all_shops()
+    public function test_it_creates_multiple_shops_ranking_and_returns_all_shops(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -705,7 +705,7 @@ class RankingApiTest extends TestCase
         ]);
     }
 
-    public function test_it_creates_single_shop_ranking_and_returns_array()
+    public function test_it_creates_single_shop_ranking_and_returns_array(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -754,7 +754,7 @@ class RankingApiTest extends TestCase
         $this->assertEquals(1, $responseData['shops'][0]['rank_position']);
     }
 
-    public function test_index_returns_multiple_shops_for_same_ranking()
+    public function test_index_returns_multiple_shops_for_same_ranking(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -797,7 +797,7 @@ class RankingApiTest extends TestCase
         $this->assertTrue($shopIds->contains($shop2->id));
     }
 
-    public function test_show_returns_individual_ranking_properly()
+    public function test_show_returns_individual_ranking_properly(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -848,7 +848,7 @@ class RankingApiTest extends TestCase
         $this->assertEquals(1, $responseData['shops'][0]['rank_position']);
     }
 
-    public function test_update_from_single_to_multiple_shops_works()
+    public function test_update_from_single_to_multiple_shops_works(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -975,7 +975,7 @@ class RankingApiTest extends TestCase
         $this->assertEquals('Updated Multiple Shops Ranking', $showResponse->json('data.title'));
     }
 
-    public function test_my_rankings_returns_multiple_shops_for_same_title()
+    public function test_my_rankings_returns_multiple_shops_for_same_title(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -1021,7 +1021,7 @@ class RankingApiTest extends TestCase
         $this->assertTrue($shopIds->contains($shop2->id));
     }
 
-    public function test_can_filter_rankings_by_user()
+    public function test_can_filter_rankings_by_user(): void
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
@@ -1073,7 +1073,7 @@ class RankingApiTest extends TestCase
         }
     }
 
-    public function test_it_can_create_ranking_with_shop_comments()
+    public function test_it_can_create_ranking_with_shop_comments(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -1116,7 +1116,7 @@ class RankingApiTest extends TestCase
         ]);
     }
 
-    public function test_it_can_update_ranking_with_shop_comments()
+    public function test_it_can_update_ranking_with_shop_comments(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();

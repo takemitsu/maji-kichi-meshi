@@ -12,7 +12,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\ImageManager;
-use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class LazyImageGenerationTest extends TestCase
@@ -50,8 +49,7 @@ class LazyImageGenerationTest extends TestCase
         ]);
     }
 
-    #[Test]
-    public function it_can_serve_original_image()
+    public function test_can_serve_original_image(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);
@@ -66,8 +64,7 @@ class LazyImageGenerationTest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists($originalPath));
     }
 
-    #[Test]
-    public function it_generates_thumbnail_immediately_during_upload()
+    public function test_generates_thumbnail_immediately_during_upload(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);
@@ -85,8 +82,7 @@ class LazyImageGenerationTest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists($reviewImage->thumbnail_path));
     }
 
-    #[Test]
-    public function it_generates_small_and_medium_sizes_on_demand()
+    public function test_generates_small_and_medium_sizes_on_demand(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);
@@ -119,8 +115,7 @@ class LazyImageGenerationTest extends TestCase
         $this->assertTrue($reviewImage->isSizeGenerated('medium'));
     }
 
-    #[Test]
-    public function it_returns_existing_path_for_already_generated_sizes()
+    public function test_returns_existing_path_for_already_generated_sizes(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);
@@ -137,8 +132,7 @@ class LazyImageGenerationTest extends TestCase
         $this->assertEquals($firstPath, $secondPath);
     }
 
-    #[Test]
-    public function it_returns_null_for_unsupported_sizes()
+    public function test_returns_null_for_unsupported_sizes(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);
@@ -152,8 +146,7 @@ class LazyImageGenerationTest extends TestCase
         $this->assertNull($path);
     }
 
-    #[Test]
-    public function it_handles_missing_original_image()
+    public function test_handles_missing_original_image(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);
@@ -170,8 +163,7 @@ class LazyImageGenerationTest extends TestCase
         $this->assertNull($path);
     }
 
-    #[Test]
-    public function api_endpoint_serves_images_correctly()
+    public function test_api_endpoint_serves_images_correctly(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);
@@ -199,15 +191,13 @@ class LazyImageGenerationTest extends TestCase
         $this->assertTrue($reviewImage->isSizeGenerated('small'));
     }
 
-    #[Test]
-    public function it_returns_404_for_non_existent_images()
+    public function test_returns_404_for_non_existent_images(): void
     {
         $response = $this->get('/api/images/reviews/thumbnail/nonexistent.jpg');
         $response->assertNotFound();
     }
 
-    #[Test]
-    public function it_validates_image_size_parameter()
+    public function test_validates_image_size_parameter(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);
@@ -220,8 +210,7 @@ class LazyImageGenerationTest extends TestCase
         $response->assertNotFound();
     }
 
-    #[Test]
-    public function it_respects_moderation_status()
+    public function test_respects_moderation_status(): void
     {
         // テスト画像を作成
         $testImage = UploadedFile::fake()->image('test.jpg', 800, 600);

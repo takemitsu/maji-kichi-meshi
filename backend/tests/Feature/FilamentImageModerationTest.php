@@ -41,7 +41,7 @@ class FilamentImageModerationTest extends TestCase
         $this->actingAs($this->admin, 'web');
     }
 
-    public function test_review_image_approve_action_calls_model_method()
+    public function test_review_image_approve_action_calls_model_method(): void
     {
         $review = Review::factory()->create();
         $reviewImage = ReviewImage::factory()->for($review)->create([
@@ -60,7 +60,7 @@ class FilamentImageModerationTest extends TestCase
         $this->assertNotNull($reviewImage->moderated_at);
     }
 
-    public function test_review_image_reject_action_calls_model_method()
+    public function test_review_image_reject_action_calls_model_method(): void
     {
         $review = Review::factory()->create();
         $reviewImage = ReviewImage::factory()->for($review)->create([
@@ -79,7 +79,7 @@ class FilamentImageModerationTest extends TestCase
         $this->assertNotNull($reviewImage->moderated_at);
     }
 
-    public function test_review_image_bulk_approve()
+    public function test_review_image_bulk_approve(): void
     {
         $review = Review::factory()->create();
         $images = ReviewImage::factory()->count(3)->for($review)->create([
@@ -96,7 +96,7 @@ class FilamentImageModerationTest extends TestCase
         }
     }
 
-    public function test_review_image_bulk_reject()
+    public function test_review_image_bulk_reject(): void
     {
         $review = Review::factory()->create();
         $images = ReviewImage::factory()->count(3)->for($review)->create([
@@ -113,7 +113,7 @@ class FilamentImageModerationTest extends TestCase
         }
     }
 
-    public function test_shop_image_approve_action_calls_model_method()
+    public function test_shop_image_approve_action_calls_model_method(): void
     {
         $shop = Shop::factory()->create();
         $shopImage = ShopImage::factory()->for($shop)->create([
@@ -132,7 +132,7 @@ class FilamentImageModerationTest extends TestCase
         $this->assertNotNull($shopImage->moderated_at);
     }
 
-    public function test_shop_image_reject_action_calls_model_method()
+    public function test_shop_image_reject_action_calls_model_method(): void
     {
         $shop = Shop::factory()->create();
         $shopImage = ShopImage::factory()->for($shop)->create([
@@ -151,7 +151,7 @@ class FilamentImageModerationTest extends TestCase
         $this->assertNotNull($shopImage->moderated_at);
     }
 
-    public function test_shop_image_defaults_to_published_on_creation()
+    public function test_shop_image_defaults_to_published_on_creation(): void
     {
         $shop = Shop::factory()->create();
 
@@ -162,7 +162,7 @@ class FilamentImageModerationTest extends TestCase
         $this->assertEquals('published', $shopImage->moderation_status);
     }
 
-    public function test_review_image_view_action_uses_urls_array()
+    public function test_review_image_view_action_uses_urls_array(): void
     {
         $review = Review::factory()->create();
         $reviewImage = ReviewImage::factory()->for($review)->create([
@@ -176,7 +176,7 @@ class FilamentImageModerationTest extends TestCase
         $page->assertTableActionHasUrl('view_image', $expectedUrl, record: $reviewImage);
     }
 
-    public function test_approve_action_only_visible_when_not_published()
+    public function test_approve_action_only_visible_when_not_published(): void
     {
         $review = Review::factory()->create();
 
@@ -194,7 +194,7 @@ class FilamentImageModerationTest extends TestCase
         $page->assertTableActionVisible('approve', record: $underReviewImage);
     }
 
-    public function test_reject_action_only_visible_when_not_rejected()
+    public function test_reject_action_only_visible_when_not_rejected(): void
     {
         $review = Review::factory()->create();
 

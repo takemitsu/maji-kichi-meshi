@@ -21,7 +21,7 @@ class CategoryApiTest extends TestCase
         $this->artisan('db:seed', ['--class' => 'CategorySeeder']);
     }
 
-    public function test_it_can_list_all_categories()
+    public function test_it_can_list_all_categories(): void
     {
         $response = $this->getJson('/api/categories');
 
@@ -41,7 +41,7 @@ class CategoryApiTest extends TestCase
         $this->assertGreaterThan(0, count($data));
     }
 
-    public function test_it_can_filter_categories_by_type()
+    public function test_it_can_filter_categories_by_type(): void
     {
         $response = $this->getJson('/api/categories?type=basic');
 
@@ -54,7 +54,7 @@ class CategoryApiTest extends TestCase
         }
     }
 
-    public function test_it_can_show_single_category()
+    public function test_it_can_show_single_category(): void
     {
         $category = Category::where('slug', 'ramen')->first();
 
@@ -71,7 +71,7 @@ class CategoryApiTest extends TestCase
             ]);
     }
 
-    public function test_it_requires_authentication_to_create_category()
+    public function test_it_requires_authentication_to_create_category(): void
     {
         $response = $this->postJson('/api/categories', [
             'name' => 'New Category',
@@ -81,7 +81,7 @@ class CategoryApiTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function test_authenticated_user_can_create_category()
+    public function test_authenticated_user_can_create_category(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -108,7 +108,7 @@ class CategoryApiTest extends TestCase
         ]);
     }
 
-    public function test_it_validates_category_creation_data()
+    public function test_it_validates_category_creation_data(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -128,7 +128,7 @@ class CategoryApiTest extends TestCase
         $this->assertArrayHasKey('type', $errors);
     }
 
-    public function test_it_auto_generates_slug_when_not_provided()
+    public function test_it_auto_generates_slug_when_not_provided(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -149,7 +149,7 @@ class CategoryApiTest extends TestCase
             ]);
     }
 
-    public function test_authenticated_user_can_update_category()
+    public function test_authenticated_user_can_update_category(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -180,7 +180,7 @@ class CategoryApiTest extends TestCase
         ]);
     }
 
-    public function test_it_prevents_deleting_category_in_use()
+    public function test_it_prevents_deleting_category_in_use(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
@@ -195,7 +195,7 @@ class CategoryApiTest extends TestCase
         $this->assertContains($response->status(), [200, 422]);
     }
 
-    public function test_it_can_delete_unused_category()
+    public function test_it_can_delete_unused_category(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
