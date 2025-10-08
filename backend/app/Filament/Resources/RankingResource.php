@@ -37,35 +37,53 @@ class RankingResource extends Resource
                     ->searchable()
                     ->preload()
                     ->disabled(),
-                Forms\Components\Select::make('shop_id')
-                    ->label('店舗')
-                    ->relationship('shop', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
                 Forms\Components\Select::make('category_id')
                     ->label('カテゴリ')
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload()
                     ->required(),
-                Forms\Components\TextInput::make('rank_position')
-                    ->label('順位')
-                    ->numeric()
-                    ->minValue(1)
-                    ->maxValue(100)
-                    ->required(),
-                Forms\Components\Toggle::make('is_public')
-                    ->label('公開設定')
-                    ->default(true)
-                    ->required(),
                 Forms\Components\TextInput::make('title')
                     ->label('タイトル')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->required(),
                 Forms\Components\Textarea::make('description')
                     ->label('説明')
                     ->columnSpanFull()
                     ->rows(3),
+                Forms\Components\Toggle::make('is_public')
+                    ->label('公開設定')
+                    ->default(true)
+                    ->required(),
+                Forms\Components\Repeater::make('items')
+                    ->label('ランキング店舗')
+                    ->relationship()
+                    ->schema([
+                        Forms\Components\Select::make('shop_id')
+                            ->label('店舗')
+                            ->relationship('shop', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpan(2),
+                        Forms\Components\TextInput::make('rank_position')
+                            ->label('順位')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(100)
+                            ->required()
+                            ->columnSpan(1),
+                        Forms\Components\Textarea::make('comment')
+                            ->label('コメント')
+                            ->rows(1)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(3)
+                    ->reorderable()
+                    ->collapsible()
+                    ->itemLabel(fn (array $state): ?string => $state['rank_position'] ? "{$state['rank_position']}位" : null)
+                    ->defaultItems(0)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -81,20 +99,9 @@ class RankingResource extends Resource
                     ->label('カテゴリ')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('shop.name')
-                    ->label('店舗')
-                    ->searchable()
-                    ->sortable()
-                    ->limit(30),
-                Tables\Columns\TextColumn::make('rank_position')
-                    ->label('順位')
-                    ->badge()
-                    ->color(fn (int $state): string => match (true) {
-                        $state <= 3 => 'success',
-                        $state <= 10 => 'warning',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (int $state): string => $state . '位')
+                Tables\Columns\TextColumn::make('items_count')
+                    ->label('店舗数')
+                    ->counts('items')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('title')
                     ->label('タイトル')
