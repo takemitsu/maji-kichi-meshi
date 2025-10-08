@@ -57,13 +57,8 @@ class CategoryController extends Controller
     /**
      * Display the specified category.
      */
-    public function show(Category $category, Request $request)
+    public function show(Category $category)
     {
-        // Load shops if requested
-        if ($request->boolean('with_shops', false)) {
-            $category->load('shops');
-        }
-
         return new CategoryResource($category);
     }
 

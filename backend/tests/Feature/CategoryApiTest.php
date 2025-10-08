@@ -218,37 +218,6 @@ class CategoryApiTest extends TestCase
     // Additional Coverage Tests
     // =============================================================================
 
-    public function test_it_can_show_category_with_shops(): void
-    {
-        $category = Category::where('slug', 'ramen')->first();
-
-        // First, associate a shop with this category
-        $shop = \App\Models\Shop::factory()->create();
-        $shop->categories()->attach($category->id);
-
-        $response = $this->getJson("/api/categories/{$category->id}?with_shops=true");
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'name',
-                    'slug',
-                    'type',
-                    'shops' => [
-                        '*' => [
-                            'id',
-                            'name',
-                        ],
-                    ],
-                ],
-            ]);
-
-        $data = $response->json('data');
-        $this->assertArrayHasKey('shops', $data);
-        $this->assertGreaterThanOrEqual(1, count($data['shops']));
-    }
-
     public function test_it_requires_authentication_to_update_category(): void
     {
         $category = Category::factory()->create([
