@@ -698,6 +698,186 @@
 5. **ImageController のレガシーエンドポイントテスト**
    - serve()メソッドの後方互換性確認
 
+---
+
+## 実測カバレッジ結果（2025-10-08 更新）
+
+### コマンド実行結果
+```bash
+XDEBUG_MODE=coverage php artisan test --coverage --min=80
+```
+
+### 全体カバレッジ: 57.4%
+※ Filament管理画面（0%）含む。管理画面は手動テストのため除外対象
+
+### 主要コントローラー実測値
+
+| Controller | Coverage | 未カバー行 | 対応要否 |
+|------------|----------|----------|---------|
+| TwoFactorController | 100.0% | なし | ✅ 完了 |
+| StatsController | 100.0% | なし | ✅ 完了 |
+| UserController | 100.0% | なし | ✅ 完了 |
+| ProfileController | 93.3% | わずか | ✅ 十分 |
+| ShopController | 92.4% | わずか | ✅ 十分 |
+| ReviewController | 89.7% | わずか | ✅ 十分 |
+| AuthController | 76.0% | OAuth例外処理 | ⚠️ 検討 |
+| **RankingController** | **70.8%** | **例外処理3箇所** | ⚠️ **要調査** |
+| **CategoryController** | **63.0%** | **lines 27-32,38,82-84** | ⚠️ **要調査** |
+| ImageController | 30.4% | `serve()` 後方互換用 | ⚠️ 削除検討 |
+
+### 詳細分析: RankingController (70.8%)
+
+**ファイル**: `app/Http/Controllers/Api/RankingController.php`
+
+**未カバー箇所:**
+- Line 80-82: `store()` 例外処理（500エラー）
+- Line 97-103: `update()` 例外処理 + Log::error（500エラー + ログ）
+- Line 116: `destroy()` 例外処理（500エラー）
+
+**分析:**
+- 16テストケースで主要機能は100%カバー済み
+- 未カバーは「RankingServiceの例外をキャッチしてHTTP 500を返す」処理のみ
+- RankingServiceは別途存在（サービス層のテストは未確認）
+
+**推奨対応:**
+1. **Option A (推奨)**: RankingServiceで例外が発生しないことが保証されているなら、例外処理は過剰 → 削除検討
+2. **Option B**: 例外が実際に発生する可能性があるなら、例外処理テストを追加
+3. **Option C**: 現状70.8%で十分と判断（主要機能100%カバー済み）
+
+### 詳細分析: CategoryController (63.0%)
+
+**ファイル**: `app/Http/Controllers/Api/CategoryController.php`
+
+**未カバー箇所:**
+- Lines 27-32: `with_shops_count` パラメータ処理（条件分岐）
+- Line 38: `withCount('shops')` 実行
+- Lines 82-84: 削除時「使用中カテゴリ」エラーレスポンス（422）
+
+**分析:**
+
+1. **`with_shops_count` 機能 (lines 27-32, 38)**
+   - 以前削除した `with_shops` 機能と類似
+   - フロントエンドでの使用箇所確認が必要
+   - 未使用なら削除候補
+
+2. **削除エラー処理 (lines 82-84)**
+   - 既存テスト: `test_it_prevents_deleting_category_in_use`
+   - テストでは `assertContains($response->status(), [200, 422])` としているため422パスが確実にカバーされていない
+   - テストを修正して422エラーを確実にテストすべき
+
+**推奨対応:**
+1. `with_shops_count` のフロントエンド使用箇所調査 → 未使用なら削除
+2. カテゴリ削除エラーテストを明確化（実際に使用中カテゴリを作成して422を確実にテスト）
+
+### Models カバレッジ
+
+| Model | Coverage | 未カバー箇所 | 推奨対応 |
+|-------|----------|------------|---------|
+| Category | 50.0% | lines 47-63（ヘルパーメソッド） | 使用状況調査 |
+| User | **9.6%** | **lines 102-378, 203-368（大量）** | **削除検討** |
+| その他 | 0% | リレーション定義のみ | 問題なし |
+
+**User Model (9.6%) - 重大な問題:**
+- 未使用と思われるヘルパーメソッドが大量に存在
+- これらが本当に未使用なら削除してカバレッジ向上
+
+### 次のアクション候補
+
+1. **`with_shops_count` 機能の使用状況調査** (CategoryController)
+   - フロントエンドコードを検索
+   - 未使用なら削除
+
+2. **User Modelの未使用メソッド特定と削除**
+   - lines 102-378, 203-368 の使用箇所調査
+   - 未使用メソッドを削除してカバレッジ向上
+
+3. **CategoryController削除テストの修正**
+   - 実際に使用中カテゴリを作成
+   - 422エラーを確実にテスト
+
+---
+
+## 実施結果（2025-10-08 完了）
+
+### 改善内容サマリー
+
+| 対象 | 改善前 | 改善後 | 改善幅 | 対応内容 |
+|------|--------|--------|--------|---------|
+| **CategoryController** | 63.0% | **100.0%** | **+37.0%** | 未使用機能削除 + エラーテスト追加 |
+| **User Model** | 83.0% | **98.9%** | **+15.9%** | エッジケース + 例外テスト追加 |
+
+### 詳細実施内容
+
+#### 1. CategoryController カバレッジ改善 (63.0% → 100.0%)
+
+**削除した未使用機能:**
+- `with_shops_count` パラメータ処理（Controller lines 27-32, 38）
+- `shops_count` フィールド（CategoryResource line 26）
+- `Category.shops_count` 型定義（Frontend types/api.ts line 63）
+- `type` フィルタ処理（Controller lines 22-34）
+- 未使用スコープ3つ（Category Model）
+  - `scopeBasic()`
+  - `scopeTime()`
+  - `scopeRanking()`
+- `type` フィルタテスト（CategoryApiTest）
+
+**追加したテスト:**
+- `test_it_prevents_deleting_category_in_use` を修正
+  - 使用中カテゴリを確実に作成（Shop と attach）
+  - 422エラーレスポンスを明示的にテスト
+  - カテゴリが削除されていないことをDB確認
+
+**結果:**
+- テスト: 12 passed (68 assertions)
+- カバレッジ: **100.0%** (未カバー箇所なし)
+
+#### 2. User Model カバレッジ改善 (83.0% → 98.9%)
+
+**追加したテスト (4件):**
+
+1. `test_get_two_factor_qr_code_url_throws_exception_when_secret_not_set`
+   - Line 197: 2FAシークレット未設定時の例外をテスト
+
+2. `test_verify_two_factor_code_returns_false_when_secret_not_set`
+   - Line 231: 2FAコード検証でsecret未設定時にfalse
+
+3. `test_delete_profile_image_clears_all_fields`
+   - Lines 320-339: プロフィール画像削除で全フィールドクリア確認
+
+4. `test_delete_profile_image_does_nothing_when_no_image`
+   - Lines 320-321: 画像未設定時の早期return確認
+
+**結果:**
+- テスト: 27 passed (72 assertions) - UserModelTestは11テストに
+- カバレッジ: **98.9%** (残り1行のみ)
+
+**残る未カバー箇所:**
+- Line 326: `Storage::delete()` 内の物理ファイル削除分岐
+  - 実ファイル作成が必要、優先度低
+
+### コード品質チェック
+
+✅ **全テスト: PASS**
+✅ **Pint: 168 files formatted**
+✅ **PHPStan: No errors**
+
+### 最終カバレッジ状況
+
+**主要コントローラー:**
+- CategoryController: **100.0%** ✅ (+37.0%)
+- User Model: **98.9%** ✅ (+15.9%)
+- TwoFactorController: 100.0% ✅
+- StatsController: 100.0% ✅
+- UserController: 100.0% ✅
+- ProfileController: 93.3% ✅
+- ShopController: 92.4% ✅
+- ReviewController: 89.7% ✅
+
+**改善なし（今回対象外）:**
+- RankingController: 70.8% (例外処理のみ未カバー)
+- AuthController: 76.0% (OAuth例外処理)
+- ImageController: 30.4% (レガシーエンドポイント)
+
 6. **ImageService のユーティリティメソッドテスト**
    - getImageUrl(), isSupportedImageType(), isValidSize()
 

@@ -23,7 +23,6 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'type' => $this->type,
-            'shops_count' => $this->when($this->relationLoaded('shops'), $this->shops->count()),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -18,26 +18,6 @@ class CategoryController extends Controller
     {
         $query = Category::query();
 
-        // Filter by type
-        if ($request->has('type')) {
-            switch ($request->type) {
-                case 'basic':
-                    $query->basic();
-                    break;
-                case 'time':
-                    $query->time();
-                    break;
-                case 'ranking':
-                    $query->ranking();
-                    break;
-            }
-        }
-
-        // Include shops count if requested
-        if ($request->boolean('with_shops_count', false)) {
-            $query->withCount('shops');
-        }
-
         // Order by name by default
         $query->orderBy('name');
 

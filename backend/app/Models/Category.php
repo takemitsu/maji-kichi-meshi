@@ -32,30 +32,6 @@ class Category extends Model
     }
 
     /**
-     * Scope for basic categories (shop types)
-     */
-    public function scopeBasic($query)
-    {
-        return $query->where('type', 'basic');
-    }
-
-    /**
-     * Scope for time-based categories
-     */
-    public function scopeTime($query)
-    {
-        return $query->where('type', 'time');
-    }
-
-    /**
-     * Scope for ranking categories
-     */
-    public function scopeRanking($query)
-    {
-        return $query->where('type', 'ranking');
-    }
-
-    /**
      * Get category by slug
      */
     public function scopeBySlug($query, $slug)

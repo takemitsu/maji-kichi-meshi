@@ -60,7 +60,6 @@ export interface Category {
     name: string
     slug: string
     type: 'basic' | 'time' | 'ranking'
-    shops_count?: number
     created_at: string
     updated_at: string
 }

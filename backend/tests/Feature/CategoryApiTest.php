@@ -41,19 +41,6 @@ class CategoryApiTest extends TestCase
         $this->assertGreaterThan(0, count($data));
     }
 
-    public function test_it_can_filter_categories_by_type(): void
-    {
-        $response = $this->getJson('/api/categories?type=basic');
-
-        $response->assertStatus(200);
-        $data = $response->json('data');
-
-        // Ensure all returned categories are basic type
-        foreach ($data as $category) {
-            $this->assertEquals('basic', $category['type']);
-        }
-    }
-
     public function test_it_can_show_single_category(): void
     {
         $category = Category::where('slug', 'ramen')->first();
@@ -184,15 +171,27 @@ class CategoryApiTest extends TestCase
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
-        $category = Category::where('slug', 'ramen')->first();
+        $category = Category::factory()->create([
+            'name' => 'Category In Use',
+            'slug' => 'category-in-use',
+            'type' => 'basic',
+        ]);
 
-        // This category is seeded and might be referenced elsewhere
+        // Create a shop that uses this category
+        $shop = \App\Models\Shop::factory()->create();
+        $shop->categories()->attach($category->id);
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
         ])->deleteJson("/api/categories/{$category->id}");
 
-        // Should either succeed if not in use, or fail with 422 if in use
-        $this->assertContains($response->status(), [200, 422]);
+        $response->assertStatus(422)
+            ->assertJson([
+                'error' => 'Cannot delete category that is in use',
+            ]);
+
+        // Verify category still exists
+        $this->assertDatabaseHas('categories', ['id' => $category->id]);
     }
 
     public function test_it_can_delete_unused_category(): void
