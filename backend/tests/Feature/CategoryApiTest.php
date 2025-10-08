@@ -213,4 +213,88 @@ class CategoryApiTest extends TestCase
 
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
     }
+
+    // =============================================================================
+    // Additional Coverage Tests
+    // =============================================================================
+
+    public function test_it_can_show_category_with_shops(): void
+    {
+        $category = Category::where('slug', 'ramen')->first();
+
+        // First, associate a shop with this category
+        $shop = \App\Models\Shop::factory()->create();
+        $shop->categories()->attach($category->id);
+
+        $response = $this->getJson("/api/categories/{$category->id}?with_shops=true");
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'slug',
+                    'type',
+                    'shops' => [
+                        '*' => [
+                            'id',
+                            'name',
+                        ],
+                    ],
+                ],
+            ]);
+
+        $data = $response->json('data');
+        $this->assertArrayHasKey('shops', $data);
+        $this->assertGreaterThanOrEqual(1, count($data['shops']));
+    }
+
+    public function test_it_requires_authentication_to_update_category(): void
+    {
+        $category = Category::factory()->create([
+            'name' => 'Test Category',
+            'type' => 'basic',
+        ]);
+
+        $response = $this->putJson("/api/categories/{$category->id}", [
+            'name' => 'Updated Name',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_it_validates_category_update_data(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+        $category = Category::factory()->create([
+            'name' => 'Test Category',
+            'type' => 'basic',
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/categories/{$category->id}", [
+            'name' => '', // Invalid: required
+            'type' => 'invalid', // Invalid: not in allowed values
+        ]);
+
+        $response->assertStatus(422);
+
+        // Check actual validation errors
+        $errors = $response->json('errors');
+        $this->assertArrayHasKey('name', $errors);
+    }
+
+    public function test_it_requires_authentication_to_delete_category(): void
+    {
+        $category = Category::factory()->create([
+            'name' => 'Test Category',
+            'type' => 'basic',
+        ]);
+
+        $response = $this->deleteJson("/api/categories/{$category->id}");
+
+        $response->assertStatus(401);
+    }
 }
