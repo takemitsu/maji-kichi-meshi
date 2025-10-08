@@ -33,7 +33,7 @@ class ShopImageTest extends TestCase
         });
     }
 
-    public function test_test_authenticated_user_can_upload_shop_images(): void
+    public function test_authenticated_user_can_upload_shop_images(): void
     {
         Storage::fake('public');
 
@@ -74,7 +74,7 @@ class ShopImageTest extends TestCase
         ]);
     }
 
-    public function test_test_unauthenticated_user_cannot_upload_shop_images(): void
+    public function test_unauthenticated_user_cannot_upload_shop_images(): void
     {
         $shop = Shop::factory()->create();
         $image = UploadedFile::fake()->image('image.jpg');
@@ -86,7 +86,7 @@ class ShopImageTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function test_test_shop_image_upload_validates_file_types(): void
+    public function test_shop_image_upload_validates_file_types(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -109,7 +109,7 @@ class ShopImageTest extends TestCase
         ]);
     }
 
-    public function test_test_shop_image_upload_validates_file_size(): void
+    public function test_shop_image_upload_validates_file_size(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -130,7 +130,7 @@ class ShopImageTest extends TestCase
         ]);
     }
 
-    public function test_test_shop_image_upload_limits_maximum_images(): void
+    public function test_shop_image_upload_limits_maximum_images(): void
     {
         Storage::fake('public');
 
@@ -157,7 +157,7 @@ class ShopImageTest extends TestCase
             ->assertJsonFragment(['error' => 'Maximum 10 images allowed']);
     }
 
-    public function test_test_authenticated_user_can_delete_shop_image(): void
+    public function test_authenticated_user_can_delete_shop_image(): void
     {
         Storage::fake('public');
 
@@ -176,7 +176,7 @@ class ShopImageTest extends TestCase
         $this->assertDatabaseMissing('shop_images', ['id' => $shopImage->id]);
     }
 
-    public function test_test_user_cannot_delete_image_from_different_shop(): void
+    public function test_user_cannot_delete_image_from_different_shop(): void
     {
         $user = User::factory()->create();
         $shop1 = Shop::factory()->create();
@@ -192,7 +192,7 @@ class ShopImageTest extends TestCase
             ->assertJsonFragment(['error' => 'Image does not belong to this shop']);
     }
 
-    public function test_test_authenticated_user_can_reorder_shop_images(): void
+    public function test_authenticated_user_can_reorder_shop_images(): void
     {
         $user = User::factory()->create();
         $shop = Shop::factory()->create();
@@ -215,7 +215,7 @@ class ShopImageTest extends TestCase
         $this->assertDatabaseHas('shop_images', ['id' => $image2->id, 'sort_order' => 2]);
     }
 
-    public function test_test_shop_images_are_included_in_shop_api_response(): void
+    public function test_shop_images_are_included_in_shop_api_response(): void
     {
         Storage::fake('public');
 

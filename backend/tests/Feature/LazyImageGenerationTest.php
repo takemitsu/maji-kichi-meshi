@@ -41,12 +41,20 @@ class LazyImageGenerationTest extends TestCase
         $this->lazyImageService = app(LazyImageService::class);
 
         // テストデータ作成
-        $this->user = User::factory()->create();
-        $this->shop = Shop::factory()->create();
-        $this->review = Review::factory()->create([
+        /** @var User $user */
+        $user = User::factory()->create();
+        $this->user = $user;
+
+        /** @var Shop $shop */
+        $shop = Shop::factory()->create();
+        $this->shop = $shop;
+
+        /** @var Review $review */
+        $review = Review::factory()->create([
             'user_id' => $this->user->id,
             'shop_id' => $this->shop->id,
         ]);
+        $this->review = $review;
     }
 
     public function test_can_serve_original_image(): void
