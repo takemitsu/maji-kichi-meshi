@@ -19,18 +19,18 @@
 
             <!-- レビュー一覧 -->
             <div v-else-if="reviews.length > 0" class="space-y-4 md:space-y-6">
-                <div v-for="review in reviews" :key="review.id" class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 p-4 md:p-6">
+                <div v-for="review in reviews" :key="review.id" class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 p-3 md:p-6">
                     <!-- ユーザー情報 -->
-                    <div class="flex items-center space-x-2 text-sm text-gray-700 mb-2">
-                        <span>{{ formatDate(review.visited_at) }}</span>
-                        <span class="flex items-center text-gray-500">
+                    <div class="flex items-center space-x-2 text-sm mb-2">
+                        <span class="text-gray-500">{{ formatDate(review.visited_at) }}</span>
+                        <span class="flex items-center text-gray-700">
                             by
                             <UserAvatar
                                 :user-name="review.user.name"
                                 :profile-image-url="review.user.profile_image?.urls?.small"
                                 size="xs"
                                 class="mx-1" />
-                            <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
+                            <UserLink :user="review.user" page-type="reviews" custom-class="text-sm font-medium" />
                         </span>
                     </div>
 
@@ -83,7 +83,7 @@
                             <div
                                 v-for="image in review.images.slice(0, 3)"
                                 :key="image.id"
-                                class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0">
+                                class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0">
                                 <img
                                     :src="image.urls.thumbnail"
                                     :alt="image.original_name"
@@ -97,7 +97,7 @@
 
                     <!-- いいねボタン -->
                     <div class="flex items-center gap-4 pt-3 border-t">
-                        <LikeButton :review-id="review.id" :initial-likes-count="0" :initial-is-liked="true" />
+                        <LikeButton :review-id="review.id" :initial-likes-count="review.likes_count || 0" :initial-is-liked="review.is_liked ?? true" />
                         <NuxtLink
                             :to="`/reviews/${review.id}`"
                             class="text-sm text-blue-600 hover:text-blue-700 font-medium"
