@@ -126,7 +126,34 @@ plan.mdに「灰/黄/赤」とあるが、以下のようなTailwindクラスを
 
 ---
 
-## 🚀 Phase 1 で学んだパフォーマンス最適化
+## 🚀 Phase 1 で学んだパフォーマンス最適化と注意点
+
+### ⚠️ pluck() による順序喪失の問題
+
+**問題**: Eloquent の `pluck('relation')` は IN句を使用するため、順序が保証されない
+
+```php
+// ❌ 順序が失われる
+$likes = ReviewLike::orderBy('created_at', 'desc')->paginate(15);
+$reviews = $likes->pluck('review');  // IN句で順序喪失
+
+// 実行されるSQL:
+// SELECT * FROM review_likes ORDER BY created_at DESC  -- 順序あり
+// SELECT * FROM reviews WHERE id IN (47, 60, 58)       -- 順序なし！
+```
+
+**解決策**: `getCollection()->map()` を使用して順序を保持
+
+```php
+// ✅ 順序が保持される
+$likes = ReviewLike::orderBy('created_at', 'desc')->paginate(15);
+$reviews = $likes->getCollection()->map(fn ($like) => $like->review);
+```
+
+**影響**:
+- いいね解除→再いいね で一番上に表示されるべきだが、表示されない
+- 最新のいいねが反映されない
+- ユーザー体験の悪化
 
 ### N+1 クエリ問題の解決パターン
 

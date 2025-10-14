@@ -81,6 +81,18 @@
   - **解決策**: `ReviewResource.php` で常に `likes_count` を返す（`is_liked` は認証時のみ true/false、未認証時は false）
   - **結果**: ゲストユーザーもいいね数を確認可能 ✅
 
+#### 1.6 UI/UX改善 ✅
+- [x] **いいねしたレビュー一覧のUI最適化**
+  - コンパクト表示（コメント2行省略、画像3枚表示）
+  - ユーザー情報の表示順変更（訪問日→ユーザー名）
+  - モバイルパディング最適化（p-3）
+  - 画像サイズ向上（thumbnail→small、w-16 h-16）
+  - いいね数の正しい表示（review.likes_count使用）
+- [x] **並び順の修正**
+  - **問題**: `pluck('review')` で IN句使用時に順序が保証されない
+  - **解決**: `getCollection()->map()` で順序を保持
+  - **結果**: いいね解除→再いいね で正しく一番上に表示される
+
 ### コード品質チェック ✅
 - [x] Laravel Pint: Pass
 - [x] PHPStan: No errors
