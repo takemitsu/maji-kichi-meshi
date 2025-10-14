@@ -230,10 +230,17 @@ class ReviewLikeApiTest extends TestCase
             'memo' => 'Second review',
         ]);
 
-        // Like review1 first, then review2
-        ReviewLike::create(['user_id' => $user->id, 'review_id' => $review1->id]);
-        sleep(1); // Ensure different timestamps
-        ReviewLike::create(['user_id' => $user->id, 'review_id' => $review2->id]);
+        // Like review1 first, then review2 with explicit timestamps
+        ReviewLike::create([
+            'user_id' => $user->id,
+            'review_id' => $review1->id,
+            'created_at' => now()->subSecond(),
+        ]);
+        ReviewLike::create([
+            'user_id' => $user->id,
+            'review_id' => $review2->id,
+            'created_at' => now(),
+        ]);
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,

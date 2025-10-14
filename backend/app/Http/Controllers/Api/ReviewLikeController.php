@@ -8,6 +8,7 @@ use App\Models\Review;
 use App\Models\ReviewLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ReviewLikeController extends Controller
 {
@@ -19,6 +20,9 @@ class ReviewLikeController extends Controller
         $userId = Auth::id();
 
         try {
+            // Get current like count before toggle
+            $currentCount = ReviewLike::where('review_id', $review->id)->count();
+
             $like = ReviewLike::where('user_id', $userId)
                 ->where('review_id', $review->id)
                 ->first();
@@ -28,6 +32,7 @@ class ReviewLikeController extends Controller
                 $like->delete();
                 $message = 'いいねを取り消しました';
                 $isLiked = false;
+                $likesCount = $currentCount - 1;
             } else {
                 // Like
                 ReviewLike::create([
@@ -36,9 +41,8 @@ class ReviewLikeController extends Controller
                 ]);
                 $message = 'いいねしました';
                 $isLiked = true;
+                $likesCount = $currentCount + 1;
             }
-
-            $likesCount = ReviewLike::where('review_id', $review->id)->count();
 
             return response()->json([
                 'message' => $message,
@@ -46,9 +50,14 @@ class ReviewLikeController extends Controller
                 'likes_count' => $likesCount,
             ]);
         } catch (\Exception $e) {
+            Log::error('Failed to toggle like', [
+                'error' => $e->getMessage(),
+                'user_id' => $userId,
+                'review_id' => $review->id,
+            ]);
+
             return response()->json([
                 'error' => 'いいねの処理に失敗しました',
-                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -80,7 +89,7 @@ class ReviewLikeController extends Controller
      */
     public function myLikes(Request $request)
     {
-        $query = ReviewLike::with(['review.user', 'review.shop.publishedImages', 'review.publishedImages'])
+        $query = ReviewLike::with(['review.user', 'review.shop.publishedImages', 'review.publishedImages', 'review.likes'])
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc');
 
@@ -89,7 +98,7 @@ class ReviewLikeController extends Controller
         $likes = $query->paginate($perPage);
 
         // Transform to review resources
-        $reviews = $likes->map(fn ($like) => $like->review);
+        $reviews = $likes->pluck('review');
 
         return ReviewResource::collection($reviews)->additional([
             'meta' => [

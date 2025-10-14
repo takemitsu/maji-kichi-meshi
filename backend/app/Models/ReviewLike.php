@@ -11,7 +11,10 @@ class ReviewLike extends Model
     /** @use HasFactory<\Database\Factories\ReviewLikeFactory> */
     use HasFactory;
 
-    public $timestamps = false;
+    /**
+     * Only created_at is used (no updated_at)
+     */
+    public const UPDATED_AT = null;
 
     protected $fillable = [
         'user_id',
