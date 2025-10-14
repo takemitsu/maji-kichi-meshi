@@ -82,7 +82,15 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="mt-4 flex space-x-3 md:ml-4 md:mt-0">
+                        <div class="mt-4 flex flex-wrap gap-3 md:ml-4 md:mt-0">
+                            <!-- 行きたいリストボタン -->
+                            <WishlistButton
+                                v-if="shop"
+                                :shop-id="shop.id"
+                                :initial-status="shop.wishlist_status"
+                                source-type="shop_detail"
+                                :allow-delete-visited="false" />
+
                             <template v-if="authStore.isLoggedIn">
                                 <button @click="editShop" class="btn-secondary flex items-center">
                                     <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">

@@ -29,7 +29,7 @@ class WishlistApiTest extends TestCase
         $token = JWTAuth::fromUser($user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/my-wishlist', [
             'shop_id' => $shop->id,
             'priority' => 3,
@@ -64,7 +64,7 @@ class WishlistApiTest extends TestCase
 
         // Try to add again
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/my-wishlist', [
             'shop_id' => $shop->id,
             'source_type' => 'shop_detail',
@@ -101,7 +101,7 @@ class WishlistApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->deleteJson("/api/my-wishlist/{$shop->id}");
 
         $response->assertStatus(200)
@@ -129,7 +129,7 @@ class WishlistApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->patchJson("/api/my-wishlist/{$shop->id}/priority", [
             'priority' => 3,
         ]);
@@ -160,7 +160,7 @@ class WishlistApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->patchJson("/api/my-wishlist/{$shop->id}/status", [
             'status' => 'visited',
         ]);
@@ -213,7 +213,7 @@ class WishlistApiTest extends TestCase
         ]);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->getJson('/api/my-wishlist?status=want_to_go&sort=priority');
 
         $response->assertStatus(200);
@@ -248,7 +248,7 @@ class WishlistApiTest extends TestCase
 
         // Get want_to_go only
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->getJson('/api/my-wishlist?status=want_to_go');
 
         $response->assertStatus(200);
@@ -258,7 +258,7 @@ class WishlistApiTest extends TestCase
 
         // Get visited only
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->getJson('/api/my-wishlist?status=visited');
 
         $response->assertStatus(200);
@@ -322,7 +322,7 @@ class WishlistApiTest extends TestCase
         $token = JWTAuth::fromUser($user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/my-wishlist', [
             'shop_id' => $shop->id,
             'source_type' => 'review',
@@ -355,7 +355,7 @@ class WishlistApiTest extends TestCase
 
         // Invalid priority (out of range)
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer ' . $token,
         ])->patchJson("/api/my-wishlist/{$shop->id}/priority", [
             'priority' => 4,
         ]);

@@ -117,9 +117,13 @@
                     <span class="text-sm text-gray-700">({{ shop.review_count || 0 }}件)</span>
                 </div>
 
-                <span class="text-xs text-gray-400">
-                    {{ formatDate(shop.updated_at) }}
-                </span>
+                <!-- 行きたいボタン -->
+                <WishlistButton
+                    @click.stop
+                    :shop-id="shop.id"
+                    :initial-status="shop.wishlist_status"
+                    source-type="shop_detail"
+                    :allow-delete-visited="false" />
             </div>
 
             <!-- アクションボタン（認証済みユーザーのみ） -->
@@ -183,11 +187,6 @@ const closeActionMenu = () => {
 const firstImage = computed(() => {
     return props.shop.images && props.shop.images.length > 0 ? props.shop.images[0] : null
 })
-
-// ユーティリティ関数
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ja-JP')
-}
 
 // カードクリック時の店舗詳細遷移
 const navigateToShop = () => {

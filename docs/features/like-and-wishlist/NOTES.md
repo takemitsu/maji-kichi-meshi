@@ -203,6 +203,82 @@ $reviews = $likes->getCollection()->map(fn ($like) => $like->review);
 - 店舗詳細ページや一覧ページで初期値を API response に含める
 - コンポーネント側で初期値がある場合は個別 API 呼び出しをスキップ
 
+### ⚠️ Public API エンドポイントでの Auth::check() の問題 ⭐ **超重要**
+
+**問題**: Resource 内で `Auth::check()` を使うと、public endpoint で常に false を返す
+
+```php
+// ❌ 問題のあるコード (ShopResource.php, ReviewResource.php)
+protected function getWishlistStatus(): array
+{
+    if (!$this->relationLoaded('wishlists') || !Auth::check()) {
+        return ['in_wishlist' => false];
+    }
+    $wishlist = $this->wishlists->where('user_id', Auth::id())->first();
+    // ...
+}
+```
+
+**原因**:
+- 店舗一覧・詳細API (`GET /api/shops/*`) は public endpoint (JWT middleware なし)
+- `routes/api.php` で `Route::get('/shops', ...)` は認証不要
+- public endpoint では `Auth::check()` が常に false を返す
+- その結果、ログイン中でも `wishlist_status` が `{in_wishlist: false}` になる
+
+**解決策**: Controller でユーザーフィルタ → Resource で isEmpty チェック
+
+```php
+// ✅ 正しいコード
+
+// 1. Controller (ShopController.php, ReviewController.php)
+$query = Shop::with([
+    'wishlists' => function ($query) {
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        }
+    },
+]);
+
+// 2. Resource (ShopResource.php, ReviewResource.php)
+protected function getWishlistStatus(): array
+{
+    // Auth::check() 削除
+    if (!$this->relationLoaded('wishlists')) {
+        return ['in_wishlist' => false];
+    }
+
+    // isEmpty() チェックのみ
+    if ($this->wishlists->isEmpty()) {
+        return ['in_wishlist' => false];
+    }
+
+    // Controller 側で既にユーザーでフィルタ済み
+    $wishlist = $this->wishlists->first();
+
+    return [
+        'in_wishlist' => true,
+        'priority' => $wishlist->priority,
+        'priority_label' => $wishlist->priority_label,
+        'status' => $wishlist->status,
+    ];
+}
+```
+
+**このパターンの利点**:
+- ログイン時: `Auth::check()` が true → wishlists コレクションにユーザーのデータが入る → `isEmpty()` が false
+- 未ログイン時: `Auth::check()` が false → wishlists コレクションが空 → `isEmpty()` が true
+- public endpoint でも適切にデータを返せる
+
+**適用箇所**:
+- `app/Http/Controllers/Api/ShopController.php` (wishlists リレーション)
+- `app/Http/Resources/ShopResource.php` (`getWishlistStatus()` メソッド)
+- `app/Http/Controllers/Api/ReviewController.php` (likes, shop.wishlists リレーション)
+- `app/Http/Resources/ReviewResource.php` (`is_liked`, `getShopWishlistStatus()`)
+
+**参考**:
+- `ReviewResource.php`:47-52 (likes_count, is_liked の実装)
+- `ShopResource.php`:59-80 (wishlist_status の実装)
+
 ---
 
 ## 📚 参考
@@ -216,16 +292,20 @@ $reviews = $likes->getCollection()->map(fn ($like) => $like->review);
 
 ## ✅ 実装完了チェックリスト
 
-### Phase 1 完了チェック
+### Phase 1 完了チェック ✅
 - [x] plan.mdをすべて読んだ
 - [x] この NOTES.md をすべて読んだ
 - [x] トグル式APIの仕様を理解した
 - [x] 命名規則（`my-` プレフィックス）を確認した
 - [x] Phase 1（いいね機能）完了
 
-### Phase 2 開始前チェック
-- [ ] plan.mdの Phase 2 セクションを再確認
-- [ ] この NOTES.md をすべて再読
-- [ ] 優先度UIに星を表示しないことを理解
-- [ ] `status=visited` の削除制御を理解
-- [ ] Phase 1 の実装パターンを参考にする
+### Phase 2 完了チェック ✅
+- [x] plan.mdの Phase 2 セクションを再確認
+- [x] この NOTES.md をすべて再読
+- [x] 優先度UIに星を表示しないことを理解
+- [x] `status=visited` の削除制御を理解
+- [x] Phase 1 の実装パターンを参考にした
+- [x] Public API での Auth パターンを理解・実装
+- [x] WishlistResource 実装（Laravel標準パターン）
+- [x] 楽観的UI実装（UX向上）
+- [x] Phase 2（行きたいリスト機能）完了

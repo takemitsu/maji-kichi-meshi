@@ -89,6 +89,12 @@
                                         いいねしたレビュー
                                     </NuxtLink>
                                     <NuxtLink
+                                        to="/my/wishlists"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                        @click="closeUserMenu">
+                                        行きたいリスト
+                                    </NuxtLink>
+                                    <NuxtLink
                                         to="/settings"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                                         @click="closeUserMenu">
@@ -201,6 +207,15 @@
                                         }"
                                         @click="closeMobileMenu">
                                         いいねしたレビュー
+                                    </NuxtLink>
+                                    <NuxtLink
+                                        to="/my/wishlists"
+                                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                                        :class="{
+                                            'text-blue-600 bg-blue-50': $route.path === '/my/wishlists',
+                                        }"
+                                        @click="closeMobileMenu">
+                                        行きたいリスト
                                     </NuxtLink>
                                     <NuxtLink
                                         to="/settings"

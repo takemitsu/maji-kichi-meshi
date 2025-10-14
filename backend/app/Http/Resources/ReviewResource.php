@@ -5,7 +5,6 @@ namespace App\Http\Resources;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * @property Review $resource
@@ -41,16 +40,45 @@ class ReviewResource extends JsonResource
                             'sort_order' => $image->sort_order,
                         ];
                     }),
+                    'wishlist_status' => $this->getShopWishlistStatus(),
                 ];
             }),
             'likes_count' => $this->whenLoaded('likes', function () {
                 return $this->likes->count();
             }, 0),
-            'is_liked' => $this->when(Auth::check() && $this->relationLoaded('likes'), function () {
-                return $this->likes->contains('user_id', Auth::id());
+            'is_liked' => $this->when($this->relationLoaded('likes') && !$this->likes->isEmpty(), function () {
+                return true; // Controller側で既に現在のユーザーでフィルタ済み
             }, false),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+        ];
+    }
+
+    /**
+     * Get wishlist status for the shop.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getShopWishlistStatus(): array
+    {
+        // wishlists が load されていない場合
+        if (!$this->shop->relationLoaded('wishlists')) {
+            return ['in_wishlist' => false];
+        }
+
+        // wishlists が空 = ログインしていないか、このユーザーの wishlist がない
+        if ($this->shop->wishlists->isEmpty()) {
+            return ['in_wishlist' => false];
+        }
+
+        // Controller 側で既に現在のユーザーでフィルタ済み
+        $wishlist = $this->shop->wishlists->first();
+
+        return [
+            'in_wishlist' => true,
+            'priority' => $wishlist->priority,
+            'priority_label' => $wishlist->priority_label,
+            'status' => $wishlist->status,
         ];
     }
 }

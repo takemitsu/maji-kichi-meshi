@@ -27,7 +27,21 @@ class ReviewController extends Controller
      */
     public function index(ReviewIndexRequest $request)
     {
-        $query = Review::with(['user', 'shop.publishedImages', 'publishedImages', 'likes']);
+        $query = Review::with([
+            'user',
+            'shop.publishedImages',
+            'shop.wishlists' => function ($query) {
+                if (Auth::check()) {
+                    $query->where('user_id', Auth::id());
+                }
+            },
+            'publishedImages',
+            'likes' => function ($query) {
+                if (Auth::check()) {
+                    $query->where('user_id', Auth::id());
+                }
+            },
+        ]);
 
         // Filter by user
         if ($request->has('user_id')) {
@@ -111,7 +125,21 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        $review->load(['user', 'shop.publishedImages', 'publishedImages', 'likes']);
+        $review->load([
+            'user',
+            'shop.publishedImages',
+            'shop.wishlists' => function ($query) {
+                if (Auth::check()) {
+                    $query->where('user_id', Auth::id());
+                }
+            },
+            'publishedImages',
+            'likes' => function ($query) {
+                if (Auth::check()) {
+                    $query->where('user_id', Auth::id());
+                }
+            },
+        ]);
 
         return new ReviewResource($review);
     }

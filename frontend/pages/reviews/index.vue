@@ -202,12 +202,26 @@
                         <!-- フッター -->
                         <div class="pt-4 border-t border-gray-200">
                             <div class="flex items-center justify-between">
-                                <!-- いいねボタン -->
-                                <LikeButton
-                                    :review-id="review.id"
-                                    :initial-likes-count="review.likes_count"
-                                    :initial-is-liked="review.is_liked"
-                                    @click.stop />
+                                <!-- アクションボタン -->
+                                <div class="flex items-center gap-2">
+                                    <!-- いいねボタン -->
+                                    <LikeButton
+                                        :review-id="review.id"
+                                        :initial-likes-count="review.likes_count"
+                                        :initial-is-liked="review.is_liked"
+                                        @click.stop />
+
+                                    <!-- 行きたいボタン -->
+                                    <WishlistButton
+                                        v-if="review.shop"
+                                        :shop-id="review.shop.id"
+                                        :initial-status="review.shop.wishlist_status"
+                                        source-type="review"
+                                        :source-user-id="review.user?.id"
+                                        :source-review-id="review.id"
+                                        :allow-delete-visited="false"
+                                        @click.stop />
+                                </div>
 
                                 <!-- 更新日時 -->
                                 <div v-if="review.updated_at !== review.created_at" class="text-sm text-gray-700">

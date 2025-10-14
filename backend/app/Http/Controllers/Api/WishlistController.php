@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\WishlistResource;
 use App\Models\Shop;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
@@ -228,7 +229,7 @@ class WishlistController extends Controller
             $wishlists = $query->get();
 
             return response()->json([
-                'data' => $wishlists,
+                'data' => WishlistResource::collection($wishlists),
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to get wishlist', [

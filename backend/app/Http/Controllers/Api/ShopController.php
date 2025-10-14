@@ -27,7 +27,15 @@ class ShopController extends Controller
      */
     public function index(ShopIndexRequest $request)
     {
-        $query = Shop::with(['categories', 'publishedImages']);
+        $query = Shop::with([
+            'categories',
+            'publishedImages',
+            'wishlists' => function ($query) {
+                if (Auth::check()) {
+                    $query->where('user_id', Auth::id());
+                }
+            },
+        ]);
 
         // Search by name
         if ($request->has('search')) {
@@ -87,7 +95,15 @@ class ShopController extends Controller
      */
     public function show(Shop $shop)
     {
-        $shop->load(['categories', 'publishedImages']);
+        $shop->load([
+            'categories',
+            'publishedImages',
+            'wishlists' => function ($query) {
+                if (Auth::check()) {
+                    $query->where('user_id', Auth::id());
+                }
+            },
+        ]);
 
         return new ShopResource($shop);
     }
