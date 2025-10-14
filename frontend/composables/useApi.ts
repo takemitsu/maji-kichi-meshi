@@ -11,6 +11,8 @@ import type {
     ReviewImage,
     ShopImage,
     ErrorResponse,
+    ReviewLikesResponse,
+    ReviewLikeToggleResponse,
 } from '~/types/api'
 
 export const useApi = () => {
@@ -197,6 +199,19 @@ export const useApi = () => {
                 apiFetch<{ message: string }>(`/reviews/${reviewId}/images/${imageId}`, {
                     method: 'DELETE',
                 }),
+
+            // いいね機能
+            getLikes: (reviewId: number) => apiFetch<ReviewLikesResponse>(`/reviews/${reviewId}/likes`),
+
+            toggleLike: (reviewId: number) =>
+                apiFetch<ReviewLikeToggleResponse>(`/reviews/${reviewId}/like`, {
+                    method: 'POST',
+                }),
+
+            myLikedReviews: (params?: Record<string, string | number>) => {
+                const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+                return apiFetch<PaginatedResponse<Review>>(`/my-liked-reviews${query}`)
+            },
         },
 
         // ランキング関連

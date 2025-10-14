@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property Review $resource
@@ -42,6 +43,12 @@ class ReviewResource extends JsonResource
                     }),
                 ];
             }),
+            'likes_count' => $this->whenLoaded('likes', function () {
+                return $this->likes->count();
+            }, 0),
+            'is_liked' => $this->when(Auth::check() && $this->relationLoaded('likes'), function () {
+                return $this->likes->contains('user_id', Auth::id());
+            }, false),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

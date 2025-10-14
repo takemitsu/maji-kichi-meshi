@@ -83,6 +83,11 @@
                                     v-if="isUserMenuOpen"
                                     class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                                     <NuxtLink
+                                        to="/my/liked-reviews"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                        いいねしたレビュー
+                                    </NuxtLink>
+                                    <NuxtLink
                                         to="/settings"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                         設定
@@ -185,6 +190,15 @@
                                         }"
                                         @click="closeMobileMenu">
                                         マイページ
+                                    </NuxtLink>
+                                    <NuxtLink
+                                        to="/my/liked-reviews"
+                                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                                        :class="{
+                                            'text-blue-600 bg-blue-50': $route.path === '/my/liked-reviews',
+                                        }"
+                                        @click="closeMobileMenu">
+                                        いいねしたレビュー
                                     </NuxtLink>
                                     <NuxtLink
                                         to="/settings"

@@ -27,7 +27,7 @@ class ReviewController extends Controller
      */
     public function index(ReviewIndexRequest $request)
     {
-        $query = Review::with(['user', 'shop.publishedImages', 'publishedImages']);
+        $query = Review::with(['user', 'shop.publishedImages', 'publishedImages', 'likes']);
 
         // Filter by user
         if ($request->has('user_id')) {
@@ -111,7 +111,7 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        $review->load(['user', 'shop.publishedImages', 'publishedImages']);
+        $review->load(['user', 'shop.publishedImages', 'publishedImages', 'likes']);
 
         return new ReviewResource($review);
     }
@@ -146,7 +146,7 @@ class ReviewController extends Controller
      */
     public function myReviews(Request $request)
     {
-        $query = Review::with(['shop', 'publishedImages'])
+        $query = Review::with(['shop', 'publishedImages', 'likes'])
             ->byUser(Auth::id());
 
         // Filter by shop

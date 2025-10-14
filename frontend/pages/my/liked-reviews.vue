@@ -1,0 +1,176 @@
+<template>
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- ヘッダー -->
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">👍 いいねしたレビュー</h1>
+                <p class="text-gray-600">あなたがいいねしたレビューの一覧です</p>
+            </div>
+
+            <!-- ローディング -->
+            <div v-if="isLoading && !reviews.length" class="flex justify-center py-12">
+                <LoadingSpinner />
+            </div>
+
+            <!-- エラー -->
+            <AlertMessage v-else-if="error" type="error" class="mb-6">
+                {{ error }}
+            </AlertMessage>
+
+            <!-- レビュー一覧 -->
+            <div v-else-if="reviews.length > 0" class="space-y-6">
+                <div v-for="review in reviews" :key="review.id" class="bg-white rounded-lg shadow-md p-6">
+                    <!-- ユーザー情報 -->
+                    <div class="flex items-center gap-3 mb-4">
+                        <UserAvatar
+                            :user-name="review.user.name"
+                            :profile-image-url="review.user.profile_image?.urls?.small"
+                            size="sm" />
+                        <div>
+                            <UserLink :user="review.user" page-type="reviews" custom-class="font-medium text-gray-900 hover:text-blue-600" />
+                            <div class="text-sm text-gray-500">
+                                {{ formatDate(review.visited_at) }} に訪問
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 店舗情報 -->
+                    <NuxtLink
+                        :to="`/shops/${review.shop.id}`"
+                        class="text-lg font-semibold text-gray-900 hover:text-blue-600 mb-3 block"
+                    >
+                        {{ review.shop.name }}
+                    </NuxtLink>
+
+                    <!-- 評価 -->
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="flex items-center gap-1">
+                            <span v-for="i in 5" :key="i" class="text-xl">
+                                {{ i <= review.rating ? '★' : '☆' }}
+                            </span>
+                        </div>
+                        <span class="text-sm px-2 py-1 rounded bg-gray-100 text-gray-700">
+                            {{ review.repeat_intention_text }}
+                        </span>
+                    </div>
+
+                    <!-- コメント -->
+                    <p v-if="review.memo" class="text-gray-700 mb-3">{{ review.memo }}</p>
+
+                    <!-- 画像 -->
+                    <div v-if="review.has_images && review.images?.length" class="flex gap-2 overflow-x-auto mb-3">
+                        <img
+                            v-for="image in review.images.slice(0, 4)"
+                            :key="image.id"
+                            :src="image.urls.small"
+                            :alt="image.original_name"
+                            class="w-24 h-24 object-cover rounded"
+                        />
+                    </div>
+
+                    <!-- いいねボタン -->
+                    <div class="flex items-center gap-4 pt-3 border-t">
+                        <LikeButton :review-id="review.id" :initial-likes-count="0" :initial-is-liked="true" />
+                        <NuxtLink
+                            :to="`/reviews/${review.id}`"
+                            class="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                            レビュー詳細を見る →
+                        </NuxtLink>
+                    </div>
+                </div>
+
+                <!-- ページネーション -->
+                <PaginationComponent
+                    v-if="pagination.total > pagination.per_page"
+                    :current-page="pagination.current_page"
+                    :total-pages="pagination.last_page"
+                    :total-items="pagination.total"
+                    :per-page="pagination.per_page"
+                    @page-change="loadPage"
+                />
+            </div>
+
+            <!-- 空の状態 -->
+            <div v-else class="text-center py-12">
+                <div class="text-6xl mb-4">👍</div>
+                <p class="text-gray-600 text-lg mb-2">まだいいねしたレビューがありません</p>
+                <p class="text-gray-500 mb-6">気になるレビューに「いいね」してみましょう</p>
+                <NuxtLink
+                    to="/reviews"
+                    class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    レビューを見る
+                </NuxtLink>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import type { Review } from '~/types/api'
+
+definePageMeta({
+    middleware: 'auth',
+})
+
+useSeoMeta({
+    title: 'いいねしたレビュー',
+    description: 'あなたがいいねしたレビューの一覧',
+})
+
+const api = useApi()
+
+const reviews = ref<Review[]>([])
+const isLoading = ref(true)
+const error = ref<string | null>(null)
+const pagination = ref({
+    current_page: 1,
+    last_page: 1,
+    per_page: 15,
+    total: 0,
+})
+
+// 日付フォーマット
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
+}
+
+// レビュー読み込み
+const loadReviews = async (page: number = 1) => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+        const response = await api.reviews.myLikedReviews({ page, per_page: 15 })
+        reviews.value = response.data
+        pagination.value = {
+            current_page: response.meta.current_page,
+            last_page: response.meta.last_page,
+            per_page: response.meta.per_page,
+            total: response.meta.total,
+        }
+    } catch (e: unknown) {
+        console.error('Failed to load liked reviews:', e)
+        error.value = 'いいねしたレビューの読み込みに失敗しました'
+    } finally {
+        isLoading.value = false
+    }
+}
+
+// ページ変更
+const loadPage = (page: number) => {
+    loadReviews(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// 初期読み込み
+onMounted(() => {
+    loadReviews()
+})
+</script>

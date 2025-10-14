@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\ReviewLikeController;
 use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\UserController;
@@ -40,6 +41,7 @@ Route::get('/shops', [ShopController::class, 'index']);
 Route::get('/shops/{shop}', [ShopController::class, 'show']);
 Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+Route::get('/reviews/{review}/likes', [ReviewLikeController::class, 'show']);
 Route::get('/rankings', [RankingController::class, 'index']);
 Route::get('/rankings/{ranking}', [RankingController::class, 'show']);
 Route::get('/public-rankings', [RankingController::class, 'publicRankings']);
@@ -97,6 +99,12 @@ Route::middleware('auth:api')->group(function () {
         ->middleware('throttle:image-upload');
     Route::delete('/reviews/{review}/images/{image}', [ReviewController::class, 'deleteImage'])
         ->middleware('throttle:delete-operation');
+
+    // Review like management
+    Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])
+        ->middleware('throttle:general-update');
+    Route::get('/my-liked-reviews', [ReviewLikeController::class, 'myLikes'])
+        ->middleware('throttle:read-operation');
 
     // Ranking management
     Route::post('/rankings', [RankingController::class, 'store'])

@@ -200,8 +200,20 @@
                         </div>
 
                         <!-- フッター -->
-                        <div v-if="review.updated_at !== review.created_at" class="pt-4 border-t border-gray-200">
-                            <div class="text-sm text-gray-700">更新: {{ formatDate(review.updated_at) }}</div>
+                        <div class="pt-4 border-t border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <!-- いいねボタン -->
+                                <LikeButton
+                                    :review-id="review.id"
+                                    :initial-likes-count="review.likes_count"
+                                    :initial-is-liked="review.is_liked"
+                                    @click.stop />
+
+                                <!-- 更新日時 -->
+                                <div v-if="review.updated_at !== review.created_at" class="text-sm text-gray-700">
+                                    更新: {{ formatDate(review.updated_at) }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

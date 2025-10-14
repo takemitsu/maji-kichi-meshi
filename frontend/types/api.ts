@@ -81,6 +81,8 @@ export interface Review {
         image_url?: string
         images?: ShopImage[]
     }
+    likes_count: number
+    is_liked: boolean
     created_at: string
     updated_at: string
 }
@@ -174,4 +176,23 @@ export interface ErrorResponse {
     errors?: Record<string, string[]>
     // Legacy support (CategoryController still uses old format)
     messages?: Record<string, string[]>
+}
+
+// いいね関連
+export interface ReviewLike {
+    id: number
+    user_id: number
+    review_id: number
+    created_at: string
+}
+
+export interface ReviewLikesResponse {
+    likes_count: number
+    is_liked?: boolean
+}
+
+export interface ReviewLikeToggleResponse {
+    message: string
+    is_liked: boolean
+    likes_count: number
 }

@@ -50,6 +50,14 @@ class Review extends Model
     }
 
     /**
+     * Likes relationship
+     */
+    public function likes()
+    {
+        return $this->hasMany(ReviewLike::class);
+    }
+
+    /**
      * Published review images relationship (only approved images)
      */
     public function publishedImages()
