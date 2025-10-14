@@ -116,31 +116,82 @@
 
 ---
 
-## Phase 2: 行きたいリスト機能 ⏸️ 未実装
+## Phase 2: 行きたいリスト機能 🚧 バックエンド完了
 
-### 実装予定タスク
+### 実装日時
+- 開始: 2025-10-14
+- バックエンド完了: 2025-10-14
 
-#### 2.1 データベース準備
-- [ ] マイグレーション作成: `create_wishlists_table`
-- [ ] マイグレーション実行・確認
+### 実装内容
 
-#### 2.2 バックエンド実装
-- [ ] `Wishlist` モデル作成
-- [ ] `WishlistRepository` 作成
-- [ ] `WishlistController` 作成
-- [ ] APIルート追加
-- [ ] `Shop` モデルにリレーション追加
+#### 2.1 データベース準備 ✅
+- [x] マイグレーション作成: `2025_10_14_095033_create_wishlists_table.php`
+- [x] マイグレーション実行・確認
+  - `wishlists` テーブル作成完了
+  - UNIQUE制約: `unique_user_shop (user_id, shop_id)`
+  - インデックス: `idx_wishlist_user_priority`, `idx_wishlist_user_created`
+  - 外部キー: CASCADE (user, shop), SET NULL (source_user, source_review)
 
-#### 2.3 フロントエンド実装
+#### 2.2 バックエンド実装 ✅
+- [x] `Wishlist` モデル作成 (`app/Models/Wishlist.php`)
+  - リレーション: `user()`, `shop()`, `sourceUser()`, `sourceReview()`
+  - アクセサ: `priorityLabel` (いつか/そのうち/絶対)
+  - **Laravel 11/12 Attribute::make() パターン使用**
+- [x] `WishlistController` 作成 (`app/Http/Controllers/Api/WishlistController.php`)
+  - **Repository パターン不使用** (Laravel標準、既存コード ReviewLikeController と統一)
+  - `store()`: 追加
+  - `destroy()`: 削除
+  - `updatePriority()`: 優先度変更
+  - `updateStatus()`: 状態変更（want_to_go → visited）
+  - `index()`: リスト取得
+- [x] `ShopController` に追加 (`app/Http/Controllers/Api/ShopController.php`)
+  - `wishlistStatus()`: 特定店舗の行きたい状態確認
+- [x] APIルート追加 (`routes/api.php`)
+  - `POST /api/my-wishlist` → 追加
+  - `DELETE /api/my-wishlist/{shop}` → 削除
+  - `PATCH /api/my-wishlist/{shop}/priority` → 優先度変更
+  - `PATCH /api/my-wishlist/{shop}/status` → 状態変更
+  - `GET /api/my-wishlist` → リスト取得
+  - `GET /api/shops/{shop}/wishlist-status` → 店舗の行きたい状態確認
+- [x] `Shop` モデルにリレーション追加
+  - `wishlists()` リレーション
+
+#### 2.3 テスト実装 ✅
+- [x] Feature Test: `WishlistApiTest.php` (13テスト、全パス)
+  - いいね追加/削除
+  - 重複追加防止 (409 Conflict)
+  - 未認証エラー (401 Unauthorized)
+  - 優先度変更
+  - 状態変更（visited_at 自動設定）
+  - リスト取得（status フィルタ、priority ソート）
+  - public endpoint の動作確認
+  - 出典情報記録 (source_type, source_user_id, source_review_id)
+  - バリデーション (priority 範囲チェック)
+  - CASCADE削除 (shop削除時にwishlist削除)
+  - **全テストパス** ✅
+
+#### 2.4 コード品質チェック ✅
+- [x] Laravel Pint: Pass
+- [x] PHPStan: No errors (PHPDoc `@property-read` で対応)
+- [x] PHPUnit: 13 tests, 37 assertions - All pass
+- [x] **Laravel標準・ベストプラクティス準拠確認**:
+  - Eloquent リレーション、Attribute Accessor、バリデーション、エラーハンドリングすべて適切
+  - Repository パターン不使用は既存コードとの一貫性を優先（問題なし）
+
+#### 2.5 フロントエンド実装 ⏸️ 未実装
 - [ ] `WishlistButton.vue` コンポーネント作成
 - [ ] `PrioritySelector.vue` コンポーネント作成
+- [ ] API連携 (`composables/useWishlists.ts`)
 - [ ] 店舗詳細ページに統合
 - [ ] レビューカードに統合
 - [ ] 行きたいリストページ実装 (`frontend/pages/my/wishlists.vue`)
+- [ ] フロントエンドコード品質チェック
+- [ ] ブラウザテスト
 
-#### 2.4 テスト実装
-- [ ] Feature Test: `WishlistTest.php`
-- [ ] コード品質チェック
+### 成果物（バックエンドのみ）
+- バックエンド: 3ファイル (Model, Controller, Migration) + ShopController 更新
+- テスト: 1ファイル (13テスト、37アサーション)
+- APIエンドポイント: 6個
 
 ---
 

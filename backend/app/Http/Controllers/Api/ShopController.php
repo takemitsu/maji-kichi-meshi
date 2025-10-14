@@ -11,8 +11,10 @@ use App\Http\Requests\ShopUploadImagesRequest;
 use App\Http\Resources\ShopResource;
 use App\Models\Shop;
 use App\Models\ShopImage;
+use App\Models\Wishlist;
 use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ShopController extends Controller
 {
@@ -179,5 +181,34 @@ class ShopController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Get wishlist status for a shop
+     */
+    public function wishlistStatus(Shop $shop)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'in_wishlist' => false,
+            ]);
+        }
+
+        $wishlist = Wishlist::where('user_id', Auth::id())
+            ->where('shop_id', $shop->id)
+            ->first();
+
+        if (!$wishlist) {
+            return response()->json([
+                'in_wishlist' => false,
+            ]);
+        }
+
+        return response()->json([
+            'in_wishlist' => true,
+            'priority' => $wishlist->priority,
+            'priority_label' => $wishlist->priority_label,
+            'status' => $wishlist->status,
+        ]);
     }
 }

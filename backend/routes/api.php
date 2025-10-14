@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ReviewLikeController;
 use App\Http\Controllers\Api\ShopController;
 use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,6 +40,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{category}', [CategoryController::class, 'show']);
 Route::get('/shops', [ShopController::class, 'index']);
 Route::get('/shops/{shop}', [ShopController::class, 'show']);
+Route::get('/shops/{shop}/wishlist-status', [ShopController::class, 'wishlistStatus']);
 Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{review}', [ReviewController::class, 'show']);
 Route::get('/reviews/{review}/likes', [ReviewLikeController::class, 'show']);
@@ -104,6 +106,18 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])
         ->middleware('throttle:general-update');
     Route::get('/my-liked-reviews', [ReviewLikeController::class, 'myLikes'])
+        ->middleware('throttle:read-operation');
+
+    // Wishlist management
+    Route::post('/my-wishlist', [WishlistController::class, 'store'])
+        ->middleware('throttle:general-update');
+    Route::delete('/my-wishlist/{shop}', [WishlistController::class, 'destroy'])
+        ->middleware('throttle:delete-operation');
+    Route::patch('/my-wishlist/{shop}/priority', [WishlistController::class, 'updatePriority'])
+        ->middleware('throttle:general-update');
+    Route::patch('/my-wishlist/{shop}/status', [WishlistController::class, 'updateStatus'])
+        ->middleware('throttle:general-update');
+    Route::get('/my-wishlist', [WishlistController::class, 'index'])
         ->middleware('throttle:read-operation');
 
     // Ranking management
