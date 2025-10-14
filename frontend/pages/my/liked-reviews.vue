@@ -70,18 +70,29 @@
                         </span>
                     </div>
 
-                    <!-- コメント -->
-                    <p v-if="review.memo" class="text-gray-700 mb-3">{{ review.memo }}</p>
+                    <!-- コメント（省略表示） -->
+                    <div v-if="review.memo" class="mb-3">
+                        <p class="text-gray-900 text-sm leading-relaxed line-clamp-2">
+                            {{ review.memo }}
+                        </p>
+                    </div>
 
-                    <!-- 画像 -->
-                    <div v-if="review.has_images && review.images?.length" class="flex gap-2 overflow-x-auto mb-3">
-                        <img
-                            v-for="image in review.images.slice(0, 4)"
-                            :key="image.id"
-                            :src="image.urls.small"
-                            :alt="image.original_name"
-                            class="w-24 h-24 object-cover rounded"
-                        />
+                    <!-- 画像（コンパクト） -->
+                    <div v-if="review.images && review.images.length > 0" class="mb-3">
+                        <div class="flex items-center space-x-2">
+                            <div
+                                v-for="image in review.images.slice(0, 3)"
+                                :key="image.id"
+                                class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0">
+                                <img
+                                    :src="image.urls.thumbnail"
+                                    :alt="image.original_name"
+                                    class="w-full h-full object-cover" />
+                            </div>
+                            <div v-if="review.images.length > 3" class="text-xs text-gray-700">
+                                +{{ review.images.length - 3 }}枚
+                            </div>
+                        </div>
                     </div>
 
                     <!-- いいねボタン -->
