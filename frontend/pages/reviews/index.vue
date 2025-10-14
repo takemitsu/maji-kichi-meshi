@@ -185,10 +185,10 @@
                                 <div
                                     v-for="image in review.images.slice(0, 3)"
                                     :key="image.id"
-                                    class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
+                                    class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
                                     @click.stop="openImageModal(image)">
                                     <img
-                                        :src="image.urls.thumbnail"
+                                        :src="image.urls.small"
                                         :alt="`レビュー画像 ${image.id}`"
                                         class="w-full h-full object-cover"
                                         @error="handleReviewImageError(image)" />

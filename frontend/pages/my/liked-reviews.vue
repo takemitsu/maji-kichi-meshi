@@ -85,7 +85,7 @@
                                 :key="image.id"
                                 class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0">
                                 <img
-                                    :src="image.urls.thumbnail"
+                                    :src="image.urls.small"
                                     :alt="image.original_name"
                                     class="w-full h-full object-cover" />
                             </div>
