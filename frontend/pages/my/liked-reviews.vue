@@ -21,29 +21,29 @@
             <div v-else-if="reviews.length > 0" class="space-y-4 md:space-y-6">
                 <div v-for="review in reviews" :key="review.id" class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 p-4 md:p-6">
                     <!-- ユーザー情報 -->
-                    <div class="flex items-center gap-3 mb-4">
-                        <UserAvatar
-                            :user-name="review.user.name"
-                            :profile-image-url="review.user.profile_image?.urls?.small"
-                            size="sm" />
-                        <div>
-                            <UserLink :user="review.user" page-type="reviews" custom-class="font-medium text-gray-900 hover:text-blue-600" />
-                            <div class="text-sm text-gray-500">
-                                {{ formatDate(review.visited_at) }} に訪問
-                            </div>
-                        </div>
+                    <div class="flex items-center space-x-2 text-sm text-gray-700 mb-2">
+                        <span>{{ formatDate(review.visited_at) }}</span>
+                        <span class="flex items-center text-gray-500">
+                            by
+                            <UserAvatar
+                                :user-name="review.user.name"
+                                :profile-image-url="review.user.profile_image?.urls?.small"
+                                size="xs"
+                                class="mx-1" />
+                            <UserLink :user="review.user" page-type="reviews" custom-class="text-sm" />
+                        </span>
                     </div>
 
                     <!-- 店舗情報 -->
                     <NuxtLink
                         :to="`/shops/${review.shop.id}`"
-                        class="text-lg font-semibold text-gray-900 hover:text-blue-600 mb-3 block"
+                        class="text-lg font-semibold text-gray-900 hover:text-blue-600 mb-2 block"
                     >
                         {{ review.shop.name }}
                     </NuxtLink>
 
                     <!-- 評価 -->
-                    <div class="flex items-center gap-4 mb-3">
+                    <div class="flex items-center gap-4 mb-2">
                         <div class="flex items-center space-x-1">
                             <div class="flex">
                                 <svg
@@ -71,14 +71,14 @@
                     </div>
 
                     <!-- コメント（省略表示） -->
-                    <div v-if="review.memo" class="mb-3">
+                    <div v-if="review.memo" class="mb-2">
                         <p class="text-gray-900 text-sm leading-relaxed line-clamp-2">
                             {{ review.memo }}
                         </p>
                     </div>
 
                     <!-- 画像（コンパクト） -->
-                    <div v-if="review.images && review.images.length > 0" class="mb-3">
+                    <div v-if="review.images && review.images.length > 0" class="mb-2">
                         <div class="flex items-center space-x-2">
                             <div
                                 v-for="image in review.images.slice(0, 3)"
@@ -160,12 +160,7 @@ const pagination = ref({
 
 // 日付フォーマット
 const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('ja-JP', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    })
+    return new Date(dateString).toLocaleDateString('ja-JP')
 }
 
 // レビュー読み込み
