@@ -97,8 +97,8 @@ class ReviewLikeController extends Controller
         $perPage = min($request->get('per_page', 15), 50);
         $likes = $query->paginate($perPage);
 
-        // Transform to review resources
-        $reviews = $likes->pluck('review');
+        // Transform to review resources while preserving order
+        $reviews = $likes->getCollection()->map(fn ($like) => $like->review);
 
         return ReviewResource::collection($reviews)->additional([
             'meta' => [
