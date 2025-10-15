@@ -120,9 +120,6 @@
                                     <h3 class="text-lg font-semibold text-gray-900">
                                         {{ review.shop?.name }}
                                     </h3>
-                                    <p class="text-sm text-gray-700 mt-1">
-                                        {{ review.shop?.address }}
-                                    </p>
                                     <div class="mt-2 flex items-center space-x-2 text-sm text-gray-700">
                                         <span>{{ formatDate(review.visited_at) }}</span>
                                         <span v-if="review.user" class="flex items-center text-gray-500">

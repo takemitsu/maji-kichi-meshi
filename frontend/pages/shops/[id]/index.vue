@@ -83,25 +83,8 @@
                             </div>
                         </div>
                         <div class="mt-4 flex flex-wrap gap-3 md:ml-4 md:mt-0">
-                            <!-- 行きたいリストボタン -->
-                            <WishlistButton
-                                v-if="shop"
-                                :shop-id="shop.id"
-                                :initial-status="shop.wishlist_status"
-                                source-type="shop_detail"
-                                :allow-delete-visited="false" />
-
                             <template v-if="authStore.isLoggedIn">
-                                <button @click="editShop" class="btn-secondary flex items-center">
-                                    <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                    編集
-                                </button>
+                                <!-- 1. レビューを追加（最優先） -->
                                 <button @click="addReview" class="btn-primary flex items-center">
                                     <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
@@ -112,10 +95,30 @@
                                     </svg>
                                     レビューを追加
                                 </button>
+
+                                <!-- 2. 編集（管理者向け） -->
+                                <button @click="editShop" class="btn-secondary flex items-center">
+                                    <svg class="w-4 h-4 mr-2 fill-none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    編集
+                                </button>
                             </template>
                             <template v-else>
                                 <NuxtLink to="/login" class="btn-primary">ログインしてレビューを追加</NuxtLink>
                             </template>
+
+                            <!-- 3. 行きたいリストボタン（サブアクション） -->
+                            <WishlistButton
+                                v-if="shop"
+                                :shop-id="shop.id"
+                                :initial-status="shop.wishlist_status"
+                                source-type="shop_detail"
+                                :allow-delete-visited="false" />
                         </div>
                     </div>
                 </div>

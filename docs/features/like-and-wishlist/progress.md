@@ -316,14 +316,143 @@
 
 ---
 
+## Phase 3: 認証統合テスト強化 ✅ 完了
+
+### 実装日時
+- 開始: 2025-10-15
+- 完了: 2025-10-15
+
+### 背景
+Phase 1・2実装後、public endpoint（認証不要エンドポイント）での認証状態別表示に問題が発覚。
+オプショナル認証パターンを実装し、包括的な認証統合テストを追加。
+
+### 実装内容
+
+#### 3.1 オプショナル認証パターン実装 ✅
+- [x] **問題点の発見**
+  - レビュー・店舗一覧で未ログイン時に他人の「行った」状態が表示される
+  - JWT認証の public endpoint で `Auth::check()` が常に false
+  - いいね数が 0 で表示される
+
+- [x] **原因分析**
+  1. Public endpoint で JWT トークンを手動パースしていない
+  2. 条件付き eager loading で `Auth::check()` 使用時に常に false
+  3. `likes_count` を loaded relation から取得していた
+
+- [x] **解決策実装** (`app/Http/Controllers/Api/`)
+  - `ReviewController.php`: オプショナル認証パターン実装
+  - `ShopController.php`: オプショナル認証パターン実装
+  - `ReviewLikeController.php`: オプショナル認証パターン実装
+  - **パターン**: `JWTAuth::parseToken()->authenticate()` を try-catch でラップ
+  - 条件付き `with()` でログインユーザーのみ個人データを load
+  - `withCount('likes')` でいいね数を効率的に取得
+
+- [x] **Resource 修正**
+  - `ReviewResource.php`: `$this->likes_count` から取得するよう修正
+  - `ShopResource.php`, `ReviewResource.php`: `isEmpty()` チェックのみに簡略化
+
+#### 3.2 認証統合テスト追加 ✅
+- [x] **新規テストファイル作成**
+  - `ReviewApiAuthIntegrationTest.php` (8テスト)
+    - レビュー一覧・詳細での行きたいリスト表示（認証状態別）
+    - ゲスト・ログインユーザー・複数ユーザーのデータ隔離
+    - フィルタリング時の認証状態維持
+  - `ShopApiAuthIntegrationTest.php` (6テスト)
+    - 店舗一覧・詳細での行きたいリスト表示（認証状態別）
+    - 複数ユーザーの行きたいステータス分離
+    - 検索フィルタ時の認証状態維持
+
+- [x] **既存テスト強化**
+  - `ReviewLikeApiTest.php`: オプショナル認証対応テスト2件追加
+    - ゲストユーザーのいいね数表示確認
+    - 認証ユーザーの `is_liked` フィールド確認
+
+#### 3.3 複数ユーザーデータ隔離テスト追加 ✅
+- [x] **WishlistApiTest.php**: 4テスト追加
+  - ゲストユーザーの401エラー確認
+  - 複数ユーザーのデータ隔離（user1はshop1,2のみ、user2はshop2,3のみ）
+  - 空の行きたいリスト確認
+  - status フィルタ時のデータ隔離確認
+
+- [x] **ReviewLikeApiTest.php**: 3テスト追加
+  - 複数ユーザーのいいねデータ隔離
+  - 空のいいねリスト確認
+  - ページネーション動作確認（20件、per_page=10）
+
+- [x] **ReviewApiAuthIntegrationTest.php**: 1テスト追加
+  - 複数ユーザーが異なるいいね・行きたい状態でレビュー一覧を見る
+
+- [x] **ShopApiAuthIntegrationTest.php**: 1テスト追加
+  - 複数ユーザーが異なる行きたい状態で店舗一覧を見る
+
+- [x] **RankingApiTest.php**: 2テスト追加
+  - 複数ユーザーが異なる公開/非公開ランキングを持つ
+  - ランキング作成が他ユーザーのデータに影響しない
+
+### テスト結果 ✅
+- **Phase 3.1**: 131テスト通過 (669 assertions)
+- **Phase 3.2**: 140テスト通過 (追加9テスト)
+- **Phase 3.3**: 289テスト通過 (1360 assertions、追加149テスト)
+- Laravel Pint: Pass
+- PHPStan: No errors
+
+### 成果物
+- **認証パターン修正**: 3ファイル (ReviewController, ShopController, ReviewLikeController)
+- **新規テストファイル**: 2ファイル (ReviewApiAuthIntegrationTest, ShopApiAuthIntegrationTest)
+- **既存テスト強化**: 4ファイル (ReviewLikeApiTest, WishlistApiTest, ReviewApiAuthIntegrationTest, ShopApiAuthIntegrationTest, RankingApiTest)
+- **総テスト数**: 289テスト、1360 assertions
+
+### 学び
+
+#### オプショナル認証パターン ⭐ **重要**
+Public endpoint（JWT middleware なし）でも認証状態に応じたデータを返すパターン:
+
+```php
+// Controller
+try {
+    JWTAuth::parseToken()->authenticate();
+} catch (\Exception $e) {
+    // トークンがない or 無効 → 未認証として扱う
+}
+
+// 条件付き eager loading
+$query->with([
+    'wishlists' => function ($query) {
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        }
+    },
+]);
+
+// Resource
+if (!$this->relationLoaded('wishlists') || $this->wishlists->isEmpty()) {
+    return ['in_wishlist' => false];
+}
+```
+
+**適用箇所**:
+- `GET /api/reviews` (ReviewController)
+- `GET /api/reviews/{id}` (ReviewController)
+- `GET /api/shops` (ShopController)
+- `GET /api/shops/{id}` (ShopController)
+- `GET /api/reviews/{review}/likes` (ReviewLikeController)
+
+#### 包括的テストの重要性
+- 未ログイン・ログイン・複数ユーザーのパターンを網羅することで、データ隔離の問題を早期発見
+- 統合テストで API エンドポイント全体の動作を確認
+- 単体機能テスト + 統合テスト の組み合わせで高い品質を担保
+
+---
+
 ## 完了
 
-Phase 1（いいね機能）・Phase 2（行きたいリスト機能）の実装が完了しました。
+Phase 1（いいね機能）・Phase 2（行きたいリスト機能）・Phase 3（認証統合テスト強化）の実装が完了しました。
 
-- バックエンド: API Resource パターン完全準拠
-- フロントエンド: 楽観的UI実装、モバイル最適化
-- テスト: 全パス(24テスト、67アサーション)
-- コード品質: Pint, PHPStan, ESLint, TypeScript すべてパス
+- **バックエンド**: API Resource パターン完全準拠、オプショナル認証パターン実装
+- **フロントエンド**: 楽観的UI実装、モバイル最適化
+- **テスト**: 全289テスト通過（1360 assertions）
+- **コード品質**: Pint, PHPStan, ESLint, TypeScript すべてパス
+- **認証パターン**: Public endpoint での認証状態別データ返却を完全サポート
 
 ---
 
