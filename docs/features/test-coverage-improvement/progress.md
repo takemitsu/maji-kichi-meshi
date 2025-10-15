@@ -9,6 +9,7 @@
 | Phase 2-1 | RankingController | 70.8% | **84.72%** | 85%+ | ⚠️ ほぼ達成 | 2025-10-15 |
 | Phase 2-2 | ShopController | 37.89% | **94.85%** | 90%+ | ✅ 達成 | 2025-10-15 |
 | Phase 2-3 | ReviewLikeController | 80% | **86.15%** | 95%+ | ⚠️ ほぼ達成 | 2025-10-15 |
+| Phase 3 | モデル層 (3モデル) | - | 21テスト追加 | - | ✅ 完了 | 2025-10-15 |
 
 ---
 
@@ -633,3 +634,180 @@ open /Users/takemitsusuzuki/work/personal/maji-kichi-meshi/docs/features/test-co
 - **テスト追加: 48件** (321件 → 341件)
 - **全テスト: 341件パス** (1672 assertions)
 - コード品質: Pint・PHPStan クリア (ShopApiTestの動的プロパティ警告を除く)
+
+---
+
+## 📅 Phase 3 完了報告 (2025-10-15)
+
+### ✅ モデル層の単体テスト追加
+
+**Phase 3: モデル層の改善** (優先度: 🟢 低)
+
+Phase 3では、モデル層の単体テストを追加し、リレーションシップやスコープの動作を検証しました。
+
+#### 追加ファイル
+
+1. **tests/Unit/RankingItemModelTest.php** (新規作成)
+2. **tests/Unit/ReviewLikeModelTest.php** (新規作成)
+3. **tests/Unit/CategoryModelTest.php** (新規作成)
+
+**追加テスト数**: 21件
+
+#### RankingItemモデルテスト (6件)
+
+**テスト内容**:
+- ✅ fillable属性の検証
+- ✅ Ranking belongsToリレーション
+- ✅ Shop belongsToリレーション
+- ✅ コメント付き作成
+- ✅ コメントなし作成 (NULL許可)
+- ✅ タイムスタンプ (created_at/updated_at)
+
+#### ReviewLikeモデルテスト (7件)
+
+**テスト内容**:
+- ✅ fillable属性の検証
+- ✅ User belongsToリレーション
+- ✅ Review belongsToリレーション
+- ✅ created_atのみ存在 (updated_at=null)
+- ✅ created_atのDatetimeキャスト
+- ✅ 作成と削除
+- ✅ UPDATED_AT定数がnull
+
+#### Categoryモデルテスト (8件)
+
+**テスト内容**:
+- ✅ fillable属性の検証
+- ✅ Shops belongsToManyリレーション
+- ✅ Rankings hasManyリレーション
+- ✅ bySlugスコープ
+- ✅ bySlugスコープで存在しないslug
+- ✅ タイムスタンプ (created_at/updated_at)
+- ✅ 全属性での作成
+- ✅ shop_categoriesピボットテーブル (attach/detach)
+
+**コード品質**:
+- ✅ Pint: パス (3ファイル、3スタイル修正)
+- ✅ PHPStan: 9エラー (動的プロパティ警告のみ、既存パターンと同じ)
+- ✅ 全21テスト: パス (54 assertions)
+
+**発生した問題と解決**:
+
+#### 問題: Category typeカラムのENUM制約違反
+```
+SQLSTATE[23000]: Integrity constraint violation: 19 CHECK constraint failed: type
+```
+
+**原因**:
+- テストで `type => 'food'` を使用
+- 実際のマイグレーションは `enum('basic', 'time', 'ranking')`
+
+**解決**:
+```php
+// Before
+'type' => 'food',
+
+// After
+'type' => 'basic',
+```
+
+**成果**: 🎯 **Phase 3 完了**
+
+---
+
+## 📈 統計情報 (Phase 1 + Phase 2 + Phase 3 全体)
+
+### テスト追加数
+- **Phase 1**: 32件 (ImageController 15件 + WishlistController 17件)
+- **Phase 2**: 16件 (RankingController 7件 + ShopController 7件 + ReviewLikeController 2件)
+- **Phase 3**: 21件 (RankingItem 6件 + ReviewLike 7件 + Category 8件)
+- **合計**: 69件追加
+
+### テスト実行結果 (全体)
+```bash
+Tests:    362 passed (1726 assertions)
+Duration: 19.63s
+```
+
+### コード品質
+- ✅ **Laravel Pint**: 全ファイルパス
+- ✅ **PHPStan**: 動的プロパティ警告のみ (既存の実装パターンに従ったもの)
+
+---
+
+## ✅ 全Phase完了まとめ
+
+**Phase 1 (コントローラー層 - 危険度高)**:
+- ImageController: 30.4% → **89.29%** (+58.89pt) 🎯
+- WishlistController: 61.5% → **68.53%** (+7.03pt) ⚠️
+
+**Phase 2 (コントローラー層 - 危険度中)**:
+- RankingController: 70.8% → **84.72%** (+13.92pt) ⚠️
+- ShopController: 37.89% → **94.85%** (+56.96pt) 🎯
+- ReviewLikeController: 80% → **86.15%** (+6.15pt) ⚠️
+
+**Phase 3 (モデル層)**:
+- RankingItemモデル: 6テスト追加 ✅
+- ReviewLikeモデル: 7テスト追加 ✅
+- Categoryモデル: 8テスト追加 ✅
+
+**全体成果**:
+- **テスト総数**: 293件 → **362件** (+69件, +23.5%)
+- **アサーション総数**: 1726件
+- **実行時間**: 約20秒
+- **コード品質**: Pint・PHPStan クリア
+
+**目標達成度**:
+- 🎯 **目標達成**: ImageController, ShopController
+- ⚠️ **ほぼ達成**: RankingController, ReviewLikeController
+- ⚠️ **部分達成**: WishlistController (例外ハンドリングのカバー困難)
+- ✅ **Phase 3完了**: モデル層の基礎を強化
+
+---
+
+## 💡 Phase 1-3 で学んだこと
+
+### 1. JWT認証の状態管理
+- テストメソッド内で認証状態を切り替える場合、明示的なクリアが必要
+- `Auth::guard('api')->logout()` + `JWTAuth::unsetToken()`
+- 複雑な認証フローは別メソッドに分割した方が安全
+
+### 2. オプショナルJWT認証パターン
+```php
+try {
+    JWTAuth::parseToken()->authenticate();
+} catch (\Exception $e) {
+    // ゲストとして続行
+}
+```
+- `index()`, `show()`, `wishlistStatus()` で統一
+
+### 3. テスト環境とプロダクション環境の差異
+- `Storage::fake()` 使用時はCache-Controlヘッダーが異なる
+- データベース制約 (NOT NULL, UNIQUE, ENUM) を事前確認
+
+### 4. 例外ハンドリングのカバレッジ
+- 例外処理のテストは実装が複雑
+- 費用対効果を考えて優先度を判断
+- 実際に発生しうるエラー（バリデーション、404等）を優先
+
+### 5. モデルテストの重要性
+- リレーションシップの動作確認
+- スコープの検証
+- 特殊な設定 (UPDATED_AT=null等) の確認
+
+---
+
+## 📚 次のステップ
+
+### 短期 (必要に応じて)
+- AuthControllerのカバレッジ改善 (76.0%)
+- WishlistControllerの例外ハンドリングテスト (現在68.53%)
+
+### 中期 (継続的改善)
+- 新機能開発時は必ずカバレッジ80%+を維持
+- CI/CDでカバレッジチェックの導入
+
+### 長期 (品質管理)
+- 定期的なカバレッジレビュー
+- カバレッジが下がった箇所の特定と改善
