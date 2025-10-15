@@ -598,4 +598,69 @@ class ReviewLikeApiTest extends TestCase
             $this->assertTrue($review['is_liked'], "All reviews should be liked by current user at index {$index}");
         }
     }
+
+    public function test_toggle_like_fails_with_nonexistent_review(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // 存在しないreview_id
+        $nonexistentReviewId = 99999;
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson("/api/reviews/{$nonexistentReviewId}/like");
+
+        $response->assertStatus(404);
+    }
+
+    public function test_my_likes_with_deleted_reviews(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $shop1 = Shop::factory()->create();
+        $shop2 = Shop::factory()->create();
+
+        $review1 = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop1->id,
+            'memo' => 'Review 1 (will be deleted)',
+        ]);
+        $review2 = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop2->id,
+            'memo' => 'Review 2 (active)',
+        ]);
+
+        // 両方のレビューにいいね
+        ReviewLike::create(['user_id' => $user->id, 'review_id' => $review1->id]);
+        ReviewLike::create(['user_id' => $user->id, 'review_id' => $review2->id]);
+
+        // review1を削除 (カスケード削除でreview_likesも削除される)
+        $review1->delete();
+
+        // my-liked-reviews を取得
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/my-liked-reviews');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // 削除されたreview1は含まれず、review2のみ表示される
+        $this->assertCount(1, $data);
+        $this->assertEquals('Review 2 (active)', $data[0]['memo']);
+
+        // データベースにはreview2のいいねのみ残っている
+        $this->assertDatabaseCount('review_likes', 1);
+        $this->assertDatabaseHas('review_likes', [
+            'user_id' => $user->id,
+            'review_id' => $review2->id,
+        ]);
+        $this->assertDatabaseMissing('review_likes', [
+            'user_id' => $user->id,
+            'review_id' => $review1->id,
+        ]);
+    }
 }

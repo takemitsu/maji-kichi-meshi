@@ -7,6 +7,7 @@ use App\Models\Ranking;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -1611,5 +1612,193 @@ class RankingApiTest extends TestCase
         $response->assertStatus(422);
         $errors = $response->json('errors');
         $this->assertArrayHasKey('per_page', $errors);
+    }
+
+    public function test_reorder_fails_with_invalid_order(): void
+    {
+        $user = User::factory()->create();
+        $shop1 = Shop::factory()->create();
+        $shop2 = Shop::factory()->create();
+        $category = Category::first();
+        $token = JWTAuth::fromUser($user);
+
+        // ランキング作成
+        $ranking = Ranking::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+        ]);
+        $ranking->items()->create([
+            'shop_id' => $shop1->id,
+            'rank_position' => 1,
+        ]);
+
+        // 無効なposition (0以下)
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/rankings/{$ranking->id}", [
+            'title' => $ranking->title,
+            'category_id' => $category->id,
+            'shops' => [
+                ['shop_id' => $shop1->id, 'position' => 0],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $errors = $response->json('errors');
+        $this->assertArrayHasKey('shops.0.position', $errors);
+
+        // 無効なposition (負の値)
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/rankings/{$ranking->id}", [
+            'title' => $ranking->title,
+            'category_id' => $category->id,
+            'shops' => [
+                ['shop_id' => $shop1->id, 'position' => -1],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $errors = $response->json('errors');
+        $this->assertArrayHasKey('shops.0.position', $errors);
+    }
+
+    public function test_toggle_private_to_public(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $category = Category::first();
+        $token = JWTAuth::fromUser($user);
+
+        // 非公開ランキングを作成
+        $ranking = Ranking::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'is_public' => false,
+        ]);
+        $ranking->items()->create([
+            'shop_id' => $shop->id,
+            'rank_position' => 1,
+        ]);
+
+        // 非公開は未認証から見えない
+        $response = $this->getJson("/api/rankings/{$ranking->id}");
+        $response->assertStatus(404);
+
+        // 非公開 → 公開に切り替え
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/rankings/{$ranking->id}", [
+            'title' => $ranking->title,
+            'category_id' => $category->id,
+            'is_public' => true,
+            'shops' => [
+                ['shop_id' => $shop->id, 'position' => 1],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertTrue($response->json('data.is_public'));
+        $this->assertDatabaseHas('rankings', [
+            'id' => $ranking->id,
+            'is_public' => true,
+        ]);
+
+        // 公開されたので未認証でも見える
+        $response = $this->getJson("/api/rankings/{$ranking->id}");
+        $response->assertStatus(200);
+        $this->assertTrue($response->json('data.is_public'));
+    }
+
+    public function test_toggle_public_to_private(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $category = Category::first();
+        $token = JWTAuth::fromUser($user);
+
+        // 公開ランキングを作成
+        $ranking = Ranking::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'is_public' => true,
+        ]);
+        $ranking->items()->create([
+            'shop_id' => $shop->id,
+            'rank_position' => 1,
+        ]);
+
+        // 公開は未認証でも見える
+        $response = $this->getJson("/api/rankings/{$ranking->id}");
+        $response->assertStatus(200);
+        $this->assertTrue($response->json('data.is_public'));
+
+        // 公開 → 非公開に切り替え
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/rankings/{$ranking->id}", [
+            'title' => $ranking->title,
+            'category_id' => $category->id,
+            'is_public' => false,
+            'shops' => [
+                ['shop_id' => $shop->id, 'position' => 1],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertFalse($response->json('data.is_public'));
+        $this->assertDatabaseHas('rankings', [
+            'id' => $ranking->id,
+            'is_public' => false,
+        ]);
+
+        // 非公開になったので未認証では見えない
+        // JWT認証をクリア
+        Auth::guard('api')->logout();
+        JWTAuth::unsetToken();
+
+        $response = $this->getJson("/api/rankings/{$ranking->id}");
+
+        $response->assertStatus(404)
+            ->assertJson(['error' => 'Ranking not found']);
+    }
+
+    public function test_owner_can_view_private_ranking_after_toggle(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $category = Category::first();
+        $token = JWTAuth::fromUser($user);
+
+        // 公開ランキングを作成して非公開に変更
+        $ranking = Ranking::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'is_public' => true,
+        ]);
+        $ranking->items()->create([
+            'shop_id' => $shop->id,
+            'rank_position' => 1,
+        ]);
+
+        // 公開 → 非公開に切り替え
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->putJson("/api/rankings/{$ranking->id}", [
+            'title' => $ranking->title,
+            'category_id' => $category->id,
+            'is_public' => false,
+            'shops' => [
+                ['shop_id' => $shop->id, 'position' => 1],
+            ],
+        ]);
+        $response->assertStatus(200);
+
+        // 所有者は非公開ランキングを閲覧可能
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson("/api/rankings/{$ranking->id}");
+        $response->assertStatus(200);
+        $this->assertFalse($response->json('data.is_public'));
     }
 }

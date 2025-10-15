@@ -353,4 +353,195 @@ class ShopApiTest extends TestCase
         $shop->refresh();
         $this->assertCount(0, $shop->categories);
     }
+
+    public function test_search_with_multiple_filters(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::where('slug', 'ramen')->first();
+
+        // 営業中のラーメン店
+        $shop1 = Shop::factory()->create([
+            'name' => 'Ramen Shop Open',
+            'is_closed' => false,
+        ]);
+        $shop1->categories()->attach($category->id);
+
+        // 閉店したラーメン店
+        $shop2 = Shop::factory()->create([
+            'name' => 'Ramen Shop Closed',
+            'is_closed' => true,
+        ]);
+        $shop2->categories()->attach($category->id);
+
+        // 営業中のカフェ
+        $shop3 = Shop::factory()->create([
+            'name' => 'Cafe Shop Open',
+            'is_closed' => false,
+        ]);
+
+        // カテゴリ + 営業中フィルタの組み合わせ
+        $response = $this->getJson("/api/shops?category={$category->id}&open_only=true");
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertEquals('Ramen Shop Open', $data[0]['name']);
+
+        // 検索 + カテゴリ + 営業中フィルタ
+        $response = $this->getJson("/api/shops?search=Ramen&category={$category->id}&open_only=true");
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertEquals('Ramen Shop Open', $data[0]['name']);
+    }
+
+    public function test_sort_with_edge_cases(): void
+    {
+        // created_atで並び順を制御（現在のShopControllerはcreated_at降順でソート）
+        $shopC = Shop::factory()->create([
+            'name' => 'Shop C',
+            'created_at' => now()->subDays(3),
+        ]);
+        $shopB = Shop::factory()->create([
+            'name' => 'Shop B',
+            'created_at' => now()->subDays(2),
+        ]);
+        $shopA = Shop::factory()->create([
+            'name' => 'Shop A',
+            'created_at' => now()->subDays(1),
+        ]);
+
+        // デフォルトソート（created_at降順 = 新しい順）
+        $response = $this->getJson('/api/shops');
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // 最新作成順に並んでいることを確認
+        $this->assertEquals('Shop A', $data[0]['name']);
+        $this->assertEquals('Shop B', $data[1]['name']);
+        $this->assertEquals('Shop C', $data[2]['name']);
+
+        // 各店舗が正しく返されることを確認
+        $this->assertCount(3, $data);
+        $names = collect($data)->pluck('name')->toArray();
+        $this->assertContains('Shop A', $names);
+        $this->assertContains('Shop B', $names);
+        $this->assertContains('Shop C', $names);
+    }
+
+    public function test_pagination_with_filters(): void
+    {
+        $category = Category::where('slug', 'ramen')->first();
+
+        // 15件のラーメン店を作成
+        for ($i = 1; $i <= 15; $i++) {
+            $shop = Shop::factory()->create([
+                'name' => "Ramen Shop {$i}",
+                'is_closed' => false,
+            ]);
+            $shop->categories()->attach($category->id);
+        }
+
+        // 5件の他カテゴリ店舗
+        for ($i = 1; $i <= 5; $i++) {
+            Shop::factory()->create([
+                'name' => "Other Shop {$i}",
+                'is_closed' => false,
+            ]);
+        }
+
+        // カテゴリフィルタ + ページネーション (1ページ10件)
+        $response = $this->getJson("/api/shops?category={$category->id}&per_page=10");
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(10, $data);
+        $this->assertEquals(15, $response->json('meta.total'));
+
+        // 2ページ目
+        $response = $this->getJson("/api/shops?category={$category->id}&per_page=10&page=2");
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(5, $data);
+    }
+
+    public function test_location_search_with_invalid_coordinates(): void
+    {
+        // 無効な緯度（範囲外）
+        $response = $this->getJson('/api/shops?latitude=200&longitude=139.7745&radius=5');
+        $response->assertStatus(422);
+        $errors = $response->json('errors');
+        $this->assertArrayHasKey('latitude', $errors);
+
+        // 無効な経度（範囲外）
+        $response = $this->getJson('/api/shops?latitude=35.7022&longitude=200&radius=5');
+        $response->assertStatus(422);
+        $errors = $response->json('errors');
+        $this->assertArrayHasKey('longitude', $errors);
+
+        // 無効な半径（負の値）
+        $response = $this->getJson('/api/shops?latitude=35.7022&longitude=139.7745&radius=-5');
+        $response->assertStatus(422);
+        $errors = $response->json('errors');
+        $this->assertArrayHasKey('radius', $errors);
+    }
+
+    // =============================================================================
+    // Wishlist Status Endpoint Tests
+    // =============================================================================
+
+    public function test_guest_can_get_wishlist_status(): void
+    {
+        $shop = Shop::factory()->create();
+
+        $response = $this->getJson("/api/shops/{$shop->id}/wishlist-status");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'in_wishlist' => false,
+            ]);
+    }
+
+    public function test_authenticated_user_sees_wishlist_status_when_not_in_list(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson("/api/shops/{$shop->id}/wishlist-status");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'in_wishlist' => false,
+            ]);
+    }
+
+    public function test_authenticated_user_sees_wishlist_status_when_in_list(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Add to wishlist
+        \App\Models\Wishlist::create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'status' => 'want_to_go',
+            'priority' => 2,
+            'source_type' => 'shop_detail',
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson("/api/shops/{$shop->id}/wishlist-status");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'in_wishlist' => true,
+                'status' => 'want_to_go',
+                'priority' => 2,
+                'priority_label' => 'そのうち',
+            ]);
+    }
 }

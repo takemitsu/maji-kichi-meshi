@@ -215,6 +215,13 @@ class ShopController extends Controller
      */
     public function wishlistStatus(Shop $shop)
     {
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
         if (!Auth::check()) {
             return response()->json([
                 'in_wishlist' => false,
