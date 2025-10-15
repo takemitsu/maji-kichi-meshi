@@ -1159,4 +1159,162 @@ class RankingApiTest extends TestCase
             'comment' => '更新後のコメント',
         ]);
     }
+
+    // =============================================================================
+    // 複数ユーザーデータ隔離テスト
+    // =============================================================================
+
+    public function test_multiple_users_see_different_rankings_in_list(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $category = Category::first();
+        $shop1 = Shop::factory()->create();
+        $shop2 = Shop::factory()->create();
+        $shop3 = Shop::factory()->create();
+
+        // user1: public ranking 1件 + private ranking 1件
+        $user1PublicRanking = Ranking::factory()->create([
+            'user_id' => $user1->id,
+            'category_id' => $category->id,
+            'is_public' => true,
+            'title' => 'User1 Public Ranking',
+        ]);
+        $user1PublicRanking->items()->create([
+            'shop_id' => $shop1->id,
+            'rank_position' => 1,
+        ]);
+
+        $user1PrivateRanking = Ranking::factory()->create([
+            'user_id' => $user1->id,
+            'category_id' => $category->id,
+            'is_public' => false,
+            'title' => 'User1 Private Ranking',
+        ]);
+        $user1PrivateRanking->items()->create([
+            'shop_id' => $shop2->id,
+            'rank_position' => 1,
+        ]);
+
+        // user2: public ranking 1件
+        $user2PublicRanking = Ranking::factory()->create([
+            'user_id' => $user2->id,
+            'category_id' => $category->id,
+            'is_public' => true,
+            'title' => 'User2 Public Ranking',
+        ]);
+        $user2PublicRanking->items()->create([
+            'shop_id' => $shop3->id,
+            'rank_position' => 1,
+        ]);
+
+        // 未ログイン: user1とuser2のpublic rankingのみ見える (2件)
+        $guestResponse = $this->getJson('/api/rankings');
+        $guestResponse->assertStatus(200);
+        $guestData = $guestResponse->json('data');
+        $this->assertCount(2, $guestData);
+        $guestTitles = collect($guestData)->pluck('title')->toArray();
+        $this->assertContains('User1 Public Ranking', $guestTitles);
+        $this->assertContains('User2 Public Ranking', $guestTitles);
+        $this->assertNotContains('User1 Private Ranking', $guestTitles);
+
+        // user1ログイン: /api/rankings では public のみ (2件)
+        // (privateランキングは /api/my-rankings で取得)
+        $token1 = JWTAuth::fromUser($user1);
+        $user1Response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token1,
+        ])->getJson('/api/rankings');
+
+        $user1Response->assertStatus(200);
+        $user1Data = $user1Response->json('data');
+        $this->assertCount(2, $user1Data);
+        $user1Titles = collect($user1Data)->pluck('title')->toArray();
+        $this->assertContains('User1 Public Ranking', $user1Titles);
+        $this->assertContains('User2 Public Ranking', $user1Titles);
+        $this->assertNotContains('User1 Private Ranking', $user1Titles);
+
+        // user1のprivateランキングは /api/my-rankings で確認
+        $myRankingsResponse = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token1,
+        ])->getJson('/api/my-rankings');
+
+        $myRankingsResponse->assertStatus(200);
+        $myRankingsData = $myRankingsResponse->json('data');
+        $this->assertCount(2, $myRankingsData);
+        $myRankingsTitles = collect($myRankingsData)->pluck('title')->toArray();
+        $this->assertContains('User1 Public Ranking', $myRankingsTitles);
+        $this->assertContains('User1 Private Ranking', $myRankingsTitles);
+
+        // user2ログイン: user2の全ranking + user1のpublic ranking (2件)
+        $token2 = JWTAuth::fromUser($user2);
+        $user2Response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token2,
+        ])->getJson('/api/rankings');
+
+        $user2Response->assertStatus(200);
+        $user2Data = $user2Response->json('data');
+        $this->assertCount(2, $user2Data);
+        $user2Titles = collect($user2Data)->pluck('title')->toArray();
+        $this->assertContains('User1 Public Ranking', $user2Titles);
+        $this->assertContains('User2 Public Ranking', $user2Titles);
+        $this->assertNotContains('User1 Private Ranking', $user2Titles);
+    }
+
+    public function test_ranking_creation_does_not_interfere_with_other_users(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $category = Category::first();
+        $shop1 = Shop::factory()->create();
+        $shop2 = Shop::factory()->create();
+
+        // user1が5件のrankingを持つ
+        for ($i = 1; $i <= 5; $i++) {
+            $ranking = Ranking::factory()->create([
+                'user_id' => $user1->id,
+                'category_id' => $category->id,
+                'is_public' => true,
+                'title' => "User1 Ranking {$i}",
+            ]);
+            $ranking->items()->create([
+                'shop_id' => $shop1->id,
+                'rank_position' => 1,
+            ]);
+        }
+
+        // user1のランキング数を確認
+        $user1InitialCount = Ranking::where('user_id', $user1->id)->count();
+        $this->assertEquals(5, $user1InitialCount);
+
+        // user2が新規ranking作成
+        $token2 = JWTAuth::fromUser($user2);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token2,
+        ])->postJson('/api/rankings', [
+            'title' => 'User2 New Ranking',
+            'category_id' => $category->id,
+            'is_public' => true,
+            'shops' => [
+                ['shop_id' => $shop2->id, 'position' => 1],
+            ],
+        ]);
+
+        $response->assertStatus(201);
+
+        // user1のrankingが影響を受けていないことを確認
+        $user1FinalCount = Ranking::where('user_id', $user1->id)->count();
+        $this->assertEquals(5, $user1FinalCount);
+
+        // user1の全てのrankingのtitleが変わっていないことを確認
+        $user1Rankings = Ranking::where('user_id', $user1->id)->get();
+        foreach ($user1Rankings as $ranking) {
+            $this->assertStringStartsWith('User1 Ranking', $ranking->title);
+        }
+
+        // user2のrankingが正しく作成されていることを確認
+        $this->assertDatabaseHas('rankings', [
+            'user_id' => $user2->id,
+            'title' => 'User2 New Ranking',
+        ]);
+    }
 }
