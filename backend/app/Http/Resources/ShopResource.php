@@ -45,8 +45,37 @@ class ShopResource extends JsonResource
                 }
             ),
             'distance' => $this->when(isset($this->distance) && $this->distance !== null, round($this->distance, 2)),
+            'wishlist_status' => $this->getWishlistStatus(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+        ];
+    }
+
+    /**
+     * Get wishlist status for the shop.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getWishlistStatus(): array
+    {
+        // wishlists が load されていない場合
+        if (!$this->relationLoaded('wishlists')) {
+            return ['in_wishlist' => false];
+        }
+
+        // wishlists が空 = ログインしていないか、このユーザーの wishlist がない
+        if ($this->wishlists->isEmpty()) {
+            return ['in_wishlist' => false];
+        }
+
+        // Controller 側で既に現在のユーザーでフィルタ済み
+        $wishlist = $this->wishlists->first();
+
+        return [
+            'in_wishlist' => true,
+            'priority' => $wishlist->priority,
+            'priority_label' => $wishlist->priority_label,
+            'status' => $wishlist->status,
         ];
     }
 }

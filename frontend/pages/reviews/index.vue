@@ -120,9 +120,6 @@
                                     <h3 class="text-lg font-semibold text-gray-900">
                                         {{ review.shop?.name }}
                                     </h3>
-                                    <p class="text-sm text-gray-700 mt-1">
-                                        {{ review.shop?.address }}
-                                    </p>
                                     <div class="mt-2 flex items-center space-x-2 text-sm text-gray-700">
                                         <span>{{ formatDate(review.visited_at) }}</span>
                                         <span v-if="review.user" class="flex items-center text-gray-500">
@@ -156,7 +153,7 @@
                                             d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                     </svg>
                                 </div>
-                                <span class="text-sm text-gray-600 ml-1">({{ review.rating }})</span>
+                                <span class="text-sm text-gray-600 ml-1">{{ review.rating }}/5</span>
                             </div>
 
                             <!-- リピート意向 -->
@@ -185,10 +182,10 @@
                                 <div
                                     v-for="image in review.images.slice(0, 3)"
                                     :key="image.id"
-                                    class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
+                                    class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
                                     @click.stop="openImageModal(image)">
                                     <img
-                                        :src="image.urls.thumbnail"
+                                        :src="image.urls.small"
                                         :alt="`レビュー画像 ${image.id}`"
                                         class="w-full h-full object-cover"
                                         @error="handleReviewImageError(image)" />
@@ -200,8 +197,34 @@
                         </div>
 
                         <!-- フッター -->
-                        <div v-if="review.updated_at !== review.created_at" class="pt-4 border-t border-gray-200">
-                            <div class="text-sm text-gray-700">更新: {{ formatDate(review.updated_at) }}</div>
+                        <div class="pt-4 border-t border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <!-- アクションボタン -->
+                                <div class="flex items-center gap-2">
+                                    <!-- いいねボタン -->
+                                    <LikeButton
+                                        :review-id="review.id"
+                                        :initial-likes-count="review.likes_count"
+                                        :initial-is-liked="review.is_liked"
+                                        @click.stop />
+
+                                    <!-- 行きたいボタン -->
+                                    <WishlistButton
+                                        v-if="review.shop"
+                                        :shop-id="review.shop.id"
+                                        :initial-status="review.shop.wishlist_status"
+                                        source-type="review"
+                                        :source-user-id="review.user?.id"
+                                        :source-review-id="review.id"
+                                        :allow-delete-visited="false"
+                                        @click.stop />
+                                </div>
+
+                                <!-- 更新日時 -->
+                                <div v-if="review.updated_at !== review.created_at" class="text-sm text-gray-700">
+                                    更新: {{ formatDate(review.updated_at) }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

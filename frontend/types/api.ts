@@ -46,6 +46,7 @@ export interface Shop {
     categories: Category[]
     images?: ShopImage[]
     distance?: number
+    wishlist_status?: WishlistStatusResponse
     created_at: string
     updated_at: string
     // 動的プロパティ（検索時のハイライト、画像URL、ランキングコメント等）
@@ -80,7 +81,10 @@ export interface Review {
         address?: string
         image_url?: string
         images?: ShopImage[]
+        wishlist_status?: WishlistStatusResponse
     }
+    likes_count: number
+    is_liked: boolean
     created_at: string
     updated_at: string
 }
@@ -174,4 +178,71 @@ export interface ErrorResponse {
     errors?: Record<string, string[]>
     // Legacy support (CategoryController still uses old format)
     messages?: Record<string, string[]>
+}
+
+// いいね関連
+export interface ReviewLike {
+    id: number
+    user_id: number
+    review_id: number
+    created_at: string
+}
+
+export interface ReviewLikesResponse {
+    likes_count: number
+    is_liked?: boolean
+}
+
+export interface ReviewLikeToggleResponse {
+    message: string
+    is_liked: boolean
+    likes_count: number
+}
+
+// 行きたいリスト関連
+export interface Wishlist {
+    id: number
+    user_id: number
+    shop_id: number
+    status: 'want_to_go' | 'visited'
+    priority: 1 | 2 | 3
+    priority_label: 'いつか' | 'そのうち' | '絶対'
+    source_type: 'review' | 'shop_detail'
+    source_user_id?: number
+    source_review_id?: number
+    visited_at?: string
+    memo?: string
+    shop?: Shop
+    source_user?: User
+    source_review?: Review
+    created_at: string
+    updated_at: string
+}
+
+export interface WishlistStatusResponse {
+    in_wishlist: boolean
+    priority?: 1 | 2 | 3
+    priority_label?: 'いつか' | 'そのうち' | '絶対'
+    status?: 'want_to_go' | 'visited'
+}
+
+export interface WishlistAddRequest {
+    shop_id: number
+    priority?: 1 | 2 | 3
+    source_type: 'review' | 'shop_detail'
+    source_user_id?: number
+    source_review_id?: number
+}
+
+export interface WishlistAddResponse {
+    message: string
+    data: Wishlist
+}
+
+export interface WishlistUpdatePriorityRequest {
+    priority: 1 | 2 | 3
+}
+
+export interface WishlistUpdateStatusRequest {
+    status: 'want_to_go' | 'visited'
 }

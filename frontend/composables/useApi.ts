@@ -11,6 +11,14 @@ import type {
     ReviewImage,
     ShopImage,
     ErrorResponse,
+    ReviewLikesResponse,
+    ReviewLikeToggleResponse,
+    Wishlist,
+    WishlistStatusResponse,
+    WishlistAddRequest,
+    WishlistAddResponse,
+    WishlistUpdatePriorityRequest,
+    WishlistUpdateStatusRequest,
 } from '~/types/api'
 
 export const useApi = () => {
@@ -197,6 +205,19 @@ export const useApi = () => {
                 apiFetch<{ message: string }>(`/reviews/${reviewId}/images/${imageId}`, {
                     method: 'DELETE',
                 }),
+
+            // いいね機能
+            getLikes: (reviewId: number) => apiFetch<ReviewLikesResponse>(`/reviews/${reviewId}/likes`),
+
+            toggleLike: (reviewId: number) =>
+                apiFetch<ReviewLikeToggleResponse>(`/reviews/${reviewId}/like`, {
+                    method: 'POST',
+                }),
+
+            myLikedReviews: (params?: Record<string, string | number>) => {
+                const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+                return apiFetch<PaginatedResponse<Review>>(`/my-liked-reviews${query}`)
+            },
         },
 
         // ランキング関連
@@ -274,6 +295,45 @@ export const useApi = () => {
             // プロフィール画像URL取得
             getImageUrl: (size: string = 'medium') =>
                 apiFetch<ApiResponse<{ url: string; size: string }>>(`/profile/image-url?size=${size}`),
+        },
+
+        // 行きたいリスト関連
+        wishlists: {
+            // 特定店舗の行きたい状態取得
+            getStatus: (shopId: number) => apiFetch<WishlistStatusResponse>(`/shops/${shopId}/wishlist-status`),
+
+            // 行きたいリストに追加
+            add: (data: WishlistAddRequest) =>
+                apiFetch<WishlistAddResponse>('/my-wishlist', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                }),
+
+            // 行きたいリストから削除
+            remove: (shopId: number) =>
+                apiFetch<{ message: string }>(`/my-wishlist/${shopId}`, {
+                    method: 'DELETE',
+                }),
+
+            // 優先度変更
+            updatePriority: (shopId: number, data: WishlistUpdatePriorityRequest) =>
+                apiFetch<ApiResponse<Wishlist>>(`/my-wishlist/${shopId}/priority`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(data),
+                }),
+
+            // ステータス変更
+            updateStatus: (shopId: number, data: WishlistUpdateStatusRequest) =>
+                apiFetch<ApiResponse<Wishlist>>(`/my-wishlist/${shopId}/status`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(data),
+                }),
+
+            // 行きたいリスト取得
+            list: (params?: Record<string, string | number>) => {
+                const query = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : ''
+                return apiFetch<ApiResponse<Wishlist[]>>(`/my-wishlist${query}`)
+            },
         },
     }
 

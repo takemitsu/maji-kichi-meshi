@@ -40,10 +40,43 @@ class ReviewResource extends JsonResource
                             'sort_order' => $image->sort_order,
                         ];
                     }),
+                    'wishlist_status' => $this->getShopWishlistStatus(),
                 ];
             }),
+            'likes_count' => $this->likes_count ?? 0,
+            'is_liked' => $this->when($this->relationLoaded('likes') && !$this->likes->isEmpty(), function () {
+                return true; // Controller側で既に現在のユーザーでフィルタ済み
+            }, false),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+        ];
+    }
+
+    /**
+     * Get wishlist status for the shop.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getShopWishlistStatus(): array
+    {
+        // wishlists が load されていない場合
+        if (!$this->shop->relationLoaded('wishlists')) {
+            return ['in_wishlist' => false];
+        }
+
+        // wishlists が空 = ログインしていないか、このユーザーの wishlist がない
+        if ($this->shop->wishlists->isEmpty()) {
+            return ['in_wishlist' => false];
+        }
+
+        // Controller 側で既に現在のユーザーでフィルタ済み
+        $wishlist = $this->shop->wishlists->first();
+
+        return [
+            'in_wishlist' => true,
+            'priority' => $wishlist->priority,
+            'priority_label' => $wishlist->priority_label,
+            'status' => $wishlist->status,
         ];
     }
 }

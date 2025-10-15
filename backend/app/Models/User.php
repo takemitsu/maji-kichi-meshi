@@ -119,6 +119,14 @@ class User extends Authenticatable implements FilamentUser, JWTSubject
     }
 
     /**
+     * Review likes relationship
+     */
+    public function reviewLikes()
+    {
+        return $this->hasMany(ReviewLike::class);
+    }
+
+    /**
      * Check if user is admin
      */
     public function isAdmin(): bool

@@ -11,8 +11,11 @@ use App\Http\Requests\ShopUploadImagesRequest;
 use App\Http\Resources\ShopResource;
 use App\Models\Shop;
 use App\Models\ShopImage;
+use App\Models\Wishlist;
 use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ShopController extends Controller
 {
@@ -25,7 +28,20 @@ class ShopController extends Controller
      */
     public function index(ShopIndexRequest $request)
     {
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
         $query = Shop::with(['categories', 'publishedImages']);
+
+        if (Auth::check()) {
+            $query->with([
+                'wishlists' => fn ($q) => $q->where('user_id', Auth::id()),
+            ]);
+        }
 
         // Search by name
         if ($request->has('search')) {
@@ -85,7 +101,20 @@ class ShopController extends Controller
      */
     public function show(Shop $shop)
     {
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
         $shop->load(['categories', 'publishedImages']);
+
+        if (Auth::check()) {
+            $shop->load([
+                'wishlists' => fn ($q) => $q->where('user_id', Auth::id()),
+            ]);
+        }
 
         return new ShopResource($shop);
     }
@@ -179,5 +208,41 @@ class ShopController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Get wishlist status for a shop
+     */
+    public function wishlistStatus(Shop $shop)
+    {
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
+        if (!Auth::check()) {
+            return response()->json([
+                'in_wishlist' => false,
+            ]);
+        }
+
+        $wishlist = Wishlist::where('user_id', Auth::id())
+            ->where('shop_id', $shop->id)
+            ->first();
+
+        if (!$wishlist) {
+            return response()->json([
+                'in_wishlist' => false,
+            ]);
+        }
+
+        return response()->json([
+            'in_wishlist' => true,
+            'priority' => $wishlist->priority,
+            'priority_label' => $wishlist->priority_label,
+            'status' => $wishlist->status,
+        ]);
     }
 }

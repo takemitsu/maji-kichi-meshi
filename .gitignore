@@ -52,6 +52,9 @@ pids
 # Coverage directory used by tools like istanbul
 coverage/
 
+# PHPUnit coverage reports
+docs/features/test-coverage-improvement/coverage-report-*
+
 # Dependencies
 node_modules/
 vendor/

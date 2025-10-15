@@ -162,4 +162,12 @@ class Shop extends Model
     {
         return $this->hasMany(ShopImage::class)->published()->ordered();
     }
+
+    /**
+     * Relationship with wishlists
+     */
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }

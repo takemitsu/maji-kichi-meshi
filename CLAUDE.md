@@ -114,3 +114,66 @@ maji-kichi-meshi/
 
 新機能開発は `docs/features/` ディレクトリを使用した標準ワークフローに従う。
 詳細: `docs/development-workflow.md`
+
+### コミットルール
+
+- **ソースコード**（実装コード）のコミット前には**必ずユーザーの判断を仰ぐ**
+- **ドキュメント**（.md ファイル等）のコミットは自己判断でOK
+- テスト結果、コード品質チェック結果を提示してからコミット判断を求める
+
+## ⚠️ 重要: ファイル・ディレクトリ操作の注意事項
+
+### フルパス指定時のディレクトリ作成禁止
+
+**問題**: ユーザーがフルパスを指定しても、カレントディレクトリ基準で相対パスとして解釈してゴミディレクトリを作成してしまう
+
+**例**:
+```
+ユーザー: "/Users/takemitsusuzuki/work/personal/maji-kichi-meshi/docs/features/like-and-wishlist の plan.md を更新して"
+
+間違った動作:
+1. Glob で検索 → 見つからない
+2. mkdir -p docs/features/like-and-wishlist  # ← カレントディレクトリにゴミフォルダ作成！
+```
+
+### 正しい手順
+
+**必ずフルパスで確認・操作する**
+
+```bash
+# ❌ 間違い: 相対パスで操作
+ls docs/features/like-and-wishlist/
+mkdir -p docs/features/like-and-wishlist
+
+# ✅ 正しい: フルパスで操作
+ls /Users/takemitsusuzuki/work/personal/maji-kichi-meshi/docs/features/like-and-wishlist/
+mkdir -p /Users/takemitsusuzuki/work/personal/maji-kichi-meshi/docs/features/like-and-wishlist
+```
+
+### ルール
+
+1. **ユーザーがフルパスを指定した場合**:
+   - 全ての操作を**フルパスで実行**する
+   - 相対パスに変換しない
+
+2. **ディレクトリ作成前の確認**:
+   ```bash
+   # まずフルパスで存在確認
+   ls /full/path/to/directory/ 2>/dev/null || echo "ディレクトリが存在しません"
+
+   # 存在しない場合は、ユーザーに確認してから作成
+   ```
+
+3. **Globツールの使用**:
+   - Glob で見つからなかった場合、すぐに mkdir しない
+   - フルパスで ls コマンドで再確認する
+
+### 原因
+
+- カレントディレクトリ: `/Users/takemitsusuzuki/work/personal/maji-kichi-meshi/backend`
+- ユーザー指定: `/Users/takemitsusuzuki/work/personal/maji-kichi-meshi/docs/...`
+- 相対パス変換時の誤り: `docs/features/...` → backend 配下に作成されてしまう
+
+### 対策
+
+**フルパスが指定された場合は、常にフルパスで操作する**
