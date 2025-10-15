@@ -137,4 +137,70 @@ class UserModelTest extends TestCase
 
         $this->assertNull($user->profile_image_filename);
     }
+
+    public function test_it_has_review_likes_relationship(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->reviewLikes());
+    }
+
+    public function test_generate_two_factor_secret_creates_secret(): void
+    {
+        $user = User::factory()->create([
+            'two_factor_secret' => null,
+        ]);
+
+        $secret = $user->generateTwoFactorSecret();
+
+        $this->assertNotNull($user->two_factor_secret);
+        $this->assertIsString($secret);
+        $this->assertEquals(16, strlen($secret)); // Google2FA secret is 16 characters
+        $this->assertTrue($user->two_factor_enabled);
+    }
+
+    public function test_enable_two_factor_sets_confirmed_at(): void
+    {
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('test-secret'),
+            'two_factor_confirmed_at' => null,
+        ]);
+
+        $user->enableTwoFactor();
+
+        $this->assertNotNull($user->two_factor_confirmed_at);
+        $this->assertTrue($user->two_factor_enabled);
+        $this->assertNotNull($user->two_factor_recovery_codes);
+    }
+
+    public function test_disable_two_factor_clears_all_2fa_fields(): void
+    {
+        $user = User::factory()->create([
+            'two_factor_secret' => 'test-secret-123',
+            'two_factor_recovery_codes' => 'test-codes',
+            'two_factor_confirmed_at' => now(),
+            'two_factor_enabled' => true,
+        ]);
+
+        $user->disableTwoFactor();
+
+        $this->assertNull($user->two_factor_secret);
+        $this->assertNull($user->two_factor_recovery_codes);
+        $this->assertNull($user->two_factor_confirmed_at);
+        $this->assertFalse($user->two_factor_enabled);
+    }
+
+    public function test_has_two_factor_enabled_checks_confirmed_at(): void
+    {
+        $userWithoutTwoFactor = User::factory()->create([
+            'two_factor_confirmed_at' => null,
+        ]);
+
+        $userWithTwoFactor = User::factory()->create([
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $this->assertFalse($userWithoutTwoFactor->hasTwoFactorEnabled());
+        $this->assertTrue($userWithTwoFactor->hasTwoFactorEnabled());
+    }
 }
