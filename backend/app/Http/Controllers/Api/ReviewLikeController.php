@@ -97,13 +97,23 @@ class ReviewLikeController extends Controller
      */
     public function myLikes(Request $request)
     {
-        $query = ReviewLike::with(['review.user', 'review.shop.publishedImages', 'review.publishedImages', 'review.likes'])
+        $query = ReviewLike::with([
+            'review.user',
+            'review.shop.publishedImages',
+            'review.publishedImages',
+        ])
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc');
 
         // Pagination
         $perPage = min($request->get('per_page', 15), 50);
         $likes = $query->paginate($perPage);
+
+        // Load likes_count and is_liked for each review (same pattern as ReviewController)
+        $likes->getCollection()->each(function ($like) {
+            $like->review->loadCount('likes'); // Total likes count
+            $like->review->load(['likes' => fn ($q) => $q->where('user_id', Auth::id())]); // Current user's like
+        });
 
         // Transform to review resources while preserving order
         $reviews = $likes->getCollection()->map(fn ($like) => $like->review);

@@ -178,6 +178,54 @@ class ReviewLikeApiTest extends TestCase
         $this->assertDatabaseCount('review_likes', 0);
     }
 
+    public function test_my_liked_reviews_includes_complete_response_schema(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $shop = Shop::factory()->create();
+        $review = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop->id,
+            'rating' => 4,
+            'memo' => 'Test review',
+        ]);
+
+        // 3 users like this review (including current user)
+        ReviewLike::create(['user_id' => $user->id, 'review_id' => $review->id]);
+        ReviewLike::create(['user_id' => User::factory()->create()->id, 'review_id' => $review->id]);
+        ReviewLike::create(['user_id' => User::factory()->create()->id, 'review_id' => $review->id]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/my-liked-reviews');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+
+        // ReviewResource の全必須フィールドを検証
+        $reviewData = $data[0];
+        $this->assertArrayHasKey('id', $reviewData);
+        $this->assertArrayHasKey('rating', $reviewData);
+        $this->assertArrayHasKey('repeat_intention', $reviewData);
+        $this->assertArrayHasKey('memo', $reviewData);
+        $this->assertArrayHasKey('visited_at', $reviewData);
+        $this->assertArrayHasKey('has_images', $reviewData);
+        $this->assertArrayHasKey('shop', $reviewData);
+        $this->assertArrayHasKey('user', $reviewData);
+        $this->assertArrayHasKey('likes_count', $reviewData);
+        $this->assertArrayHasKey('is_liked', $reviewData);
+        $this->assertArrayHasKey('created_at', $reviewData);
+        $this->assertArrayHasKey('updated_at', $reviewData);
+
+        // ★ 今回の問題の本質: likes_count が 0 ではなく 3 であることを検証
+        $this->assertEquals(3, $reviewData['likes_count'], 'likes_count should be 3, not 0');
+        $this->assertTrue($reviewData['is_liked'], 'is_liked should be true for current user');
+        $this->assertEquals(4, $reviewData['rating']);
+        $this->assertEquals('Test review', $reviewData['memo']);
+    }
+
     public function test_user_can_get_their_liked_reviews(): void
     {
         $user = User::factory()->create();
@@ -193,8 +241,9 @@ class ReviewLikeApiTest extends TestCase
             ]);
         }
 
-        // Like 2 of them
+        // Like 2 of them, with different like counts
         ReviewLike::create(['user_id' => $user->id, 'review_id' => $reviews[0]->id]);
+        ReviewLike::create(['user_id' => User::factory()->create()->id, 'review_id' => $reviews[0]->id]);
         ReviewLike::create(['user_id' => $user->id, 'review_id' => $reviews[1]->id]);
 
         $response = $this->withHeaders([
@@ -204,6 +253,23 @@ class ReviewLikeApiTest extends TestCase
         $response->assertStatus(200);
         $data = $response->json('data');
         $this->assertCount(2, $data);
+
+        // レスポンススキーマ検証
+        $this->assertArrayHasKey('id', $data[0]);
+        $this->assertArrayHasKey('rating', $data[0]);
+        $this->assertArrayHasKey('memo', $data[0]);
+        $this->assertArrayHasKey('shop', $data[0]);
+        $this->assertArrayHasKey('user', $data[0]);
+        $this->assertArrayHasKey('likes_count', $data[0]);
+        $this->assertArrayHasKey('is_liked', $data[0]);
+
+        // likes_count の正確性検証
+        $this->assertEquals(1, $data[0]['likes_count'], 'Second review should have 1 like');
+        $this->assertEquals(2, $data[1]['likes_count'], 'First review should have 2 likes');
+
+        // is_liked の正確性検証
+        $this->assertTrue($data[0]['is_liked'], 'Current user liked this review');
+        $this->assertTrue($data[1]['is_liked'], 'Current user liked this review');
     }
 
     public function test_guest_cannot_get_liked_reviews(): void
@@ -230,6 +296,11 @@ class ReviewLikeApiTest extends TestCase
             'memo' => 'Second review',
         ]);
 
+        // 各レビューに異なる数のいいねを追加
+        ReviewLike::create(['user_id' => User::factory()->create()->id, 'review_id' => $review1->id]);
+        ReviewLike::create(['user_id' => User::factory()->create()->id, 'review_id' => $review2->id]);
+        ReviewLike::create(['user_id' => User::factory()->create()->id, 'review_id' => $review2->id]);
+
         // Like review1 first, then review2 with explicit timestamps
         ReviewLike::create([
             'user_id' => $user->id,
@@ -252,6 +323,14 @@ class ReviewLikeApiTest extends TestCase
         // Most recent like should be first (review2)
         $this->assertEquals('Second review', $data[0]['memo']);
         $this->assertEquals('First review', $data[1]['memo']);
+
+        // likes_count 検証（現在のユーザー含む全てのいいね数）
+        $this->assertEquals(3, $data[0]['likes_count'], 'review2 should have 3 likes');
+        $this->assertEquals(2, $data[1]['likes_count'], 'review1 should have 2 likes');
+
+        // is_liked 検証（現在のユーザーがいいねしている）
+        $this->assertTrue($data[0]['is_liked']);
+        $this->assertTrue($data[1]['is_liked']);
     }
 
     public function test_likes_count_updates_correctly(): void
@@ -498,5 +577,25 @@ class ReviewLikeApiTest extends TestCase
         $this->assertEquals(1, $meta['current_page']);
         $this->assertEquals(2, $meta['last_page']);
         $this->assertEquals(20, $meta['total']);
+
+        // 全てのレビューが必須フィールドを持つことを検証
+        foreach ($data as $index => $review) {
+            $this->assertArrayHasKey('id', $review, "Review at index {$index} missing id");
+            $this->assertArrayHasKey('likes_count', $review, "Review at index {$index} missing likes_count");
+            $this->assertArrayHasKey('is_liked', $review, "Review at index {$index} missing is_liked");
+            $this->assertArrayHasKey('rating', $review, "Review at index {$index} missing rating");
+            $this->assertArrayHasKey('shop', $review, "Review at index {$index} missing shop");
+            $this->assertArrayHasKey('user', $review, "Review at index {$index} missing user");
+
+            // 型検証
+            $this->assertIsInt($review['likes_count'], "likes_count should be integer at index {$index}");
+            $this->assertIsBool($review['is_liked'], "is_liked should be boolean at index {$index}");
+
+            // likes_count は最低でも1（現在のユーザーのいいね）
+            $this->assertGreaterThanOrEqual(1, $review['likes_count'], "likes_count should be at least 1 at index {$index}");
+
+            // 全てのレビューは現在のユーザーがいいねしている
+            $this->assertTrue($review['is_liked'], "All reviews should be liked by current user at index {$index}");
+        }
     }
 }
