@@ -501,4 +501,388 @@ class WishlistApiTest extends TestCase
         $this->assertCount(1, $data);
         $this->assertEquals('want_to_go', $data[0]['status']);
     }
+
+    // =============================================================================
+    // 異常系・バリデーションエラーのテスト
+    // =============================================================================
+
+    public function test_add_wishlist_fails_with_invalid_shop_id(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/my-wishlist', [
+            'shop_id' => 99999, // Non-existent shop
+            'source_type' => 'shop_detail',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('shop_id');
+    }
+
+    public function test_add_wishlist_fails_with_invalid_priority(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Priority = 0 (too low)
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/my-wishlist', [
+            'shop_id' => $shop->id,
+            'priority' => 0,
+            'source_type' => 'shop_detail',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('priority');
+
+        // Priority = 4 (too high)
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/my-wishlist', [
+            'shop_id' => $shop->id,
+            'priority' => 4,
+            'source_type' => 'shop_detail',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('priority');
+    }
+
+    public function test_add_wishlist_fails_with_invalid_source_type(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/my-wishlist', [
+            'shop_id' => $shop->id,
+            'source_type' => 'invalid_source',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('source_type');
+    }
+
+    public function test_add_wishlist_fails_with_missing_required_fields(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Missing shop_id
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/my-wishlist', [
+            'source_type' => 'shop_detail',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('shop_id');
+
+        // Missing source_type
+        $shop = Shop::factory()->create();
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/my-wishlist', [
+            'shop_id' => $shop->id,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('source_type');
+    }
+
+    public function test_update_priority_fails_with_invalid_priority(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        Wishlist::create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'source_type' => 'shop_detail',
+        ]);
+
+        // Priority = 0
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/priority", [
+            'priority' => 0,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('priority');
+    }
+
+    public function test_update_priority_fails_when_not_in_wishlist(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Shop is not in user's wishlist
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/priority", [
+            'priority' => 3,
+        ]);
+
+        $response->assertStatus(404)
+            ->assertJson([
+                'error' => '行きたいリストに登録されていません',
+            ]);
+    }
+
+    public function test_update_status_fails_with_invalid_status(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        Wishlist::create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'source_type' => 'shop_detail',
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/status", [
+            'status' => 'invalid_status',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('status');
+    }
+
+    public function test_update_status_fails_when_not_in_wishlist(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/status", [
+            'status' => 'visited',
+        ]);
+
+        $response->assertStatus(404)
+            ->assertJson([
+                'error' => '行きたいリストに登録されていません',
+            ]);
+    }
+
+    public function test_remove_wishlist_fails_when_not_in_wishlist(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->deleteJson("/api/my-wishlist/{$shop->id}");
+
+        $response->assertStatus(404)
+            ->assertJson([
+                'error' => '行きたいリストに登録されていません',
+            ]);
+    }
+
+    public function test_index_filters_with_invalid_status(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/my-wishlist?status=invalid_status');
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('status');
+    }
+
+    public function test_index_filters_with_invalid_sort(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/my-wishlist?sort=invalid_sort');
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('sort');
+    }
+
+    public function test_user_cannot_update_other_users_wishlist_priority(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        // user1 creates wishlist
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop->id,
+            'priority' => 2,
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user2 tries to update user1's wishlist
+        $token2 = JWTAuth::fromUser($user2);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token2,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/priority", [
+            'priority' => 3,
+        ]);
+
+        $response->assertStatus(404)
+            ->assertJson([
+                'error' => '行きたいリストに登録されていません',
+            ]);
+
+        // Verify user1's wishlist was not changed
+        $this->assertDatabaseHas('wishlists', [
+            'user_id' => $user1->id,
+            'shop_id' => $shop->id,
+            'priority' => 2, // Still original priority
+        ]);
+    }
+
+    public function test_user_cannot_update_other_users_wishlist_status(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        // user1 creates wishlist
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop->id,
+            'status' => 'want_to_go',
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user2 tries to update user1's wishlist
+        $token2 = JWTAuth::fromUser($user2);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token2,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/status", [
+            'status' => 'visited',
+        ]);
+
+        $response->assertStatus(404);
+
+        // Verify user1's wishlist was not changed
+        $this->assertDatabaseHas('wishlists', [
+            'user_id' => $user1->id,
+            'shop_id' => $shop->id,
+            'status' => 'want_to_go', // Still original status
+        ]);
+    }
+
+    public function test_user_cannot_remove_other_users_wishlist(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $shop = Shop::factory()->create();
+
+        // user1 creates wishlist
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop->id,
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user2 tries to remove user1's wishlist
+        $token2 = JWTAuth::fromUser($user2);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token2,
+        ])->deleteJson("/api/my-wishlist/{$shop->id}");
+
+        $response->assertStatus(404);
+
+        // Verify user1's wishlist still exists
+        $this->assertDatabaseHas('wishlists', [
+            'user_id' => $user1->id,
+            'shop_id' => $shop->id,
+        ]);
+    }
+
+    public function test_visited_at_is_set_when_status_changes_to_visited(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $wishlist = Wishlist::create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'status' => 'want_to_go',
+            'source_type' => 'shop_detail',
+        ]);
+
+        $this->assertNull($wishlist->visited_at);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/status", [
+            'status' => 'visited',
+        ]);
+
+        $response->assertStatus(200);
+
+        $wishlist->refresh();
+        $this->assertNotNull($wishlist->visited_at);
+    }
+
+    public function test_visited_at_is_not_updated_when_already_visited(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $originalVisitedAt = now()->subDays(5);
+        $wishlist = Wishlist::create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+            'status' => 'visited',
+            'visited_at' => $originalVisitedAt,
+            'source_type' => 'shop_detail',
+        ]);
+
+        // Change back to want_to_go
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/status", [
+            'status' => 'want_to_go',
+        ]);
+
+        // Change to visited again
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->patchJson("/api/my-wishlist/{$shop->id}/status", [
+            'status' => 'visited',
+        ]);
+
+        $response->assertStatus(200);
+
+        // visited_at should be updated to a new timestamp
+        $wishlist->refresh();
+        $this->assertNotNull($wishlist->visited_at);
+        // Verify the new visited_at is different from the original
+        $newVisitedAt = $wishlist->visited_at;
+        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $newVisitedAt);
+        $this->assertGreaterThan(
+            $originalVisitedAt->getTimestamp(),
+            $newVisitedAt->getTimestamp()
+        );
+    }
 }
