@@ -232,4 +232,90 @@ class ShopApiAuthIntegrationTest extends TestCase
         $this->assertTrue($data[0]['wishlist_status']['in_wishlist']);
         $this->assertEquals('want_to_go', $data[0]['wishlist_status']['status']);
     }
+
+    public function test_multiple_users_see_different_wishlist(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $shop1 = Shop::factory()->create(['name' => 'Shop 1']);
+        $shop2 = Shop::factory()->create(['name' => 'Shop 2']);
+        $shop3 = Shop::factory()->create(['name' => 'Shop 3']);
+
+        // user1: shop1, shop2 を行きたい
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop1->id,
+            'status' => 'want_to_go',
+            'priority' => 3,
+            'source_type' => 'shop_detail',
+        ]);
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop2->id,
+            'status' => 'visited',
+            'priority' => 2,
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user2: shop2, shop3 を行きたい
+        Wishlist::create([
+            'user_id' => $user2->id,
+            'shop_id' => $shop2->id,
+            'status' => 'want_to_go',
+            'priority' => 1,
+            'source_type' => 'shop_detail',
+        ]);
+        Wishlist::create([
+            'user_id' => $user2->id,
+            'shop_id' => $shop3->id,
+            'status' => 'visited',
+            'priority' => 3,
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user1 で確認
+        $token1 = JWTAuth::fromUser($user1);
+        $response1 = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token1,
+        ])->getJson('/api/shops');
+
+        $response1->assertStatus(200);
+        $shops1 = $response1->json('data');
+
+        // user1 は shop1, shop2 だけ in_wishlist: true
+        foreach ($shops1 as $shop) {
+            if ($shop['name'] === 'Shop 1') {
+                $this->assertTrue($shop['wishlist_status']['in_wishlist']);
+                $this->assertEquals('want_to_go', $shop['wishlist_status']['status']);
+            } elseif ($shop['name'] === 'Shop 2') {
+                $this->assertTrue($shop['wishlist_status']['in_wishlist']);
+                $this->assertEquals('visited', $shop['wishlist_status']['status']);
+            } elseif ($shop['name'] === 'Shop 3') {
+                $this->assertFalse($shop['wishlist_status']['in_wishlist']);
+            }
+        }
+
+        // user2 で確認
+        $token2 = JWTAuth::fromUser($user2);
+        $response2 = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token2,
+        ])->getJson('/api/shops');
+
+        $response2->assertStatus(200);
+        $shops2 = $response2->json('data');
+
+        // user2 は shop2, shop3 だけ in_wishlist: true
+        foreach ($shops2 as $shop) {
+            if ($shop['name'] === 'Shop 1') {
+                $this->assertFalse($shop['wishlist_status']['in_wishlist']);
+            } elseif ($shop['name'] === 'Shop 2') {
+                $this->assertTrue($shop['wishlist_status']['in_wishlist']);
+                $this->assertEquals('want_to_go', $shop['wishlist_status']['status']);
+            } elseif ($shop['name'] === 'Shop 3') {
+                $this->assertTrue($shop['wishlist_status']['in_wishlist']);
+                $this->assertEquals('visited', $shop['wishlist_status']['status']);
+            }
+        }
+    }
 }

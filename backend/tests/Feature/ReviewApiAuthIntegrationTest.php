@@ -345,4 +345,84 @@ class ReviewApiAuthIntegrationTest extends TestCase
         $this->assertTrue($data[0]['is_liked']);
         $this->assertTrue($data[0]['shop']['wishlist_status']['in_wishlist']);
     }
+
+    public function test_multiple_users_see_different_likes_and_wishlist(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $shop1 = Shop::factory()->create();
+        $shop2 = Shop::factory()->create();
+
+        $review1 = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop1->id,
+            'memo' => 'Review 1',
+        ]);
+        $review2 = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop2->id,
+            'memo' => 'Review 2',
+        ]);
+
+        // user1: review1 をいいね、shop1 を行きたい
+        ReviewLike::create(['user_id' => $user1->id, 'review_id' => $review1->id]);
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop1->id,
+            'status' => 'want_to_go',
+            'source_type' => 'review',
+            'source_review_id' => $review1->id,
+        ]);
+
+        // user2: review2 をいいね、shop2 を行きたい
+        ReviewLike::create(['user_id' => $user2->id, 'review_id' => $review2->id]);
+        Wishlist::create([
+            'user_id' => $user2->id,
+            'shop_id' => $shop2->id,
+            'status' => 'want_to_go',
+            'source_type' => 'review',
+            'source_review_id' => $review2->id,
+        ]);
+
+        // user1 で確認
+        $token1 = JWTAuth::fromUser($user1);
+        $response1 = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token1,
+        ])->getJson('/api/reviews');
+
+        $response1->assertStatus(200);
+        $reviews1 = $response1->json('data');
+
+        // user1 は review1 だけいいね、shop1 だけ行きたい
+        foreach ($reviews1 as $review) {
+            if ($review['memo'] === 'Review 1') {
+                $this->assertTrue($review['is_liked']);
+                $this->assertTrue($review['shop']['wishlist_status']['in_wishlist']);
+            } elseif ($review['memo'] === 'Review 2') {
+                $this->assertFalse($review['is_liked']);
+                $this->assertFalse($review['shop']['wishlist_status']['in_wishlist']);
+            }
+        }
+
+        // user2 で確認
+        $token2 = JWTAuth::fromUser($user2);
+        $response2 = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token2,
+        ])->getJson('/api/reviews');
+
+        $response2->assertStatus(200);
+        $reviews2 = $response2->json('data');
+
+        // user2 は review2 だけいいね、shop2 だけ行きたい
+        foreach ($reviews2 as $review) {
+            if ($review['memo'] === 'Review 1') {
+                $this->assertFalse($review['is_liked']);
+                $this->assertFalse($review['shop']['wishlist_status']['in_wishlist']);
+            } elseif ($review['memo'] === 'Review 2') {
+                $this->assertTrue($review['is_liked']);
+                $this->assertTrue($review['shop']['wishlist_status']['in_wishlist']);
+            }
+        }
+    }
 }

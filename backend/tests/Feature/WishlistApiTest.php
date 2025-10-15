@@ -380,4 +380,125 @@ class WishlistApiTest extends TestCase
 
         $this->assertDatabaseCount('wishlists', 0);
     }
+
+    // =============================================================================
+    // 複数ユーザーのデータ隔離テスト
+    // =============================================================================
+
+    public function test_guest_cannot_get_wishlist(): void
+    {
+        $response = $this->getJson('/api/my-wishlist');
+
+        $response->assertStatus(401);
+    }
+
+    public function test_user_only_sees_own_wishlist(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $shop1 = Shop::factory()->create(['name' => 'Shop 1']);
+        $shop2 = Shop::factory()->create(['name' => 'Shop 2']);
+        $shop3 = Shop::factory()->create(['name' => 'Shop 3']);
+
+        // user1: shop1, shop2 を行きたいリスト追加
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop1->id,
+            'status' => 'want_to_go',
+            'source_type' => 'shop_detail',
+        ]);
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop2->id,
+            'status' => 'want_to_go',
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user2: shop2, shop3 を行きたいリスト追加
+        Wishlist::create([
+            'user_id' => $user2->id,
+            'shop_id' => $shop2->id,
+            'status' => 'want_to_go',
+            'source_type' => 'shop_detail',
+        ]);
+        Wishlist::create([
+            'user_id' => $user2->id,
+            'shop_id' => $shop3->id,
+            'status' => 'want_to_go',
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user1 で取得
+        $token1 = JWTAuth::fromUser($user1);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token1,
+        ])->getJson('/api/my-wishlist');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // user1 は shop1, shop2 のみ見える (shop3 は見えない)
+        $this->assertCount(2, $data);
+        $shopIds = collect($data)->pluck('shop.id')->toArray();
+        $this->assertContains($shop1->id, $shopIds);
+        $this->assertContains($shop2->id, $shopIds);
+        $this->assertNotContains($shop3->id, $shopIds);
+    }
+
+    public function test_empty_wishlist_returns_empty_array(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/my-wishlist');
+
+        $response->assertStatus(200)
+            ->assertJson(['data' => []]);
+    }
+
+    public function test_wishlist_filters_only_users_data(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $shop1 = Shop::factory()->create();
+
+        // user1: shop1 (want_to_go)
+        Wishlist::create([
+            'user_id' => $user1->id,
+            'shop_id' => $shop1->id,
+            'status' => 'want_to_go',
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user2: shop1 (visited)
+        Wishlist::create([
+            'user_id' => $user2->id,
+            'shop_id' => $shop1->id,
+            'status' => 'visited',
+            'source_type' => 'shop_detail',
+        ]);
+
+        // user1 で visited フィルタ → 0件（user2 の visited は見えない）
+        $token1 = JWTAuth::fromUser($user1);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token1,
+        ])->getJson('/api/my-wishlist?status=visited');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(0, $data);
+
+        // user1 で want_to_go フィルタ → 1件
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token1,
+        ])->getJson('/api/my-wishlist?status=want_to_go');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertEquals('want_to_go', $data[0]['status']);
+    }
 }

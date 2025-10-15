@@ -396,4 +396,107 @@ class ReviewLikeApiTest extends TestCase
                 'is_liked' => true, // 認証済みユーザーには is_liked が含まれる
             ]);
     }
+
+    // =============================================================================
+    // 複数ユーザーのデータ隔離テスト
+    // =============================================================================
+
+    public function test_user_only_sees_own_liked_reviews(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $shop1 = Shop::factory()->create();
+        $shop2 = Shop::factory()->create();
+        $shop3 = Shop::factory()->create();
+
+        $review1 = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop1->id,
+            'memo' => 'Review 1',
+        ]);
+        $review2 = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop2->id,
+            'memo' => 'Review 2',
+        ]);
+        $review3 = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop3->id,
+            'memo' => 'Review 3',
+        ]);
+
+        // user1: review1, review2 をいいね
+        ReviewLike::create(['user_id' => $user1->id, 'review_id' => $review1->id]);
+        ReviewLike::create(['user_id' => $user1->id, 'review_id' => $review2->id]);
+
+        // user2: review2, review3 をいいね
+        ReviewLike::create(['user_id' => $user2->id, 'review_id' => $review2->id]);
+        ReviewLike::create(['user_id' => $user2->id, 'review_id' => $review3->id]);
+
+        // user1 で取得
+        $token1 = JWTAuth::fromUser($user1);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token1,
+        ])->getJson('/api/my-liked-reviews');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // user1 は review1, review2 のみ見える (review3 は見えない)
+        $this->assertCount(2, $data);
+        $memos = collect($data)->pluck('memo')->toArray();
+        $this->assertContains('Review 1', $memos);
+        $this->assertContains('Review 2', $memos);
+        $this->assertNotContains('Review 3', $memos);
+    }
+
+    public function test_empty_liked_reviews_returns_empty_data(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/my-liked-reviews');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(0, $data);
+    }
+
+    public function test_liked_reviews_pagination(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+
+        // Create 20 reviews and like them all
+        for ($i = 1; $i <= 20; $i++) {
+            $shop = Shop::factory()->create();
+            $review = Review::factory()->create([
+                'user_id' => User::factory()->create()->id,
+                'shop_id' => $shop->id,
+                'memo' => "Review {$i}",
+            ]);
+            ReviewLike::create([
+                'user_id' => $user->id,
+                'review_id' => $review->id,
+                'created_at' => now()->addSeconds($i),
+            ]);
+        }
+
+        // Get first page with per_page=10
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/my-liked-reviews?per_page=10');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $meta = $response->json('meta');
+
+        $this->assertCount(10, $data);
+        $this->assertEquals(1, $meta['current_page']);
+        $this->assertEquals(2, $meta['last_page']);
+        $this->assertEquals(20, $meta['total']);
+    }
 }
