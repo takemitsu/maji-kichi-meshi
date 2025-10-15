@@ -1,7 +1,7 @@
 <template>
     <button
         type="button"
-        :disabled="isLoading || !isAuthenticated || (status === 'visited' && !allowDeleteVisited)"
+        :disabled="isLoading || (status === 'visited' && !allowDeleteVisited)"
         :class="[
             'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200',
             getButtonClass(),
@@ -98,7 +98,11 @@ const fetchStatus = async () => {
 
 // 行きたいリストトグル
 const handleToggle = async () => {
-    if (!isAuthenticated.value || isLoading.value) {
+    if (!isAuthenticated.value) {
+        useToastStore().showLoginToast()
+        return
+    }
+    if (isLoading.value) {
         return
     }
 
