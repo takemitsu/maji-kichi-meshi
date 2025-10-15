@@ -19,6 +19,7 @@ import type {
     WishlistAddResponse,
     WishlistUpdatePriorityRequest,
     WishlistUpdateStatusRequest,
+    DashboardStatsResponse,
 } from '~/types/api'
 
 export const useApi = () => {
@@ -256,7 +257,7 @@ export const useApi = () => {
 
         // 統計情報
         stats: {
-            dashboard: () => apiFetch<ApiResponse<{ reviews_count: number; rankings_count: number }>>('/stats/dashboard'),
+            dashboard: () => apiFetch<ApiResponse<DashboardStatsResponse>>('/stats/dashboard'),
         },
 
         // ユーザー関連

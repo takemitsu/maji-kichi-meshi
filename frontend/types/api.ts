@@ -246,3 +246,11 @@ export interface WishlistUpdatePriorityRequest {
 export interface WishlistUpdateStatusRequest {
     status: 'want_to_go' | 'visited'
 }
+
+// Dashboard統計情報
+export interface DashboardStatsResponse {
+    reviews_count: number
+    rankings_count: number
+    liked_reviews_count: number
+    wishlists_count: number
+}
