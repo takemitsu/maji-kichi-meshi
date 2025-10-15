@@ -43,9 +43,7 @@ class ReviewResource extends JsonResource
                     'wishlist_status' => $this->getShopWishlistStatus(),
                 ];
             }),
-            'likes_count' => $this->whenLoaded('likes', function () {
-                return $this->likes->count();
-            }, 0),
+            'likes_count' => $this->likes_count ?? 0,
             'is_liked' => $this->when($this->relationLoaded('likes') && !$this->likes->isEmpty(), function () {
                 return true; // Controller側で既に現在のユーザーでフィルタ済み
             }, false),

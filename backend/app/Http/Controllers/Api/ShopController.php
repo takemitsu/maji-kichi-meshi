@@ -15,6 +15,7 @@ use App\Models\Wishlist;
 use App\Services\ImageUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ShopController extends Controller
 {
@@ -27,15 +28,20 @@ class ShopController extends Controller
      */
     public function index(ShopIndexRequest $request)
     {
-        $query = Shop::with([
-            'categories',
-            'publishedImages',
-            'wishlists' => function ($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
-                }
-            },
-        ]);
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
+        $query = Shop::with(['categories', 'publishedImages']);
+
+        if (Auth::check()) {
+            $query->with([
+                'wishlists' => fn ($q) => $q->where('user_id', Auth::id()),
+            ]);
+        }
 
         // Search by name
         if ($request->has('search')) {
@@ -95,15 +101,20 @@ class ShopController extends Controller
      */
     public function show(Shop $shop)
     {
-        $shop->load([
-            'categories',
-            'publishedImages',
-            'wishlists' => function ($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
-                }
-            },
-        ]);
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
+        $shop->load(['categories', 'publishedImages']);
+
+        if (Auth::check()) {
+            $shop->load([
+                'wishlists' => fn ($q) => $q->where('user_id', Auth::id()),
+            ]);
+        }
 
         return new ShopResource($shop);
     }

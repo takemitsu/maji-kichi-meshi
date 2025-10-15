@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ReviewController extends Controller
 {
@@ -27,21 +28,22 @@ class ReviewController extends Controller
      */
     public function index(ReviewIndexRequest $request)
     {
-        $query = Review::with([
-            'user',
-            'shop.publishedImages',
-            'shop.wishlists' => function ($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
-                }
-            },
-            'publishedImages',
-            'likes' => function ($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
-                }
-            },
-        ]);
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
+        $query = Review::with(['user', 'shop.publishedImages', 'publishedImages'])
+            ->withCount('likes'); // いいね数は全ユーザーに表示
+
+        if (Auth::check()) {
+            $query->with([
+                'shop.wishlists' => fn ($q) => $q->where('user_id', Auth::id()),
+                'likes' => fn ($q) => $q->where('user_id', Auth::id()),
+            ]);
+        }
 
         // Filter by user
         if ($request->has('user_id')) {
@@ -125,21 +127,22 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        $review->load([
-            'user',
-            'shop.publishedImages',
-            'shop.wishlists' => function ($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
-                }
-            },
-            'publishedImages',
-            'likes' => function ($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
-                }
-            },
-        ]);
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
+        $review->load(['user', 'shop.publishedImages', 'publishedImages'])
+            ->loadCount('likes'); // いいね数は全ユーザーに表示
+
+        if (Auth::check()) {
+            $review->load([
+                'shop.wishlists' => fn ($q) => $q->where('user_id', Auth::id()),
+                'likes' => fn ($q) => $q->where('user_id', Auth::id()),
+            ]);
+        }
 
         return new ReviewResource($review);
     }

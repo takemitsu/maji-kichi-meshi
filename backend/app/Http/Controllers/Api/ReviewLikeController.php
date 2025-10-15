@@ -9,6 +9,7 @@ use App\Models\ReviewLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ReviewLikeController extends Controller
 {
@@ -67,6 +68,13 @@ class ReviewLikeController extends Controller
      */
     public function show(Review $review, Request $request)
     {
+        // Optional auth: JWT トークンがあれば認証、なければゲスト
+        try {
+            JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            // トークンがない、または無効 → ゲストとして続行
+        }
+
         $likesCount = ReviewLike::where('review_id', $review->id)->count();
 
         $response = [

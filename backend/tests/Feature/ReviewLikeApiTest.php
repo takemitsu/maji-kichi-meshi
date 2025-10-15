@@ -327,4 +327,73 @@ class ReviewLikeApiTest extends TestCase
         // Likes should be deleted too (cascade)
         $this->assertDatabaseCount('review_likes', 0);
     }
+
+    // =============================================================================
+    // ReviewLikeController の show メソッドのオプショナル認証テスト
+    // =============================================================================
+
+    public function test_review_like_show_works_for_guest(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $review = Review::factory()->create([
+            'user_id' => $user->id,
+            'shop_id' => $shop->id,
+        ]);
+
+        // Create 2 likes
+        $users = User::factory(2)->create();
+        foreach ($users as $likeUser) {
+            ReviewLike::create([
+                'user_id' => $likeUser->id,
+                'review_id' => $review->id,
+            ]);
+        }
+
+        // 未ログインでアクセス
+        $response = $this->getJson("/api/reviews/{$review->id}/likes");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'likes_count' => 2,
+            ])
+            ->assertJsonMissingPath('is_liked'); // ゲストには is_liked が含まれない
+    }
+
+    public function test_review_like_show_includes_is_liked_for_authenticated_user(): void
+    {
+        $user = User::factory()->create();
+        $shop = Shop::factory()->create();
+        $review = Review::factory()->create([
+            'user_id' => User::factory()->create()->id,
+            'shop_id' => $shop->id,
+        ]);
+
+        // Create 3 likes by other users
+        $otherUsers = User::factory(3)->create();
+        foreach ($otherUsers as $likeUser) {
+            ReviewLike::create([
+                'user_id' => $likeUser->id,
+                'review_id' => $review->id,
+            ]);
+        }
+
+        // このユーザーもいいね
+        ReviewLike::create([
+            'user_id' => $user->id,
+            'review_id' => $review->id,
+        ]);
+
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson("/api/reviews/{$review->id}/likes");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'likes_count' => 4,
+                'is_liked' => true, // 認証済みユーザーには is_liked が含まれる
+            ]);
+    }
 }
