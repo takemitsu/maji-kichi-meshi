@@ -19,7 +19,10 @@
 
             <!-- レビュー一覧 -->
             <div v-else-if="reviews.length > 0" class="space-y-4 md:space-y-6">
-                <div v-for="review in reviews" :key="review.id" class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 p-3 md:p-6">
+                <div
+                    v-for="review in reviews"
+                    :key="review.id"
+                    class="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 p-3 md:p-6">
                     <!-- ユーザー情報 -->
                     <div class="flex items-center space-x-2 text-sm mb-2">
                         <span class="text-gray-500">{{ formatDate(review.visited_at) }}</span>
@@ -37,8 +40,7 @@
                     <!-- 店舗情報 -->
                     <NuxtLink
                         :to="`/shops/${review.shop.id}`"
-                        class="text-lg font-semibold text-gray-900 hover:text-blue-600 mb-2 block"
-                    >
+                        class="text-lg font-semibold text-gray-900 hover:text-blue-600 mb-2 block">
                         {{ review.shop.name }}
                     </NuxtLink>
 
@@ -84,10 +86,7 @@
                                 v-for="image in review.images.slice(0, 3)"
                                 :key="image.id"
                                 class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0">
-                                <img
-                                    :src="image.urls.small"
-                                    :alt="image.original_name"
-                                    class="w-full h-full object-cover" />
+                                <img :src="image.urls.small" :alt="image.original_name" class="w-full h-full object-cover" />
                             </div>
                             <div v-if="review.images.length > 3" class="text-xs text-gray-700">
                                 +{{ review.images.length - 3 }}枚
@@ -97,11 +96,11 @@
 
                     <!-- いいねボタン -->
                     <div class="flex items-center gap-4 pt-3 border-t">
-                        <LikeButton :review-id="review.id" :initial-likes-count="review.likes_count || 0" :initial-is-liked="review.is_liked ?? true" />
-                        <NuxtLink
-                            :to="`/reviews/${review.id}`"
-                            class="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                        >
+                        <LikeButton
+                            :review-id="review.id"
+                            :initial-likes-count="review.likes_count || 0"
+                            :initial-is-liked="review.is_liked ?? true" />
+                        <NuxtLink :to="`/reviews/${review.id}`" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
                             レビュー詳細を見る →
                         </NuxtLink>
                     </div>
@@ -114,8 +113,7 @@
                     :total-pages="pagination.last_page"
                     :total-items="pagination.total"
                     :per-page="pagination.per_page"
-                    @page-change="loadPage"
-                />
+                    @page-change="loadPage" />
             </div>
 
             <!-- 空の状態 -->
@@ -125,8 +123,7 @@
                 <p class="text-gray-500 mb-6">気になるレビューに「いいね」してみましょう</p>
                 <NuxtLink
                     to="/reviews"
-                    class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
+                    class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     レビューを見る
                 </NuxtLink>
             </div>

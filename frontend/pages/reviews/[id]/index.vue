@@ -138,7 +138,9 @@
                     </div>
 
                     <!-- 画像セクション -->
-                    <div v-if="review.images && review.images.length > 0" class="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200">
+                    <div
+                        v-if="review.images && review.images.length > 0"
+                        class="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div
                                 v-for="image in review.images"

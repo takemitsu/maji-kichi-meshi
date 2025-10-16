@@ -14,11 +14,15 @@ const toastStore = useToastStore()
 
 <style scoped>
 .toast-enter-active {
-    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    transition:
+        opacity 0.2s ease-out,
+        transform 0.2s ease-out;
 }
 
 .toast-leave-active {
-    transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+    transition:
+        opacity 0.3s ease-in,
+        transform 0.3s ease-in;
 }
 
 .toast-enter-from {

@@ -116,9 +116,13 @@ const api = useApi()
 const localWishlist = ref<Wishlist>({ ...props.wishlist })
 
 // propsが変更されたらローカルも更新
-watch(() => props.wishlist, (newVal) => {
-    localWishlist.value = { ...newVal }
-}, { deep: true })
+watch(
+    () => props.wishlist,
+    (newVal) => {
+        localWishlist.value = { ...newVal }
+    },
+    { deep: true },
+)
 
 // 日付フォーマット
 const formatDate = (dateString: string) => {
