@@ -1001,4 +1001,162 @@ class ShopApiTest extends TestCase
             ->assertJsonPath('data.average_rating', 4)
             ->assertJsonPath('data.review_count', 1);
     }
+
+    // =============================================================================
+    // Sort Tiebreak Tests
+    // =============================================================================
+
+    public function test_sort_by_created_at_with_same_date_uses_id_tiebreak(): void
+    {
+        // 同じcreated_atを持つ店舗を作成（IDの降順になるべき）
+        $sameTime = now()->subDay();
+        $shop1 = Shop::factory()->create([
+            'name' => 'Shop 1',
+            'created_at' => $sameTime,
+        ]);
+        $shop2 = Shop::factory()->create([
+            'name' => 'Shop 2',
+            'created_at' => $sameTime,
+        ]);
+        $shop3 = Shop::factory()->create([
+            'name' => 'Shop 3',
+            'created_at' => $sameTime,
+        ]);
+
+        $response = $this->getJson('/api/shops?sort=created_at_desc');
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // ID降順（新しいID = 後から作成 = 優先）
+        $this->assertEquals('Shop 3', $data[0]['name']);
+        $this->assertEquals('Shop 2', $data[1]['name']);
+        $this->assertEquals('Shop 1', $data[2]['name']);
+    }
+
+    public function test_sort_by_review_latest_with_same_visited_at_uses_created_at_tiebreak(): void
+    {
+        $user = User::factory()->create();
+        $sameVisitDate = now()->subDay()->format('Y-m-d');
+
+        // 同じvisited_atだが異なるcreated_atのレビューを持つ店舗
+        $shop1 = Shop::factory()->create([
+            'name' => 'Shop 1',
+            'created_at' => now()->subDays(3),
+        ]);
+        $shop2 = Shop::factory()->create([
+            'name' => 'Shop 2',
+            'created_at' => now()->subDays(2),
+        ]);
+        $shop3 = Shop::factory()->create([
+            'name' => 'Shop 3',
+            'created_at' => now()->subDays(1),
+        ]);
+
+        \App\Models\Review::factory()->create([
+            'shop_id' => $shop1->id,
+            'user_id' => $user->id,
+            'visited_at' => $sameVisitDate,
+            'created_at' => now()->subDays(3),
+        ]);
+        \App\Models\Review::factory()->create([
+            'shop_id' => $shop2->id,
+            'user_id' => $user->id,
+            'visited_at' => $sameVisitDate,
+            'created_at' => now()->subDays(2),
+        ]);
+        \App\Models\Review::factory()->create([
+            'shop_id' => $shop3->id,
+            'user_id' => $user->id,
+            'visited_at' => $sameVisitDate,
+            'created_at' => now()->subDays(1),
+        ]);
+
+        $response = $this->getJson('/api/shops?sort=review_latest');
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // visited_at同じ → created_at降順 → id降順
+        $this->assertEquals('Shop 3', $data[0]['name']);
+        $this->assertEquals('Shop 2', $data[1]['name']);
+        $this->assertEquals('Shop 1', $data[2]['name']);
+    }
+
+    public function test_sort_by_reviews_count_with_same_count_uses_created_at_tiebreak(): void
+    {
+        $user = User::factory()->create();
+
+        // reviews_countが同じ（3件ずつ）だが、created_atが異なる店舗
+        $shop1 = Shop::factory()->create([
+            'name' => 'Shop 1',
+            'created_at' => now()->subDays(3),
+        ]);
+        $shop2 = Shop::factory()->create([
+            'name' => 'Shop 2',
+            'created_at' => now()->subDays(2),
+        ]);
+        $shop3 = Shop::factory()->create([
+            'name' => 'Shop 3',
+            'created_at' => now()->subDays(1),
+        ]);
+
+        // 各店舗に3件ずつレビュー作成
+        foreach ([$shop1, $shop2, $shop3] as $shop) {
+            \App\Models\Review::factory()->count(3)->create([
+                'shop_id' => $shop->id,
+                'user_id' => $user->id,
+            ]);
+        }
+
+        $response = $this->getJson('/api/shops?sort=reviews_count_desc');
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // reviews_count同じ → created_at降順 → id降順
+        $this->assertEquals('Shop 3', $data[0]['name']);
+        $this->assertEquals('Shop 2', $data[1]['name']);
+        $this->assertEquals('Shop 1', $data[2]['name']);
+        $this->assertEquals(3, $data[0]['review_count']);
+        $this->assertEquals(3, $data[1]['review_count']);
+        $this->assertEquals(3, $data[2]['review_count']);
+    }
+
+    public function test_sort_by_rating_with_same_rating_uses_created_at_tiebreak(): void
+    {
+        $user = User::factory()->create();
+
+        // 同じ平均評価（4.0）だが、created_atが異なる店舗
+        $shop1 = Shop::factory()->create([
+            'name' => 'Shop 1',
+            'created_at' => now()->subDays(3),
+        ]);
+        $shop2 = Shop::factory()->create([
+            'name' => 'Shop 2',
+            'created_at' => now()->subDays(2),
+        ]);
+        $shop3 = Shop::factory()->create([
+            'name' => 'Shop 3',
+            'created_at' => now()->subDays(1),
+        ]);
+
+        // 各店舗に同じ評価のレビュー作成
+        foreach ([$shop1, $shop2, $shop3] as $shop) {
+            \App\Models\Review::factory()->create([
+                'shop_id' => $shop->id,
+                'user_id' => $user->id,
+                'rating' => 4,
+            ]);
+        }
+
+        $response = $this->getJson('/api/shops?sort=rating_desc');
+        $response->assertStatus(200);
+        $data = $response->json('data');
+
+        // rating同じ → created_at降順 → id降順
+        $this->assertEquals('Shop 3', $data[0]['name']);
+        $this->assertEquals('Shop 2', $data[1]['name']);
+        $this->assertEquals('Shop 1', $data[2]['name']);
+        $this->assertEquals(4, $data[0]['average_rating']);
+        $this->assertEquals(4, $data[1]['average_rating']);
+        $this->assertEquals(4, $data[2]['average_rating']);
+    }
 }

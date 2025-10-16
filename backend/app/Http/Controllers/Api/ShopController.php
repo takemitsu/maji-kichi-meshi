@@ -32,13 +32,21 @@ class ShopController extends Controller
     protected function applySorting($query, string $sort)
     {
         return match ($sort) {
-            'created_at_desc' => $query->orderBy('created_at', 'desc'),
-            'review_latest' => $query->orderByRaw('(SELECT MAX(created_at) FROM reviews WHERE reviews.shop_id = shops.id) IS NULL')
-                ->orderByRaw('(SELECT MAX(created_at) FROM reviews WHERE reviews.shop_id = shops.id) DESC'),
-            'reviews_count_desc' => $query->orderBy('reviews_count', 'desc'),
+            'created_at_desc' => $query->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc'),
+            'review_latest' => $query->orderByRaw('(SELECT MAX(visited_at) FROM reviews WHERE reviews.shop_id = shops.id) IS NULL')
+                ->orderByRaw('(SELECT MAX(visited_at) FROM reviews WHERE reviews.shop_id = shops.id) DESC')
+                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc'),
+            'reviews_count_desc' => $query->orderBy('reviews_count', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc'),
             'rating_desc' => $query->orderByRaw('reviews_avg_rating IS NULL')
-                ->orderBy('reviews_avg_rating', 'desc'),
-            default => $query->orderBy('created_at', 'desc'),
+                ->orderBy('reviews_avg_rating', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc'),
+            default => $query->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc'),
         };
     }
 
