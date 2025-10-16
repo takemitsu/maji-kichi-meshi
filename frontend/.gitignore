@@ -18,6 +18,9 @@ logs
 .fleet
 .idea
 
+# MCP Servers
+.serena
+
 # Local env files
 .env
 .env.*

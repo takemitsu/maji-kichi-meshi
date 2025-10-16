@@ -60,5 +60,4 @@ node_modules/
 vendor/
 
 # Serena MCP Server
-.serena/*
-!.serena/project.yml
+.serena/
