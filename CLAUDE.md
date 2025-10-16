@@ -48,7 +48,8 @@ composer stan                  # 静的解析
 ```bash
 npm run dev        # 開発サーバー起動
 npm run build      # ビルド
-npm run lint       # Lint + フォーマット
+npm run lint       # Lint
+npm run format     # フォーマット
 npm run type-check # 型チェック
 ```
 
@@ -121,7 +122,48 @@ maji-kichi-meshi/
 - **ドキュメント**（.md ファイル等）のコミットは自己判断でOK
 - テスト結果、コード品質チェック結果を提示してからコミット判断を求める
 
+### コード変更後の品質チェック
+
+**該当する変更のみ実行:**
+
+**PHPファイル修正時** (backend/ ディレクトリで実行):
+```bash
+composer pint                               # コードフォーマット
+./vendor/bin/phpstan analyse --memory-limit=1024M  # 静的解析
+php artisan test                            # テスト実行（新機能/修正時のみ）
+```
+
+**JS/Vue/TSファイル修正時** (frontend/ ディレクトリで実行):
+```bash
+npm run lint       # ESLint
+npm run format     # Prettier
+npm run type-check # TypeScript型チェック
+```
+
 ## ⚠️ 重要: ファイル・ディレクトリ操作の注意事項
+
+### docs/ ディレクトリの誤作成防止
+
+**問題**: `docs/` で始まるパスを指示されたとき、カレントディレクトリに `docs/` を作成してしまう
+
+**例**:
+```
+ユーザー: "docs/features/xxx/plan.md を更新して"
+
+間違った動作:
+1. pwd 確認せず
+2. cd backend だと backend/docs/ を作成 ← 間違い！
+3. cd frontend だと frontend/docs/ を作成 ← 間違い！
+
+正しい動作:
+1. pwd で現在位置確認
+2. プロジェクトルートの /Users/takemitsusuzuki/work/personal/maji-kichi-meshi/docs/ を操作
+```
+
+**必須手順:**
+1. `docs/` で始まるパスの場合、**必ず `pwd` で現在位置を確認**
+2. `backend/` または `frontend/` にいる場合は、プロジェクトルートに移動するか、フルパスで操作
+3. **絶対に backend/docs/ や frontend/docs/ を作成しない**
 
 ### フルパス指定時のディレクトリ作成禁止
 
