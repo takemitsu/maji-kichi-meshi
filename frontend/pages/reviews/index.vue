@@ -282,14 +282,15 @@ import type { Review, ReviewImage } from '~/types/api'
 // レビュー閲覧はログイン不要、作成・編集時にログインチェック
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
 // リアクティブデータ
 const reviews = ref<Review[]>([])
 const loading = ref(true)
 const error = ref('')
-const selectedRating = ref('')
-const selectedRepeatIntention = ref('')
+const selectedRating = ref((route.query.rating as string) || '')
+const selectedRepeatIntention = ref((route.query.repeat_intention as string) || '')
 const selectedImage = ref<ReviewImage | null>(null)
 
 // user_id フィルタ対応
@@ -326,21 +327,41 @@ const { data: shopInfo } = await useLazyAsyncData(
     },
 )
 
-// ページネーション
-const currentPage = ref(1)
+// ページネーション（URLクエリから初期値を取得）
+const currentPage = ref(parseInt((route.query.page as string) || '1'))
 const perPage = ref(20)
 const totalItems = ref(0)
 const totalPages = ref(0)
 
+// URLクエリパラメータを更新する関数
+const updateQueryParams = (page: number) => {
+    const query: Record<string, string> = {}
+
+    // 既存のクエリパラメータを保持
+    if (shopId.value) query.shop_id = shopId.value
+    if (userId.value) query.user_id = userId.value
+    if (selectedRating.value) query.rating = selectedRating.value
+    if (selectedRepeatIntention.value) query.repeat_intention = selectedRepeatIntention.value
+
+    // ページ番号を追加（1ページ目の場合は省略）
+    if (page > 1) {
+        query.page = page.toString()
+    }
+
+    router.push({ query })
+}
+
 // フィルター
 const handleFilter = () => {
     currentPage.value = 1 // フィルター変更時は1ページ目に戻る
+    updateQueryParams(1)
     loadReviews()
 }
 
 // ページ変更
 const handlePageChange = (page: number) => {
     currentPage.value = page
+    updateQueryParams(page)
     loadReviews()
     window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -425,6 +446,32 @@ watch([() => route.query.shop_id, () => route.query.user_id], ([newShopId, newUs
     userId.value = (newUserId as string) || ''
     currentPage.value = 1 // フィルタ変更時は1ページ目に戻る
     loadReviews()
+})
+
+// ページ番号の監視（ブラウザバック/フォワード対応）
+watch(
+    () => route.query.page,
+    (newPage) => {
+        const page = parseInt((newPage as string) || '1')
+        if (currentPage.value !== page) {
+            currentPage.value = page
+            loadReviews()
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+    },
+)
+
+// フィルタパラメータの監視（URL直接アクセス・ブラウザバック対応）
+watch([() => route.query.rating, () => route.query.repeat_intention], ([newRating, newRepeatIntention]) => {
+    const rating = (newRating as string) || ''
+    const repeatIntention = (newRepeatIntention as string) || ''
+
+    if (selectedRating.value !== rating || selectedRepeatIntention.value !== repeatIntention) {
+        selectedRating.value = rating
+        selectedRepeatIntention.value = repeatIntention
+        currentPage.value = 1
+        loadReviews()
+    }
 })
 
 // 初期化

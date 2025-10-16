@@ -144,6 +144,8 @@ import type { Shop, Category } from '~/types/api'
 // 店舗閲覧はログイン不要、操作時にログインチェック
 
 const { $api } = useNuxtApp()
+const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
 // リアクティブデータ
@@ -152,12 +154,12 @@ const categories = ref<Category[]>([])
 const loading = ref(true)
 const searchLoading = ref(false)
 const error = ref('')
-const searchQuery = ref('')
-const selectedCategory = ref('')
+const searchQuery = ref((route.query.search as string) || '')
+const selectedCategory = ref((route.query.category as string) || '')
 
-// ページネーション
-const currentPage = ref(1)
-const perPage = ref(20)
+// ページネーション（URLクエリから初期値を取得）
+const currentPage = ref(parseInt((route.query.page as string) || '1'))
+const perPage = ref(24)
 const totalItems = ref(0)
 const totalPages = ref(0)
 
@@ -175,20 +177,39 @@ const enhanceShopForDisplay = (shop: Shop) => {
     }
 }
 
+// URLクエリパラメータを更新する関数
+const updateQueryParams = (page: number) => {
+    const query: Record<string, string> = {}
+
+    // 既存のクエリパラメータを保持
+    if (searchQuery.value) query.search = searchQuery.value
+    if (selectedCategory.value) query.category = selectedCategory.value
+
+    // ページ番号を追加（1ページ目の場合は省略）
+    if (page > 1) {
+        query.page = page.toString()
+    }
+
+    router.push({ query })
+}
+
 // 検索とフィルター
 const handleSearch = useDebounceFn(() => {
     currentPage.value = 1 // 検索時は1ページ目に戻る
+    updateQueryParams(1)
     loadShops()
 }, 300)
 
 const handleCategoryFilter = () => {
     currentPage.value = 1 // フィルター変更時は1ページ目に戻る
+    updateQueryParams(1)
     loadShops()
 }
 
 // ページ変更
 const handlePageChange = (page: number) => {
     currentPage.value = page
+    updateQueryParams(page)
     loadShops()
     window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -268,6 +289,32 @@ const deleteShop = async (shop: Shop) => {
 // }
 
 // ShopCardコンポーネントで外部クリック処理
+
+// ページ番号の監視（ブラウザバック/フォワード対応）
+watch(
+    () => route.query.page,
+    (newPage) => {
+        const page = parseInt((newPage as string) || '1')
+        if (currentPage.value !== page) {
+            currentPage.value = page
+            loadShops()
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+    },
+)
+
+// 検索・フィルタパラメータの監視（URL直接アクセス・ブラウザバック対応）
+watch([() => route.query.search, () => route.query.category], ([newSearch, newCategory]) => {
+    const search = (newSearch as string) || ''
+    const category = (newCategory as string) || ''
+
+    if (searchQuery.value !== search || selectedCategory.value !== category) {
+        searchQuery.value = search
+        selectedCategory.value = category
+        currentPage.value = 1
+        loadShops()
+    }
+})
 
 // 初期化
 onMounted(async () => {
