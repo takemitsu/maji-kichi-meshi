@@ -29,6 +29,7 @@ class ShopIndexRequest extends FormRequest
             'longitude' => 'sometimes|numeric|min:-180|max:180',
             'radius' => 'sometimes|numeric|min:0.1|max:100',
             'per_page' => 'sometimes|integer|min:1|max:50',
+            'sort' => 'sometimes|in:created_at_asc,created_at_desc,review_latest,reviews_count_desc,rating_desc',
         ];
     }
 }

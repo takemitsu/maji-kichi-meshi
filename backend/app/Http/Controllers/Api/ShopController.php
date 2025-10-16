@@ -24,6 +24,24 @@ class ShopController extends Controller
     ) {}
 
     /**
+     * Apply sorting to the query based on sort parameter.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function applySorting($query, string $sort)
+    {
+        return match ($sort) {
+            'created_at_asc' => $query->orderBy('created_at', 'asc'),
+            'created_at_desc' => $query->orderBy('created_at', 'desc'),
+            'review_latest' => $query->orderByRaw('(SELECT MAX(created_at) FROM reviews WHERE reviews.shop_id = shops.id) DESC NULLS LAST'),
+            'reviews_count_desc' => $query->orderBy('reviews_count', 'desc'),
+            'rating_desc' => $query->orderByRaw('reviews_avg_rating DESC NULLS LAST'),
+            default => $query->orderBy('created_at', 'desc'),
+        };
+    }
+
+    /**
      * Display a listing of shops.
      */
     public function index(ShopIndexRequest $request)
@@ -35,7 +53,9 @@ class ShopController extends Controller
             // トークンがない、または無効 → ゲストとして続行
         }
 
-        $query = Shop::with(['categories', 'publishedImages']);
+        $query = Shop::with(['categories', 'publishedImages'])
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews');
 
         if (Auth::check()) {
             $query->with([
@@ -69,8 +89,9 @@ class ShopController extends Controller
             $query->near($latitude, $longitude, $radius);
         }
 
-        // Sort by created_at descending (newest first)
-        $query->orderBy('created_at', 'desc');
+        // Sort
+        $sort = $request->get('sort', 'created_at_desc');
+        $query = $this->applySorting($query, $sort);
 
         // Pagination
         $perPage = min($request->get('per_page', 15), 50); // Max 50 items per page
@@ -92,6 +113,8 @@ class ShopController extends Controller
         }
 
         $shop->load('categories');
+        $shop->loadAvg('reviews', 'rating');
+        $shop->loadCount('reviews');
 
         return (new ShopResource($shop))->response()->setStatusCode(201);
     }
@@ -109,6 +132,8 @@ class ShopController extends Controller
         }
 
         $shop->load(['categories', 'publishedImages']);
+        $shop->loadAvg('reviews', 'rating');
+        $shop->loadCount('reviews');
 
         if (Auth::check()) {
             $shop->load([
@@ -132,6 +157,8 @@ class ShopController extends Controller
         }
 
         $shop->load('categories');
+        $shop->loadAvg('reviews', 'rating');
+        $shop->loadCount('reviews');
 
         return new ShopResource($shop);
     }

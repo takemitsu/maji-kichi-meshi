@@ -18,6 +18,9 @@ class ShopResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $attributes = $this->resource->getAttributes();
+        $averageRating = $attributes['reviews_avg_rating'] ?? null;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -29,8 +32,8 @@ class ShopResource extends JsonResource
             'website' => $this->website,
             'google_place_id' => $this->google_place_id,
             'is_closed' => $this->is_closed,
-            'average_rating' => round($this->average_rating, 1),
-            'review_count' => $this->review_count,
+            'average_rating' => $averageRating !== null ? round($averageRating, 1) : null,
+            'review_count' => $attributes['reviews_count'] ?? null,
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'images' => $this->when(
                 $this->relationLoaded('publishedImages'),
