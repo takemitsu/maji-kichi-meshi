@@ -557,32 +557,6 @@ class ShopApiTest extends TestCase
     // Sort Feature Tests
     // =============================================================================
 
-    public function test_it_can_sort_shops_by_created_at_asc(): void
-    {
-        // 3つの店舗を異なる作成日時で作成
-        $shopOld = Shop::factory()->create([
-            'name' => 'Old Shop',
-            'created_at' => now()->subDays(3),
-        ]);
-        $shopMiddle = Shop::factory()->create([
-            'name' => 'Middle Shop',
-            'created_at' => now()->subDays(2),
-        ]);
-        $shopNew = Shop::factory()->create([
-            'name' => 'New Shop',
-            'created_at' => now()->subDays(1),
-        ]);
-
-        // 古い順（昇順）
-        $response = $this->getJson('/api/shops?sort=created_at_asc');
-        $response->assertStatus(200);
-        $data = $response->json('data');
-
-        $this->assertEquals('Old Shop', $data[0]['name']);
-        $this->assertEquals('Middle Shop', $data[1]['name']);
-        $this->assertEquals('New Shop', $data[2]['name']);
-    }
-
     public function test_it_can_sort_shops_by_created_at_desc(): void
     {
         // 3つの店舗を異なる作成日時で作成

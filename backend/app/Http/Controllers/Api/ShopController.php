@@ -32,11 +32,12 @@ class ShopController extends Controller
     protected function applySorting($query, string $sort)
     {
         return match ($sort) {
-            'created_at_asc' => $query->orderBy('created_at', 'asc'),
             'created_at_desc' => $query->orderBy('created_at', 'desc'),
-            'review_latest' => $query->orderByRaw('(SELECT MAX(created_at) FROM reviews WHERE reviews.shop_id = shops.id) DESC NULLS LAST'),
+            'review_latest' => $query->orderByRaw('(SELECT MAX(created_at) FROM reviews WHERE reviews.shop_id = shops.id) IS NULL')
+                ->orderByRaw('(SELECT MAX(created_at) FROM reviews WHERE reviews.shop_id = shops.id) DESC'),
             'reviews_count_desc' => $query->orderBy('reviews_count', 'desc'),
-            'rating_desc' => $query->orderByRaw('reviews_avg_rating DESC NULLS LAST'),
+            'rating_desc' => $query->orderByRaw('reviews_avg_rating IS NULL')
+                ->orderBy('reviews_avg_rating', 'desc'),
             default => $query->orderBy('created_at', 'desc'),
         };
     }
