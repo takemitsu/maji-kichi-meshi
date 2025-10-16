@@ -78,7 +78,7 @@
             <AlertMessage v-if="error" type="error" :message="error" @close="error = ''" />
 
             <!-- レビュー一覧 -->
-            <div v-if="!loading && reviews.length > 0" class="space-y-4 md:space-y-6">
+            <div v-if="!loading && reviews.length > 0" class="space-y-3 md:space-y-6">
                 <div
                     v-for="review in reviews"
                     :key="review.id"
@@ -86,7 +86,7 @@
                     @click="navigateToReview(review)">
                     <div class="p-4 md:p-6">
                         <!-- ヘッダー部分 -->
-                        <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-start justify-between mb-2 md:mb-4">
                             <div class="flex items-start space-x-4">
                                 <!-- 店舗画像 -->
                                 <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
@@ -139,10 +139,11 @@
                         </div>
 
                         <!-- 評価部分（コンパクト） -->
-                        <div class="flex items-center space-x-4 mb-3">
+                        <div class="flex items-center space-x-4 mb-1 md:mb-3">
+                            <p class="text-xs text-gray-500 leading-none flex items-center h-4">今回の評価</p>
                             <!-- 星評価 -->
                             <div class="flex items-center space-x-1">
-                                <div class="flex">
+                                <div class="flex relative -top-px">
                                     <svg
                                         v-for="star in 5"
                                         :key="star"
@@ -170,7 +171,7 @@
                         </div>
 
                         <!-- コメント（省略表示） -->
-                        <div v-if="review.memo" class="mb-3">
+                        <div v-if="review.memo" class="mb-2 md:mb-3">
                             <p class="text-gray-900 text-sm leading-relaxed line-clamp-2">
                                 {{ review.memo }}
                             </p>
@@ -197,7 +198,7 @@
                         </div>
 
                         <!-- フッター -->
-                        <div class="pt-4 border-t border-gray-200">
+                        <div class="pt-3 md:pt-4 border-t border-gray-200">
                             <div class="flex items-center justify-between">
                                 <!-- アクションボタン -->
                                 <div class="flex items-center gap-2">

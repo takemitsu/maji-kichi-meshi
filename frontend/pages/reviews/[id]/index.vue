@@ -99,9 +99,10 @@
                     <!-- 評価セクション -->
                     <div class="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200">
                         <div class="flex items-center flex-wrap gap-x-3 gap-y-2">
+                            <p class="text-xs text-gray-500 leading-none flex items-center h-5">今回の評価</p>
                             <!-- 星評価 -->
                             <div class="flex items-center gap-1.5">
-                                <div class="flex">
+                                <div class="flex relative -top-0.5">
                                     <svg
                                         v-for="star in 5"
                                         :key="star"
