@@ -219,3 +219,26 @@ mkdir -p /Users/takemitsusuzuki/work/personal/maji-kichi-meshi/docs/features/lik
 ### 対策
 
 **フルパスが指定された場合は、常にフルパスで操作する**
+
+## ⚠️ MCP Chrome DevTools 使用時の制約
+
+### スクリーンショット撮影の制限
+
+**問題**: `fullPage: true` を使うと、大きなページでAPI制限（8000px）を超えてセッションがクラッシュする
+
+**絶対ルール**:
+- **`mcp__chrome-devtools__take_screenshot` で `fullPage: true` を絶対に使用しない**
+- スクリーンショットはビューポート範囲のみ（デフォルト動作）
+- 必要に応じて `format: "jpeg"`, `quality: 70` で圧縮
+
+**正しい使用例**:
+```javascript
+// ✅ 正しい: ビューポートのみ
+take_screenshot()
+
+// ✅ 正しい: 圧縮形式
+take_screenshot({ format: "jpeg", quality: 70 })
+
+// ❌ 絶対禁止: fullPage
+take_screenshot({ fullPage: true })  // セッションクラッシュの原因
+```

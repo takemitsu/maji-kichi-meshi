@@ -35,7 +35,8 @@
 
             <!-- 検索・フィルター -->
             <div class="mb-4 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- 1行目: 検索 + PC時はカテゴリ・並び順も表示 -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- 検索 -->
                     <div class="md:col-span-2">
                         <div class="relative">
@@ -58,14 +59,30 @@
                                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                             </div>
                         </div>
-                        <div v-if="searchQuery || selectedCategory" class="mt-2 text-sm text-gray-700">
-                            検索結果: {{ totalItems }}件中 {{ (currentPage - 1) * perPage + 1 }}〜{{
-                                Math.min(currentPage * perPage, totalItems)
-                            }}件を表示
-                        </div>
                     </div>
 
-                    <!-- カテゴリフィルター -->
+                    <!-- カテゴリフィルター（PC表示） -->
+                    <div class="hidden md:block">
+                        <select v-model="selectedCategory" @change="handleCategoryFilter" class="input-field">
+                            <option value="">全てのカテゴリ</option>
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- 並び順（PC表示） -->
+                    <div class="hidden md:block">
+                        <select v-model="selectedSort" @change="handleSortChange" class="input-field">
+                            <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+                                {{ option.label }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 2行目: モバイル表示（カテゴリ・並び順） -->
+                <div class="grid grid-cols-2 gap-4 md:hidden">
                     <div>
                         <select v-model="selectedCategory" @change="handleCategoryFilter" class="input-field">
                             <option value="">全てのカテゴリ</option>
@@ -74,6 +91,20 @@
                             </option>
                         </select>
                     </div>
+                    <div>
+                        <select v-model="selectedSort" @change="handleSortChange" class="input-field">
+                            <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+                                {{ option.label }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 検索結果表示 -->
+                <div v-if="searchQuery || selectedCategory || selectedSort !== 'created_at_desc'" class="text-sm text-gray-700">
+                    検索結果: {{ totalItems }}件中 {{ (currentPage - 1) * perPage + 1 }}〜{{
+                        Math.min(currentPage * perPage, totalItems)
+                    }}件を表示
                 </div>
             </div>
 
@@ -156,6 +187,15 @@ const searchLoading = ref(false)
 const error = ref('')
 const searchQuery = ref((route.query.search as string) || '')
 const selectedCategory = ref((route.query.category as string) || '')
+const selectedSort = ref((route.query.sort as string) || 'created_at_desc')
+
+// 並び順選択肢
+const sortOptions = [
+    { value: 'created_at_desc', label: '新しい順' },
+    { value: 'review_latest', label: '最新レビュー順' },
+    { value: 'reviews_count_desc', label: 'レビュー数順' },
+    { value: 'rating_desc', label: '評価順' },
+]
 
 // ページネーション（URLクエリから初期値を取得）
 const currentPage = ref(parseInt((route.query.page as string) || '1'))
@@ -184,6 +224,7 @@ const updateQueryParams = (page: number) => {
     // 既存のクエリパラメータを保持
     if (searchQuery.value) query.search = searchQuery.value
     if (selectedCategory.value) query.category = selectedCategory.value
+    if (selectedSort.value !== 'created_at_desc') query.sort = selectedSort.value // デフォルト値は省略
 
     // ページ番号を追加（1ページ目の場合は省略）
     if (page > 1) {
@@ -202,6 +243,12 @@ const handleSearch = useDebounceFn(() => {
 
 const handleCategoryFilter = () => {
     currentPage.value = 1 // フィルター変更時は1ページ目に戻る
+    updateQueryParams(1)
+    loadShops()
+}
+
+const handleSortChange = () => {
+    currentPage.value = 1 // ソート変更時は1ページ目に戻る
     updateQueryParams(1)
     loadShops()
 }
@@ -228,6 +275,7 @@ const loadShops = async () => {
 
         if (searchQuery.value) params.search = searchQuery.value
         if (selectedCategory.value) params.category = selectedCategory.value
+        if (selectedSort.value) params.sort = selectedSort.value
 
         const response = await $api.shops.list(params)
 
@@ -303,14 +351,16 @@ watch(
     },
 )
 
-// 検索・フィルタパラメータの監視（URL直接アクセス・ブラウザバック対応）
-watch([() => route.query.search, () => route.query.category], ([newSearch, newCategory]) => {
+// 検索・フィルタ・ソートパラメータの監視（URL直接アクセス・ブラウザバック対応）
+watch([() => route.query.search, () => route.query.category, () => route.query.sort], ([newSearch, newCategory, newSort]) => {
     const search = (newSearch as string) || ''
     const category = (newCategory as string) || ''
+    const sort = (newSort as string) || 'created_at_desc'
 
-    if (searchQuery.value !== search || selectedCategory.value !== category) {
+    if (searchQuery.value !== search || selectedCategory.value !== category || selectedSort.value !== sort) {
         searchQuery.value = search
         selectedCategory.value = category
+        selectedSort.value = sort
         currentPage.value = 1
         loadShops()
     }
