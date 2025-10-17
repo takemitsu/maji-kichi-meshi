@@ -105,11 +105,10 @@ maji-kichi-meshi/
 詳細ドキュメント: `docs/README.md`
 
 主要ファイル:
-- `docs/concept.md` - プロジェクト概要・コンセプト
+- `docs/concept.md` - プロジェクト概要・コンセプト・「マジキチ」な価値
 - `docs/technical-specs.md` - 技術仕様・API仕様・実装状況
 - `docs/database-er-diagram.md` - データベース設計・ER図
-- `docs/development-workflow.md` - 機能開発ワークフロー
-- `docs/20250729-production-deployment-guide.md` - デプロイメントガイド
+- `docs/deployment-guide.md` - デプロイメントガイド（deploy.sh使用）
 
 ## Development Workflow
 
