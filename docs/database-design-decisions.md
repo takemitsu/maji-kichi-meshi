@@ -115,4 +115,3 @@ ORDER BY r.rank_position;
 ## 参考文献
 - [database-er-diagram.md](./database-er-diagram.md) - 基本的なER図
 - [technical-specs.md](./technical-specs.md) - 実装済み機能詳細
-- [archive/2025-07-development-records/](./archive/2025-07-development-records/) - 詳細な分析記録

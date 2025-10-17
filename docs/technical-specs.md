@@ -37,7 +37,7 @@ Future: Mobile Apps → Same API
 ### データベース
 - **本番環境**: MySQL
 - **開発環境**: SQLite
-- **マイグレーション**: Laravel標準 (19ファイル)
+- **マイグレーション**: Laravel標準 (21ファイル - Phase 9で2つ追加)
 
 ### 外部サービス
 - **OAuth**: Google OAuth 2.0（実装済み）
@@ -136,6 +136,22 @@ POST   /api/users/profile-image     # プロフィール画像アップロード
 DELETE /api/users/profile-image     # プロフィール画像削除
 ```
 
+### いいね・行きたいリスト API ✅ 実装済み (Phase 9)
+```
+# レビューいいね機能
+POST   /api/reviews/{id}/like       # いいねする（オプショナル認証）
+DELETE /api/reviews/{id}/like       # いいね取り消し（オプショナル認証）
+GET    /api/reviews/{id}/likes      # いいね一覧・件数取得（公開API）
+
+# 行きたいリスト機能
+GET    /api/wishlists               # 自分の行きたいリスト一覧 (要認証)
+POST   /api/wishlists               # 行きたいリストに追加 (要認証)
+PUT    /api/wishlists/{id}          # ステータス更新（訪問済みなど）(要認証・所有者のみ)
+DELETE /api/wishlists/{id}          # リストから削除 (要認証・所有者のみ)
+```
+
+**オプショナル認証**: 未ログイン時は localStorage にデータ保存、ログイン後にサーバーと同期
+
 ### 統計・管理 API ✅ 実装済み
 ```
 # ダッシュボード統計
@@ -164,16 +180,18 @@ GET    /api/admin/reports           # 通報一覧 (管理者のみ)
 ## データベース設計
 
 ### 主要リレーション
-- **User** 1:N OAuthProvider, Review, Ranking, AdminLoginAttempt
-- **Shop** 1:N Review, ShopImage, ShopCategory, RankingItem  
+- **User** 1:N OAuthProvider, Review, Ranking, AdminLoginAttempt, ReviewLike, Wishlist
+- **Shop** 1:N Review, ShopImage, ShopCategory, RankingItem, Wishlist
 - **Category** 1:N ShopCategory, Ranking
-- **Review** 1:N ReviewImage
+- **Review** 1:N ReviewImage, ReviewLike
 - **Ranking** 1:N RankingItem (正規化された構造)
 
 ### 新テーブル追加 (実装済み)
 - **shop_images** - 店舗画像管理 (4サイズ、検閲機能)
 - **ranking_items** - ランキングアイテム (正規化)
 - **admin_login_attempts** - 管理者ログイン試行記録
+- **review_likes** - レビューいいね機能 (Phase 9)
+- **wishlists** - 行きたいリスト機能 (Phase 9)
 
 ### インデックス戦略 (実装済み)
 ```sql
@@ -196,6 +214,11 @@ CREATE INDEX idx_shop_images_status ON shop_images(moderation_status);
 
 -- 管理機能
 CREATE INDEX idx_admin_attempts_user ON admin_login_attempts(user_id, created_at);
+
+-- いいね・行きたいリスト (Phase 9)
+UNIQUE INDEX "review_likes_user_review_unique" ON review_likes(user_id, review_id);
+CREATE INDEX idx_wishlists_user_status ON wishlists(user_id, status);
+CREATE INDEX idx_wishlists_shop ON wishlists(shop_id);
 ```
 
 ## セキュリティ
@@ -266,16 +289,16 @@ CREATE INDEX idx_admin_attempts_user ON admin_login_attempts(user_id, created_at
 ## 開発・運用
 
 ### テスト戦略 ✅ 実装済み
-- **Unit Test**: モデル・サービスクラス (7テスト成功)
-- **Feature Test**: API エンドポイント (98%成功率)
-- **Integration Test**: OAuth フロー (統合テスト完了)
-- **カバレッジ**: 目標達成 (63テスト、100%成功実績)
+- **Unit Test**: モデル・サービスクラス
+- **Feature Test**: API エンドポイント
+- **Integration Test**: OAuth フロー + オプショナル認証 (Phase 9)
+- **カバレッジ**: 289テスト、1360アサーション (100%成功)
 
 ### デプロイメント ✅ 本番環境構築済み
 - **開発**: `php artisan serve` + `npm run dev`
 - **本番**: Sakura VPS + nginx + PHP-FPM + 静的ビルド
 - **管理画面**: Laravel Filament + 2FA設定 (動作確認済み)
-- **デプロイガイド**: `docs/20250729-production-deployment-guide.md`
+- **デプロイガイド**: `docs/deployment-guide.md` (deploy.sh 自動デプロイ対応)
 - **CI/CD**: 将来的にGitHub Actions
 
 ### 監視・ログ
@@ -288,26 +311,14 @@ CREATE INDEX idx_admin_attempts_user ON admin_login_attempts(user_id, created_at
 ### Phase 1: 基盤構築 ✅ 完了
 - [x] Laravel + Nuxt.js プロジェクト構築
 - [x] データベース設計・実装 (MySQL/SQLite)
-- [x] 全テーブルマイグレーション (19ファイル)
-- [x] 全モデルクラス (User, OAuthProvider, Shop, Category, Review, ReviewImage, Ranking, ShopImage, RankingItem, AdminLoginAttempt)
+- [x] 全テーブルマイグレーション (21ファイル - Phase 9で2つ追加)
+- [x] 全モデルクラス (User, OAuthProvider, Shop, Category, Review, ReviewImage, Ranking, ShopImage, RankingItem, AdminLoginAttempt, ReviewLike, Wishlist)
 - [x] JWT + OAuth 認証システム (Google専用)
-- [x] 包括的テストスイート (63テスト、98%成功率)
+- [x] 包括的テストスイート (289テスト、1360アサーション)
 - [x] API ルート設定
 - [x] 全シーダー (CategorySeeder, AdminSeeder, ShopSeeder, ReviewSeeder, RankingSeeder)
 - [x] フロントエンド基本構成 (Nuxt.js + TypeScript + Tailwind CSS + Pinia)
 - [x] 認証システムフロントエンド実装 (OAuth + JWT + 自動ログアウト)
-
-### Phase 2-8: 全機能実装 ✅ 完了
-- [x] 店舗管理 API (ShopController, ShopResource) - 9テスト成功
-- [x] カテゴリ管理 API (CategoryController, CategoryResource) - 10テスト成功
-- [x] レビュー機能 API (ReviewController, ReviewResource) - 13テスト成功
-- [x] ランキング機能 API (RankingController, RankingResource) - 正規化構造実装
-- [x] 画像アップロード機能 (4サイズ自動リサイズ、検閲機能)
-- [x] 管理者システム (Laravel Filament - ユーザー・店舗・画像・レビュー・ランキング管理)
-- [x] 統計ダッシュボード (StatsController + フロントエンド統合)
-- [x] プロフィール画像機能 (ProfileImageService)
-- [x] フロントエンド完全実装 (Vue/Nuxt SPA + モバイル対応)
-- [x] 全APIエンドポイント実装 (63テスト成功、98%成功率)
 
 ### 実装済みファイル
 
@@ -321,6 +332,8 @@ backend/
 │   ├── Category.php (カテゴリ・スラッグ対応)
 │   ├── Review.php (レビュー・重複防止)
 │   ├── ReviewImage.php
+│   ├── ReviewLike.php (Phase 9)
+│   ├── Wishlist.php (Phase 9)
 │   └── Ranking.php (ランキング・位置調整)
 ├── app/Http/Controllers/Api/
 │   ├── AuthController.php (OAuth + JWT 認証)
@@ -334,7 +347,7 @@ backend/
 │   ├── CategoryResource.php
 │   ├── ReviewResource.php
 │   └── RankingResource.php
-├── database/migrations/ (19ファイル)
+├── database/migrations/ (21ファイル)
 ├── database/seeders/
 │   ├── CategorySeeder.php
 │   ├── AdminSeeder.php
@@ -403,14 +416,32 @@ frontend/
 - [x] 認証フロー統合テスト (認証エラー解決)
 - [x] フロントエンド・バックエンド統合テスト完了
 
+### Phase 9: いいね・行きたいリスト機能 ✅ 完了 (2025-10-14 〜 2025-10-15)
+- [x] レビューいいね機能実装 (ReviewLikeController, ReviewLike モデル)
+- [x] 行きたいリスト機能実装 (WishlistController, Wishlist モデル)
+- [x] オプショナル認証システム実装 (未ログイン時 localStorage、ログイン後サーバー同期)
+- [x] 包括的テストスイート (289テスト、1360アサーション、100%成功)
+  - OptionalAuthMiddleware 統合テスト
+  - ReviewLike API テスト
+  - Wishlist API テスト
+  - 認証/未認証両方のシナリオ完全カバレッジ
+- [x] データベーススキーマ追加
+  - review_likes テーブル (user_id, review_id ユニーク制約)
+  - wishlists テーブル (優先度、ステータス、出典管理)
+- [x] API エンドポイント実装
+  - POST/DELETE /api/reviews/{id}/like (オプショナル認証)
+  - GET /api/reviews/{id}/likes (公開API)
+  - GET/POST/PUT/DELETE /api/wishlists (要認証)
+
 ### 🎯 プロジェクト完了状況: **100%** (本番デプロイ完了版)
 - ✅ **全Phase完了**: Phase 1-9すべて実装済み
-- ✅ **テストカバレッジ**: 63テスト、98%成功率
+- ✅ **テストカバレッジ**: 289テスト、1360アサーション (100%成功)
 - ✅ **フロントエンド・バックエンド統合**: 完全対応
 - ✅ **管理者機能**: Laravel Filament完全実装 + 2FA設定
 - ✅ **画像処理システム**: 4サイズ自動リサイズ・検閲機能
 - ✅ **統計ダッシュボード**: リアルタイム統計表示
 - ✅ **本番デプロイ**: 管理画面含む完全システム稼働中
+- ✅ **いいね・行きたいリスト機能**: オプショナル認証対応 (Phase 9)
 
 ### 🚀 次期拡張予定
 - Google Places API連携

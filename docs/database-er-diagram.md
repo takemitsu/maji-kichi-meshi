@@ -15,10 +15,14 @@
 ### レビュー関連
 - `reviews` - 店舗レビュー
 - `review_images` - レビュー画像（4サイズ、検閲機能）
+- `review_likes` - レビューいいね
 
 ### ランキング関連
 - `rankings` - ユーザー別ランキング（タイトル、説明、公開設定）
 - `ranking_items` - ランキングアイテム（正規化された構造）
+
+### 行きたいリスト関連
+- `wishlists` - 行きたいリスト（優先度、状態管理）
 
 ### 管理・システム関連
 - `admin_login_attempts` - 管理者ログイン試行記録
@@ -31,17 +35,21 @@ erDiagram
     users ||--o{ reviews : "1対多"
     users ||--o{ rankings : "1対多"
     users ||--o{ admin_login_attempts : "1対多"
-    
+    users ||--o{ review_likes : "1対多"
+    users ||--o{ wishlists : "1対多"
+
     shops ||--o{ reviews : "1対多"
     shops ||--o{ shop_images : "1対多"
     shops ||--o{ shop_categories : "1対多"
     shops ||--o{ ranking_items : "1対多"
-    
+    shops ||--o{ wishlists : "1対多"
+
     categories ||--o{ shop_categories : "1対多"
     categories ||--o{ rankings : "1対多"
-    
+
     reviews ||--o{ review_images : "1対多"
-    
+    reviews ||--o{ review_likes : "1対多"
+
     rankings ||--o{ ranking_items : "1対多"
     
     users {
@@ -194,6 +202,29 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
+
+    review_likes {
+        bigint id PK
+        bigint user_id FK
+        bigint review_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    wishlists {
+        bigint id PK
+        bigint user_id FK
+        bigint shop_id FK
+        string status "want_to_go/visited"
+        int priority "1-3 (いつか/そのうち/絶対)"
+        string source_type "user/review"
+        bigint source_user_id FK "出典ユーザー"
+        bigint source_review_id FK "出典レビュー"
+        timestamp visited_at "訪問日時"
+        text notes "メモ"
+        timestamp created_at
+        timestamp updated_at
+    }
 ```
 
 ## テーブル詳細
@@ -276,7 +307,7 @@ ON "reviews" ("user_id", "shop_id")
 
 ### 作成済みマイグレーション（最新版）
 1. `2014_10_12_000000_create_users_table.php`
-2. `2019_08_19_000000_create_failed_jobs_table.php` 
+2. `2019_08_19_000000_create_failed_jobs_table.php`
 3. `2019_12_14_000001_create_personal_access_tokens_table.php`
 4. `2024_01_01_000000_create_cache_table.php`
 5. `2024_01_01_000001_create_jobs_table.php`
@@ -294,10 +325,14 @@ ON "reviews" ("user_id", "shop_id")
 17. `2025_07_09_140000_restructure_rankings_table.php`
 18. `2025_07_09_140001_create_ranking_items_table.php`
 19. `2025_07_10_120000_add_profile_image_fields_to_users_table.php`
+20. `2025_01_14_000001_create_review_likes_table.php`
+21. `2025_10_14_095033_create_wishlists_table.php`
 
-### Phase 9完了: 本番デプロイ完了版 ✅
+### Phase 1-9完了: 本番稼働中 ✅
 **プロジェクト完了状況: 100%**
 - OAuth設定完了後、即座に本番リリース可能
 - 管理者機能完備
 - 統計ダッシュボード実装済み
 - 画像処理システム完成
+- いいね・行きたいリスト機能実装済み (Phase 9)
+- 包括的認証統合テスト (289テスト、1360アサーション)
