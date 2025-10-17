@@ -97,7 +97,13 @@
                 <span
                     v-for="category in shop.categories"
                     :key="category.id"
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    :class="[
+                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors',
+                        selectedCategoryId === category.id
+                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                            : 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+                    ]"
+                    @click.stop="$emit('categoryClick', category.id)">
                     {{ category.name }}
                 </span>
             </div>
@@ -145,12 +151,14 @@ interface Props {
     shop: Shop
     showActions?: boolean
     showQuickActions?: boolean
+    selectedCategoryId?: number | null
 }
 
 interface Emits {
     edit: [shop: Shop]
     delete: [shop: Shop]
     addReview: [shop: Shop]
+    categoryClick: [categoryId: number]
 }
 
 const props = withDefaults(defineProps<Props>(), {

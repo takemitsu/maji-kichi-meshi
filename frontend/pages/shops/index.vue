@@ -121,8 +121,10 @@
                         v-for="shop in shops"
                         :key="shop.id"
                         :shop="enhanceShopForDisplay(shop)"
+                        :selected-category-id="selectedCategory ? parseInt(selectedCategory) : null"
                         @edit="editShop"
-                        @delete="deleteShop" />
+                        @delete="deleteShop"
+                        @category-click="handleCategoryClick" />
                 </div>
 
                 <!-- ページネーション -->
@@ -245,6 +247,20 @@ const handleCategoryFilter = () => {
     currentPage.value = 1 // フィルター変更時は1ページ目に戻る
     updateQueryParams(1)
     loadShops()
+}
+
+const handleCategoryClick = (categoryId: number) => {
+    // 既に選択中のカテゴリをクリックした場合はフィルタ解除
+    if (selectedCategory.value === categoryId.toString()) {
+        selectedCategory.value = ''
+    } else {
+        selectedCategory.value = categoryId.toString()
+    }
+    currentPage.value = 1 // カテゴリ変更時は1ページ目に戻る
+    updateQueryParams(1)
+    loadShops()
+    // ページトップにスクロール
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const handleSortChange = () => {
