@@ -12,13 +12,23 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            // 基本カテゴリ
+            // 基本カテゴリ（既存）
             ['name' => 'ラーメン', 'slug' => 'ramen', 'type' => 'basic'],
             ['name' => '定食・食堂', 'slug' => 'teishoku', 'type' => 'basic'],
             ['name' => '居酒屋・バー', 'slug' => 'izakaya', 'type' => 'basic'],
             ['name' => 'カフェ・喫茶店', 'slug' => 'cafe', 'type' => 'basic'],
             ['name' => 'ファストフード', 'slug' => 'fastfood', 'type' => 'basic'],
             ['name' => 'その他', 'slug' => 'others', 'type' => 'basic'],
+
+            // 基本カテゴリ（追加）
+            ['name' => '中華料理', 'slug' => 'chinese', 'type' => 'basic'],
+            ['name' => '寿司・和食', 'slug' => 'japanese', 'type' => 'basic'],
+            ['name' => '焼肉・焼鳥', 'slug' => 'yakiniku', 'type' => 'basic'],
+            ['name' => 'イタリアン・洋食', 'slug' => 'western', 'type' => 'basic'],
+            ['name' => 'スイーツ・ベーカリー', 'slug' => 'sweets', 'type' => 'basic'],
+            ['name' => 'カレー', 'slug' => 'curry', 'type' => 'basic'],
+            ['name' => 'そば・うどん', 'slug' => 'noodles', 'type' => 'basic'],
+            ['name' => 'エスニック', 'slug' => 'ethnic', 'type' => 'basic'],
 
             // 時間帯タグ
             ['name' => 'ランチ営業', 'slug' => 'lunch', 'type' => 'time'],
@@ -30,7 +40,10 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            \App\Models\Category::create($category);
+            \App\Models\Category::updateOrCreate(
+                ['slug' => $category['slug']],
+                $category
+            );
         }
     }
 }

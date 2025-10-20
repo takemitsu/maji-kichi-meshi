@@ -16,12 +16,16 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::query();
+        $categories = Category::query()->orderBy('name')->get();
 
-        // Order by name by default
-        $query->orderBy('name');
+        // 「その他」カテゴリを最後に移動
+        $others = $categories->firstWhere('slug', 'others');
+        if ($others) {
+            $categories = $categories->reject(fn ($category) => $category->slug === 'others')
+                ->push($others);
+        }
 
-        return CategoryResource::collection($query->get());
+        return CategoryResource::collection($categories);
     }
 
     /**

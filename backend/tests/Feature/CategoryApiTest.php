@@ -265,4 +265,43 @@ class CategoryApiTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    public function test_it_returns_others_category_at_the_end(): void
+    {
+        $response = $this->getJson('/api/categories');
+
+        $response->assertStatus(200);
+
+        $data = $response->json('data');
+        $this->assertGreaterThan(0, count($data));
+
+        // 「その他」カテゴリを探す
+        $othersCategory = collect($data)->firstWhere('slug', 'others');
+        $this->assertNotNull($othersCategory, '「その他」カテゴリが存在すること');
+
+        // 配列の最後の要素が「その他」であることを検証
+        $lastCategory = end($data);
+        $this->assertEquals('others', $lastCategory['slug'], '「その他」カテゴリが配列の最後に配置されること');
+    }
+
+    public function test_it_handles_missing_others_category_gracefully(): void
+    {
+        // 「その他」カテゴリを削除
+        $othersCategory = Category::where('slug', 'others')->first();
+        if ($othersCategory) {
+            $othersCategory->delete();
+        }
+
+        // カテゴリ一覧取得が正常に動作することを確認
+        $response = $this->getJson('/api/categories');
+
+        $response->assertStatus(200);
+
+        $data = $response->json('data');
+        $this->assertGreaterThan(0, count($data), 'カテゴリが取得できること');
+
+        // 「その他」がないことを確認
+        $othersExists = collect($data)->contains('slug', 'others');
+        $this->assertFalse($othersExists, '「その他」カテゴリが削除されていること');
+    }
 }
