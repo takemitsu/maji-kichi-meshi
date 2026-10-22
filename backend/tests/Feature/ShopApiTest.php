@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Review;
 use App\Models\Shop;
 use App\Models\User;
+use App\Models\Wishlist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -61,17 +63,17 @@ class ShopApiTest extends TestCase
         $shop = Shop::factory()->create(['name' => 'Test Shop']);
 
         // レビュー3件作成（評価: 3, 4, 5 → 平均: 4.0）
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop->id,
             'user_id' => $user->id,
             'rating' => 3,
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop->id,
             'user_id' => $user->id,
             'rating' => 4,
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop->id,
             'user_id' => $user->id,
             'rating' => 5,
@@ -107,12 +109,12 @@ class ShopApiTest extends TestCase
         $shop = Shop::factory()->create(['name' => 'Test Shop']);
 
         // レビュー2件作成（評価: 4, 5 → 平均: 4.5）
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop->id,
             'user_id' => $user->id,
             'rating' => 4,
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop->id,
             'user_id' => $user->id,
             'rating' => 5,
@@ -592,21 +594,21 @@ class ShopApiTest extends TestCase
         $shop2 = Shop::factory()->create(['name' => 'Shop 2']);
         $shop3 = Shop::factory()->create(['name' => 'Shop 3']);
 
-        // レビューを異なる日時で作成
-        \App\Models\Review::factory()->create([
+        // レビューを異なる訪問日で作成（ソートは visited_at 基準。factory の visited_at はランダムなので明示する）
+        Review::factory()->create([
             'shop_id' => $shop1->id,
             'user_id' => $user->id,
-            'created_at' => now()->subDays(5), // 古い
+            'visited_at' => now()->subDays(5)->toDateString(), // 古い
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop2->id,
             'user_id' => $user->id,
-            'created_at' => now()->subDays(1), // 最新
+            'visited_at' => now()->subDays(1)->toDateString(), // 最新
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop3->id,
             'user_id' => $user->id,
-            'created_at' => now()->subDays(3), // 中間
+            'visited_at' => now()->subDays(3)->toDateString(), // 中間
         ]);
 
         // レビュー投稿順（最新レビューがある店舗が上）
@@ -630,15 +632,15 @@ class ShopApiTest extends TestCase
         $shop3 = Shop::factory()->create(['name' => 'Shop 3']);
 
         // レビュー数を異なる数で作成
-        \App\Models\Review::factory()->count(1)->create([
+        Review::factory()->count(1)->create([
             'shop_id' => $shop1->id,
             'user_id' => $user->id,
         ]);
-        \App\Models\Review::factory()->count(5)->create([
+        Review::factory()->count(5)->create([
             'shop_id' => $shop2->id,
             'user_id' => $user->id,
         ]);
-        \App\Models\Review::factory()->count(3)->create([
+        Review::factory()->count(3)->create([
             'shop_id' => $shop3->id,
             'user_id' => $user->id,
         ]);
@@ -666,17 +668,17 @@ class ShopApiTest extends TestCase
         $shop3 = Shop::factory()->create(['name' => 'Shop 3']);
 
         // 異なる評価でレビューを作成
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop1->id,
             'user_id' => $user->id,
             'rating' => 3,
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop2->id,
             'user_id' => $user->id,
             'rating' => 5,
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop3->id,
             'user_id' => $user->id,
             'rating' => 4,
@@ -703,7 +705,7 @@ class ShopApiTest extends TestCase
         $shopWithReview = Shop::factory()->create(['name' => 'Shop With Review']);
         $shopWithoutReview = Shop::factory()->create(['name' => 'Shop Without Review']);
 
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shopWithReview->id,
             'user_id' => $user->id,
             'rating' => 5,
@@ -744,12 +746,12 @@ class ShopApiTest extends TestCase
         $shop2->categories()->attach($category->id);
 
         // レビューを作成（Shop 1 が高評価）
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop1->id,
             'user_id' => $user->id,
             'rating' => 5,
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop2->id,
             'user_id' => $user->id,
             'rating' => 3,
@@ -774,12 +776,12 @@ class ShopApiTest extends TestCase
         $shop2 = Shop::factory()->create(['name' => 'Cafe B']);
 
         // レビューを作成（Cafe B が高評価）
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop1->id,
             'user_id' => $user->id,
             'rating' => 3,
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop2->id,
             'user_id' => $user->id,
             'rating' => 5,
@@ -802,7 +804,7 @@ class ShopApiTest extends TestCase
         // 30件の店舗を作成（評価をランダムに）
         for ($i = 1; $i <= 30; $i++) {
             $shop = Shop::factory()->create(['name' => "Shop {$i}"]);
-            \App\Models\Review::factory()->create([
+            Review::factory()->create([
                 'shop_id' => $shop->id,
                 'user_id' => $user->id,
                 'rating' => ($i % 5) + 1, // 1-5の評価
@@ -867,7 +869,7 @@ class ShopApiTest extends TestCase
         $token = JWTAuth::fromUser($user);
 
         // Add to wishlist
-        \App\Models\Wishlist::create([
+        Wishlist::create([
             'user_id' => $user->id,
             'shop_id' => $shop->id,
             'status' => 'want_to_go',
@@ -901,7 +903,7 @@ class ShopApiTest extends TestCase
         for ($i = 1; $i <= 10; $i++) {
             $shop = Shop::factory()->create();
             $shop->categories()->attach($category->id);
-            \App\Models\Review::factory()->count(2)->create([
+            Review::factory()->count(2)->create([
                 'shop_id' => $shop->id,
                 'user_id' => $user->id,
             ]);
@@ -916,7 +918,7 @@ class ShopApiTest extends TestCase
         for ($i = 11; $i <= 100; $i++) {
             $shop = Shop::factory()->create();
             $shop->categories()->attach($category->id);
-            \App\Models\Review::factory()->count(2)->create([
+            Review::factory()->count(2)->create([
                 'shop_id' => $shop->id,
                 'user_id' => $user->id,
             ]);
@@ -943,7 +945,7 @@ class ShopApiTest extends TestCase
         // レビュー付きの店舗を作成
         $shop = Shop::factory()->create();
         $shop->categories()->attach($category->id);
-        \App\Models\Review::factory()->count(3)->create([
+        Review::factory()->count(3)->create([
             'shop_id' => $shop->id,
             'user_id' => $user->id,
         ]);
@@ -985,7 +987,7 @@ class ShopApiTest extends TestCase
         $shop = Shop::factory()->create(['name' => 'Old Name']);
 
         // レビューを追加
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop->id,
             'user_id' => $user->id,
             'rating' => 4,
@@ -1052,19 +1054,19 @@ class ShopApiTest extends TestCase
             'created_at' => now()->subDays(1),
         ]);
 
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop1->id,
             'user_id' => $user->id,
             'visited_at' => $sameVisitDate,
             'created_at' => now()->subDays(3),
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop2->id,
             'user_id' => $user->id,
             'visited_at' => $sameVisitDate,
             'created_at' => now()->subDays(2),
         ]);
-        \App\Models\Review::factory()->create([
+        Review::factory()->create([
             'shop_id' => $shop3->id,
             'user_id' => $user->id,
             'visited_at' => $sameVisitDate,
@@ -1101,7 +1103,7 @@ class ShopApiTest extends TestCase
 
         // 各店舗に3件ずつレビュー作成
         foreach ([$shop1, $shop2, $shop3] as $shop) {
-            \App\Models\Review::factory()->count(3)->create([
+            Review::factory()->count(3)->create([
                 'shop_id' => $shop->id,
                 'user_id' => $user->id,
             ]);
@@ -1140,7 +1142,7 @@ class ShopApiTest extends TestCase
 
         // 各店舗に同じ評価のレビュー作成
         foreach ([$shop1, $shop2, $shop3] as $shop) {
-            \App\Models\Review::factory()->create([
+            Review::factory()->create([
                 'shop_id' => $shop->id,
                 'user_id' => $user->id,
                 'rating' => 4,
