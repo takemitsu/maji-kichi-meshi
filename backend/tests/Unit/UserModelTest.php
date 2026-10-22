@@ -4,8 +4,11 @@ namespace Tests\Unit;
 
 use App\Models\OAuthProvider;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserModelTest extends TestCase
@@ -16,7 +19,7 @@ class UserModelTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->assertInstanceOf(\Tymon\JWTAuth\Contracts\JWTSubject::class, $user);
+        $this->assertInstanceOf(JWTSubject::class, $user);
         $this->assertEquals($user->id, $user->getJWTIdentifier());
         $this->assertIsArray($user->getJWTCustomClaims());
     }
@@ -45,14 +48,14 @@ class UserModelTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->reviews());
+        $this->assertInstanceOf(HasMany::class, $user->reviews());
     }
 
     public function test_it_has_rankings_relationship(): void
     {
         $user = User::factory()->create();
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->rankings());
+        $this->assertInstanceOf(HasMany::class, $user->rankings());
     }
 
     public function test_it_hides_sensitive_attributes(): void
@@ -73,7 +76,7 @@ class UserModelTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $user->email_verified_at);
+        $this->assertInstanceOf(Carbon::class, $user->email_verified_at);
     }
 
     public function test_get_two_factor_qr_code_url_throws_exception_when_secret_not_set(): void
@@ -142,7 +145,7 @@ class UserModelTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $user->reviewLikes());
+        $this->assertInstanceOf(HasMany::class, $user->reviewLikes());
     }
 
     public function test_generate_two_factor_secret_creates_secret(): void

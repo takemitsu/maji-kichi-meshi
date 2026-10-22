@@ -7,6 +7,7 @@ use App\Models\Shop;
 use App\Models\User;
 use App\Models\Wishlist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -879,7 +880,7 @@ class WishlistApiTest extends TestCase
         $this->assertNotNull($wishlist->visited_at);
         // Verify the new visited_at is different from the original
         $newVisitedAt = $wishlist->visited_at;
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $newVisitedAt);
+        $this->assertInstanceOf(Carbon::class, $newVisitedAt);
         $this->assertGreaterThan(
             $originalVisitedAt->getTimestamp(),
             $newVisitedAt->getTimestamp()

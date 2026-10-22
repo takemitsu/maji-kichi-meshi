@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\OAuthProvider;
 use App\Models\User;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Mockery;
@@ -18,7 +19,7 @@ class AuthenticationTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(\Database\Seeders\CategorySeeder::class);
+        $this->seed(CategorySeeder::class);
     }
 
     public function test_it_requires_authentication_for_me_endpoint(): void

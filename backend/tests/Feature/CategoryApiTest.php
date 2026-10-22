@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -178,7 +179,7 @@ class CategoryApiTest extends TestCase
         ]);
 
         // Create a shop that uses this category
-        $shop = \App\Models\Shop::factory()->create();
+        $shop = Shop::factory()->create();
         $shop->categories()->attach($category->id);
 
         $response = $this->withHeaders([

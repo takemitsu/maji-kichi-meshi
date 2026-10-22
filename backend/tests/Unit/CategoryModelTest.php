@@ -6,7 +6,10 @@ use App\Models\Category;
 use App\Models\Ranking;
 use App\Models\Shop;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class CategoryModelTest extends TestCase
@@ -41,7 +44,7 @@ class CategoryModelTest extends TestCase
 
         $category->shops()->attach([$shop1->id, $shop2->id]);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsToMany::class, $category->shops());
+        $this->assertInstanceOf(BelongsToMany::class, $category->shops());
         $this->assertCount(2, $category->shops);
         $this->assertTrue($category->shops->contains($shop1));
         $this->assertTrue($category->shops->contains($shop2));
@@ -63,7 +66,7 @@ class CategoryModelTest extends TestCase
             'title' => 'Top Ramen Shops',
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $category->rankings());
+        $this->assertInstanceOf(HasMany::class, $category->rankings());
         $this->assertCount(2, $category->rankings);
         $this->assertTrue($category->rankings->contains($ranking1));
         $this->assertTrue($category->rankings->contains($ranking2));
@@ -95,8 +98,8 @@ class CategoryModelTest extends TestCase
 
         $this->assertNotNull($category->created_at);
         $this->assertNotNull($category->updated_at);
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $category->created_at);
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $category->updated_at);
+        $this->assertInstanceOf(Carbon::class, $category->created_at);
+        $this->assertInstanceOf(Carbon::class, $category->updated_at);
     }
 
     public function test_it_can_be_created_with_all_attributes(): void

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\ReviewLikeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReviewLike extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReviewLikeFactory> */
+    /** @use HasFactory<ReviewLikeFactory> */
     use HasFactory;
 
     /**

@@ -13,6 +13,7 @@ use App\Models\Shop;
 use App\Models\ShopImage;
 use App\Models\Wishlist;
 use App\Services\ImageUploadService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -26,8 +27,8 @@ class ShopController extends Controller
     /**
      * Apply sorting to the query based on sort parameter.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder  $query
+     * @return Builder
      */
     protected function applySorting($query, string $sort)
     {

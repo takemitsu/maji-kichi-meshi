@@ -2,9 +2,12 @@
 
 namespace Tests\Unit;
 
+use App\Models\Review;
 use App\Models\ReviewImage;
 use App\Models\Shop;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -115,7 +118,7 @@ class AdminUserModelTest extends TestCase
         $user = User::factory()->create();
 
         $this->assertInstanceOf(
-            \Illuminate\Database\Eloquent\Relations\HasMany::class,
+            HasMany::class,
             $user->reviews()
         );
     }
@@ -125,7 +128,7 @@ class AdminUserModelTest extends TestCase
         $user = User::factory()->create();
 
         $this->assertInstanceOf(
-            \Illuminate\Database\Eloquent\Relations\HasMany::class,
+            HasMany::class,
             $user->rankings()
         );
     }
@@ -135,7 +138,7 @@ class AdminUserModelTest extends TestCase
         $user = User::factory()->create();
 
         $this->assertInstanceOf(
-            \Illuminate\Database\Eloquent\Relations\HasMany::class,
+            HasMany::class,
             $user->oauthProviders()
         );
     }
@@ -166,7 +169,7 @@ class AdminUserModelTest extends TestCase
         ]);
 
         $this->assertInstanceOf(
-            \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
+            BelongsTo::class,
             $shop->moderator()
         );
 
@@ -175,7 +178,7 @@ class AdminUserModelTest extends TestCase
 
     public function test_review_image_model_has_correct_moderation_methods(): void
     {
-        $review = \App\Models\Review::factory()->create();
+        $review = Review::factory()->create();
 
         $publishedImage = ReviewImage::factory()->create([
             'review_id' => $review->id,
@@ -205,7 +208,7 @@ class AdminUserModelTest extends TestCase
 
     public function test_review_image_model_has_moderator_relationship(): void
     {
-        $review = \App\Models\Review::factory()->create();
+        $review = Review::factory()->create();
         $moderator = User::factory()->create(['role' => 'admin']);
         $image = ReviewImage::factory()->create([
             'review_id' => $review->id,
@@ -215,7 +218,7 @@ class AdminUserModelTest extends TestCase
         ]);
 
         $this->assertInstanceOf(
-            \Illuminate\Database\Eloquent\Relations\BelongsTo::class,
+            BelongsTo::class,
             $image->moderator()
         );
 

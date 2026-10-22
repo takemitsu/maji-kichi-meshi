@@ -7,7 +7,9 @@ use App\Models\Ranking;
 use App\Models\RankingItem;
 use App\Models\Shop;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class RankingItemModelTest extends TestCase
@@ -51,7 +53,7 @@ class RankingItemModelTest extends TestCase
             'rank_position' => 1,
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class, $rankingItem->ranking());
+        $this->assertInstanceOf(BelongsTo::class, $rankingItem->ranking());
         $this->assertInstanceOf(Ranking::class, $rankingItem->ranking);
         $this->assertEquals($ranking->id, $rankingItem->ranking->id);
     }
@@ -72,7 +74,7 @@ class RankingItemModelTest extends TestCase
             'rank_position' => 1,
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class, $rankingItem->shop());
+        $this->assertInstanceOf(BelongsTo::class, $rankingItem->shop());
         $this->assertInstanceOf(Shop::class, $rankingItem->shop);
         $this->assertEquals($shop->id, $rankingItem->shop->id);
         $this->assertEquals('Test Shop', $rankingItem->shop->name);
@@ -147,7 +149,7 @@ class RankingItemModelTest extends TestCase
 
         $this->assertNotNull($rankingItem->created_at);
         $this->assertNotNull($rankingItem->updated_at);
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $rankingItem->created_at);
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $rankingItem->updated_at);
+        $this->assertInstanceOf(Carbon::class, $rankingItem->created_at);
+        $this->assertInstanceOf(Carbon::class, $rankingItem->updated_at);
     }
 }

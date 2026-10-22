@@ -6,7 +6,9 @@ use App\Models\Review;
 use App\Models\ReviewLike;
 use App\Models\Shop;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class ReviewLikeModelTest extends TestCase
@@ -39,7 +41,7 @@ class ReviewLikeModelTest extends TestCase
             'review_id' => $review->id,
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class, $reviewLike->user());
+        $this->assertInstanceOf(BelongsTo::class, $reviewLike->user());
         $this->assertInstanceOf(User::class, $reviewLike->user);
         $this->assertEquals($user->id, $reviewLike->user->id);
         $this->assertEquals('Test User', $reviewLike->user->name);
@@ -60,7 +62,7 @@ class ReviewLikeModelTest extends TestCase
             'review_id' => $review->id,
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class, $reviewLike->review());
+        $this->assertInstanceOf(BelongsTo::class, $reviewLike->review());
         $this->assertInstanceOf(Review::class, $reviewLike->review);
         $this->assertEquals($review->id, $reviewLike->review->id);
         $this->assertEquals(5, $reviewLike->review->rating);
@@ -82,7 +84,7 @@ class ReviewLikeModelTest extends TestCase
 
         // created_at exists
         $this->assertNotNull($reviewLike->created_at);
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $reviewLike->created_at);
+        $this->assertInstanceOf(Carbon::class, $reviewLike->created_at);
 
         // updated_at is null (UPDATED_AT = null in model)
         $this->assertNull($reviewLike->updated_at);
@@ -108,7 +110,7 @@ class ReviewLikeModelTest extends TestCase
             'review_id' => $review->id,
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $reviewLike->created_at);
+        $this->assertInstanceOf(Carbon::class, $reviewLike->created_at);
         $this->assertTrue($reviewLike->created_at->isToday());
     }
 

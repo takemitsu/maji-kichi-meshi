@@ -5,7 +5,9 @@ namespace Tests\Unit;
 use App\Models\Shop;
 use App\Models\User;
 use App\Models\Wishlist;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class WishlistModelTest extends TestCase
@@ -16,7 +18,7 @@ class WishlistModelTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(\Database\Seeders\CategorySeeder::class);
+        $this->seed(CategorySeeder::class);
     }
 
     public function test_it_has_fillable_attributes(): void
@@ -131,7 +133,7 @@ class WishlistModelTest extends TestCase
             'visited_at' => now(),
         ]);
 
-        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $wishlist->visited_at);
+        $this->assertInstanceOf(Carbon::class, $wishlist->visited_at);
     }
 
     public function test_priority_cast_to_integer(): void

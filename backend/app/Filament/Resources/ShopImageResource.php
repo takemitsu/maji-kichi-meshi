@@ -5,10 +5,12 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ShopImageResource\Pages;
 use App\Models\ShopImage;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -43,7 +45,7 @@ class ShopImageResource extends Resource
                         'rejected' => '拒否',
                     ])
                     ->required(),
-                \Filament\Forms\Components\Textarea::make('moderation_notes')
+                Textarea::make('moderation_notes')
                     ->label('検閲メモ')
                     ->columnSpanFull(),
                 TextInput::make('original_name')
@@ -168,7 +170,7 @@ class ShopImageResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    \Filament\Tables\Actions\BulkAction::make('approve')
+                    BulkAction::make('approve')
                         ->label('一括承認')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
@@ -178,7 +180,7 @@ class ShopImageResource extends Resource
                                 $record->approve(auth()->id());
                             });
                         }),
-                    \Filament\Tables\Actions\BulkAction::make('reject')
+                    BulkAction::make('reject')
                         ->label('一括拒否')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')

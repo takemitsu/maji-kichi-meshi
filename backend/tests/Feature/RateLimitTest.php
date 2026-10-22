@@ -8,6 +8,7 @@ use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -215,7 +216,7 @@ class RateLimitTest extends TestCase
         }
 
         // レート制限キャッシュをクリアしてユーザー2のテストを開始
-        \Illuminate\Support\Facades\Cache::flush();
+        Cache::flush();
 
         // ユーザー2は同じIPからでも5回作成できる（異なる店舗で）
         for ($i = 0; $i < 5; $i++) {

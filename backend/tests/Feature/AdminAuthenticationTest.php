@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Filament\Panel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -46,28 +47,28 @@ class AdminAuthenticationTest extends TestCase
 
     public function test_admin_can_access_panel(): void
     {
-        $panel = app(\Filament\Panel::class);
+        $panel = app(Panel::class);
 
         $this->assertTrue($this->admin->canAccessPanel($panel));
     }
 
     public function test_moderator_can_access_panel(): void
     {
-        $panel = app(\Filament\Panel::class);
+        $panel = app(Panel::class);
 
         $this->assertTrue($this->moderator->canAccessPanel($panel));
     }
 
     public function test_regular_user_cannot_access_panel(): void
     {
-        $panel = app(\Filament\Panel::class);
+        $panel = app(Panel::class);
 
         $this->assertFalse($this->user->canAccessPanel($panel));
     }
 
     public function test_banned_user_cannot_access_panel(): void
     {
-        $panel = app(\Filament\Panel::class);
+        $panel = app(Panel::class);
 
         $this->assertFalse($this->bannedUser->canAccessPanel($panel));
     }
@@ -109,7 +110,7 @@ class AdminAuthenticationTest extends TestCase
 
     public function test_user_role_defaults_are_correct(): void
     {
-        $defaultUser = \App\Models\User::factory()->create();
+        $defaultUser = User::factory()->create();
 
         $this->assertEquals('user', $defaultUser->role);
         $this->assertEquals('active', $defaultUser->status);

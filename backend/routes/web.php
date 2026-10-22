@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\TwoFactorController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,8 +36,8 @@ Route::get('/login', function () {
 
 // OAuth routes (need sessions, so in web routes)
 Route::prefix('api/auth')->group(function () {
-    Route::get('/{provider}', [App\Http\Controllers\Api\AuthController::class, 'oauthRedirect'])->name('api.auth.redirect');
-    Route::get('/{provider}/callback', [App\Http\Controllers\Api\AuthController::class, 'oauthCallback'])->name('api.auth.callback');
+    Route::get('/{provider}', [AuthController::class, 'oauthRedirect'])->name('api.auth.redirect');
+    Route::get('/{provider}/callback', [AuthController::class, 'oauthCallback'])->name('api.auth.callback');
 });
 
 // Admin Two-Factor Authentication Routes

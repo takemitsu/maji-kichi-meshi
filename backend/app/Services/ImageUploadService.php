@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Review;
+use App\Models\ReviewImage;
 use App\Models\Shop;
+use App\Models\ShopImage;
 use Illuminate\Support\Facades\DB;
 
 class ImageUploadService
@@ -47,7 +49,7 @@ class ImageUploadService
     /**
      * Delete an image.
      *
-     * @param  \App\Models\ShopImage|\App\Models\ReviewImage  $image
+     * @param  ShopImage|ReviewImage  $image
      */
     public function deleteImage($image): bool
     {
@@ -82,8 +84,8 @@ class ImageUploadService
         $modelClass = get_class($model);
 
         return match ($modelClass) {
-            \App\Models\Shop::class => \App\Models\ShopImage::class,
-            \App\Models\Review::class => \App\Models\ReviewImage::class,
+            Shop::class => ShopImage::class,
+            Review::class => ReviewImage::class,
             default => throw new \InvalidArgumentException("Unsupported model type: {$modelClass}"),
         };
     }
@@ -96,8 +98,8 @@ class ImageUploadService
         $modelClass = get_class($model);
 
         return match ($modelClass) {
-            \App\Models\Shop::class => 'shop_id',
-            \App\Models\Review::class => 'review_id',
+            Shop::class => 'shop_id',
+            Review::class => 'review_id',
             default => throw new \InvalidArgumentException("Unsupported model type: {$modelClass}"),
         };
     }

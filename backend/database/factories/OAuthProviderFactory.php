@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\OAuthProvider;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OAuthProvider>
+ * @extends Factory<OAuthProvider>
  */
 class OAuthProviderFactory extends Factory
 {

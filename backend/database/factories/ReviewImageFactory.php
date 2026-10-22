@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\ReviewImage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ReviewImage>
+ * @extends Factory<ReviewImage>
  */
 class ReviewImageFactory extends Factory
 {

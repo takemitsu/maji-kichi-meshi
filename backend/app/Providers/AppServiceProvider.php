@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Intervention\Image\ImageManager;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // intervention/image-laravelは'image'として登録するが、
         // ImageManager::classでも解決できるようにエイリアスを追加
-        $this->app->alias('image', \Intervention\Image\ImageManager::class);
+        $this->app->alias('image', ImageManager::class);
     }
 
     /**

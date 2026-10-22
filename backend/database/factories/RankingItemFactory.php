@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Ranking;
+use App\Models\RankingItem;
 use App\Models\Shop;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RankingItem>
+ * @extends Factory<RankingItem>
  */
 class RankingItemFactory extends Factory
 {

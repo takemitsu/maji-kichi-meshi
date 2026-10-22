@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Ranking;
 use App\Models\RankingItem;
 use App\Models\User;
+use Database\Seeders\CategorySeeder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,7 +19,7 @@ class RankingModelTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(\Database\Seeders\CategorySeeder::class);
+        $this->seed(CategorySeeder::class);
     }
 
     public function test_it_has_fillable_attributes(): void
@@ -68,7 +70,7 @@ class RankingModelTest extends TestCase
 
         $ranking->load('items');
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $ranking->items);
+        $this->assertInstanceOf(Collection::class, $ranking->items);
         $this->assertEquals(1, $ranking->items->count());
         $this->assertTrue($ranking->items->contains($item));
     }

@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use PragmaRX\Google2FA\Google2FA;
 use Tests\TestCase;
 
 class TwoFactorControllerTest extends TestCase
@@ -69,7 +70,7 @@ class TwoFactorControllerTest extends TestCase
         $secret = $this->admin->generateTwoFactorSecret();
 
         // Generate valid TOTP code
-        $google2fa = new \PragmaRX\Google2FA\Google2FA;
+        $google2fa = new Google2FA;
         $validCode = $google2fa->getCurrentOtp($secret);
 
         $response = $this->actingAs($this->admin)
@@ -93,7 +94,7 @@ class TwoFactorControllerTest extends TestCase
     {
         $secret = $this->admin->generateTwoFactorSecret();
 
-        $google2fa = new \PragmaRX\Google2FA\Google2FA;
+        $google2fa = new Google2FA;
         $validCode = $google2fa->getCurrentOtp($secret);
 
         $response = $this->actingAs($this->admin)
@@ -184,7 +185,7 @@ class TwoFactorControllerTest extends TestCase
         $secret = $this->admin->generateTwoFactorSecret();
         $this->admin->enableTwoFactor();
 
-        $google2fa = new \PragmaRX\Google2FA\Google2FA;
+        $google2fa = new Google2FA;
         $validCode = $google2fa->getCurrentOtp($secret);
 
         $response = $this->actingAs($this->admin)
@@ -421,7 +422,7 @@ class TwoFactorControllerTest extends TestCase
         $secret = $this->admin->generateTwoFactorSecret();
         $this->admin->enableTwoFactor();
 
-        $google2fa = new \PragmaRX\Google2FA\Google2FA;
+        $google2fa = new Google2FA;
         $validCode = $google2fa->getCurrentOtp($secret);
 
         $response = $this->actingAs($this->admin)
@@ -445,7 +446,7 @@ class TwoFactorControllerTest extends TestCase
         $secret = $this->admin->generateTwoFactorSecret();
         $this->admin->enableTwoFactor();
 
-        $google2fa = new \PragmaRX\Google2FA\Google2FA;
+        $google2fa = new Google2FA;
         $validCode = $google2fa->getCurrentOtp($secret);
 
         $response = $this->actingAs($this->admin)

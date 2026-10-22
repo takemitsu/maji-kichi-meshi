@@ -8,6 +8,8 @@ use App\Models\Shop;
 use App\Models\ShopImage;
 use App\Models\User;
 use App\Models\Wishlist;
+use Database\Seeders\CategorySeeder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,7 +21,7 @@ class ShopModelTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed(\Database\Seeders\CategorySeeder::class);
+        $this->seed(CategorySeeder::class);
     }
 
     public function test_it_has_fillable_attributes(): void
@@ -56,7 +58,7 @@ class ShopModelTest extends TestCase
 
         $shop->categories()->attach($category->id);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $shop->categories);
+        $this->assertInstanceOf(Collection::class, $shop->categories);
         $this->assertEquals(1, $shop->categories->count());
         $this->assertTrue($shop->categories->contains($category));
     }
@@ -68,7 +70,7 @@ class ShopModelTest extends TestCase
 
         $shop->load('reviews');
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $shop->reviews);
+        $this->assertInstanceOf(Collection::class, $shop->reviews);
         $this->assertEquals(1, $shop->reviews->count());
         $this->assertTrue($shop->reviews->contains($review));
     }
@@ -83,7 +85,7 @@ class ShopModelTest extends TestCase
 
         $shop->load('images');
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $shop->images);
+        $this->assertInstanceOf(Collection::class, $shop->images);
         $this->assertEquals(1, $shop->images->count());
         $this->assertTrue($shop->images->contains($image));
     }
@@ -102,7 +104,7 @@ class ShopModelTest extends TestCase
 
         $shop->load('wishlists');
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $shop->wishlists);
+        $this->assertInstanceOf(Collection::class, $shop->wishlists);
         $this->assertEquals(1, $shop->wishlists->count());
         $this->assertTrue($shop->wishlists->contains($wishlist));
     }
