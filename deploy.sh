@@ -114,13 +114,13 @@ fi
 
 log_info "フロントエンド.env設定ファイル確認完了"
 
-# package.jsonに変更があるかチェック
-if git diff HEAD~1 package.json | grep -q .; then
-    log_warn "package.json変更検出 - 依存関係再インストール"
-    rm -rf node_modules package-lock.json
-    npm install
+# package.json / package-lock.json に変更があるかチェック
+# npm ci はロックファイルに固定されたバージョンだけを入れる（本番で最新版を取りに行かない）
+if git diff HEAD~1 -- package.json package-lock.json | grep -q .; then
+    log_warn "依存関係の変更検出 - npm ci で再インストール"
+    npm ci
 else
-    log_info "package.json: 変更なし"
+    log_info "package.json / package-lock.json: 変更なし"
 fi
 
 # SPAビルド
@@ -166,7 +166,7 @@ sudo chown -R www-data:www-data "$FRONTEND_PROD_DIR"
 
 # Phase 6: サービス再起動
 echo "🔄 Phase 6: サービス再起動"
-sudo systemctl restart php8.3-fpm
+sudo systemctl restart php8.4-fpm
 sudo nginx -t
 sudo systemctl reload nginx
 

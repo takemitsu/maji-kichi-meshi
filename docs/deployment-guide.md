@@ -1,9 +1,9 @@
 # デプロイメントガイド
 
 **作成日**: 2025-07-29
-**最終更新**: 2025-10-17
+**最終更新**: 2026-10-22
 **対象**: マジキチメシアプリケーション
-**環境**: Sakura VPS (Ubuntu + nginx + PHP8.3)
+**環境**: Sakura VPS (Ubuntu + nginx + PHP8.4)
 
 ## 概要
 
@@ -15,8 +15,8 @@ Laravel API + Laravel Filament管理画面 + Vue/Nuxt SPA の本番環境デプ�
 
 ### サーバー環境
 - Ubuntu 24.04
-- nginx 1.28.0
-- PHP 8.3 + PHP-FPM
+- nginx 1.30.6
+- PHP 8.4 + PHP-FPM
 - MySQL 8.0
 - Git
 - Node.js v18以上
@@ -112,7 +112,7 @@ sudo -u www-data php artisan route:cache
 sudo -u www-data php artisan view:cache
 
 # サービス再起動
-sudo systemctl restart php8.3-fpm
+sudo systemctl restart php8.4-fpm
 ```
 
 ### 2. フロントエンド手動デプロイ
@@ -158,17 +158,40 @@ sudo -u www-data php artisan admin:create
 
 ## 🔍 トラブルシューティング
 
+### 0. PHP バージョン切り替え後に 502 Bad Gateway（2026-10-22 に発生）
+
+**原因**: 新しい `php8.x-fpm` を apt で入れると pool 設定の `listen.owner` / `listen.group` が `www-data` になる。このサーバーの nginx は `user nginx;` で動いているため、ソケットに接続できず 502 になる。
+
+```bash
+# 切り替え手順（8.3 → 8.4 の例）
+sudo apt-get install php8.4-fpm
+sudo sed -i 's/^listen.owner = www-data/listen.owner = nginx/; s/^listen.group = www-data/listen.group = nginx/' /etc/php/8.4/fpm/pool.d/www.conf
+sudo sed -i 's#/run/php/php8.3-fpm.sock#/run/php/php8.4-fpm.sock#g' /etc/nginx/conf.d/maji-kichi-meshi.conf
+sudo update-alternatives --set php /usr/bin/php8.4
+sudo systemctl enable --now php8.4-fpm
+sudo nginx -t && sudo systemctl reload nginx
+curl -s -o /dev/null -w "%{http_code}\n" https://maji-kichi-meshi.takemitsu.net/api/categories   # 200 を確認してから
+sudo systemctl disable --now php8.3-fpm
+cd /var/www/maji-kichi-backend && sudo -u www-data php artisan config:cache && sudo -u www-data php artisan route:cache && sudo -u www-data php artisan view:cache
+
+# 確認: 拡張と php.ini の差分（gd/imagick/intl などの抜け）
+diff <(php8.3 -m) <(php8.4 -m)
+diff <(grep -vE '^\s*;|^\s*$' /etc/php/8.3/fpm/php.ini) <(grep -vE '^\s*;|^\s*$' /etc/php/8.4/fpm/php.ini)
+```
+
+**注意**: nginx の `fastcgi_pass` を書き換える前に旧 FPM を止めない。
+
 ### 1. 403 Forbidden エラー（管理画面）
 
 **原因**: PHP-FPMソケット権限問題
 
 ```bash
 # 権限確認
-sudo -u www-data test -r /run/php/php8.3-fpm.sock && echo "OK" || echo "NG"
+sudo -u www-data test -r /run/php/php8.4-fpm.sock && echo "OK" || echo "NG"
 
 # 解決方法
 sudo usermod -a -G nginx www-data
-sudo systemctl restart php8.3-fpm
+sudo systemctl restart php8.4-fpm
 sudo systemctl restart nginx
 ```
 
@@ -181,7 +204,7 @@ cd /var/www/maji-kichi-backend
 sudo -u www-data php artisan config:clear
 sudo -u www-data php artisan route:clear
 sudo -u www-data php artisan cache:clear
-sudo systemctl restart php8.3-fpm
+sudo systemctl restart php8.4-fpm
 ```
 
 ### 3. SPA 404エラー（/adminにアクセスできない）
@@ -244,7 +267,7 @@ sudo rm -rf /var/www/maji-kichi-frontend
 sudo mv /var/www/maji-kichi-frontend.backup.YYYYMMDD_HHMMSS /var/www/maji-kichi-frontend
 
 # サービス再起動
-sudo systemctl restart php8.3-fpm
+sudo systemctl restart php8.4-fpm
 sudo systemctl reload nginx
 ```
 
