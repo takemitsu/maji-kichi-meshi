@@ -153,6 +153,12 @@ sudo -u www-data php artisan config:cache
 sudo -u www-data php artisan route:cache  
 sudo -u www-data php artisan view:cache
 
+# Livewire の静的アセット再公開
+# public/vendor/livewire は git 管理外で、これを忘れると vendor 側の Livewire を更新しても
+# 管理画面は古い JS を読み続ける（2026-10-22 に 3.6.3 の JS が残っていた）
+log_info "Livewire アセット再公開"
+sudo -u www-data php artisan livewire:publish --assets
+
 # フロントエンドデプロイ
 log_info "フロントエンドファイル配置"
 
