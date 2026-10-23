@@ -118,7 +118,7 @@ log_info "フロントエンド.env設定ファイル確認完了"
 # npm ci はロックファイルに固定されたバージョンだけを入れる（本番で最新版を取りに行かない）
 if git diff HEAD~1 -- package.json package-lock.json | grep -q .; then
     log_warn "依存関係の変更検出 - npm ci で再インストール"
-    npm ci
+    npm ci --strict-allow-scripts
 else
     log_info "package.json / package-lock.json: 変更なし"
 fi
